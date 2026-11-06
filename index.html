@@ -90,6 +90,10 @@ p{margin:0}
 .btn.ghost.light{color:#fff;border-color:rgba(255,255,255,.85)}
 .dlhelp{font-size:14px;background:rgba(255,255,255,.16);border-radius:12px;padding:0 12px;margin:0}
 .dlhelp:not(:empty){padding:10px 12px}
+.get{background:linear-gradient(140deg,#8a459a,#ca41bc);color:#fff;border-radius:22px;padding:22px;display:grid;gap:12px}
+.get h2{font-size:24px;color:#fff}
+.get .actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.get .note{color:#fff;opacity:.92}
 </style>
 
 </head>
@@ -105,12 +109,7 @@ p{margin:0}
     </div>
     <p class="lead">Tải báo cáo giải mã gene, kết quả khám sức khoẻ, ảnh cân điện tử hoặc đồng hồ, vài dòng về lối sống. Nhận lại giao thức trường thọ chi tiết, bản tóm tắt cốt lõi và thẻ nhắc theo giờ mỗi ngày.</p>
     <p class="tag">Thuận tự nhiên - Tự nhiên thuận.</p>
-    <div class="actions">
-      <a class="btn gold" id="dl" href="giao-thuc-truong-tho-ca-the-hoa.zip" download="giao-thuc-truong-tho-ca-the-hoa.zip">Tải gói skill (.zip)</a>
-      <a class="btn ghost light" id="dl2" href="https://drive.google.com/file/d/15qYxvzsXKbQsdZhb4epl-m-DbIZg6gDk/view?usp=sharing" target="_blank" rel="noopener">Tải qua Google Drive</a>
-      <span class="note" id="dlNote">Gói gồm phương pháp và app, không chứa hồ sơ của ai.</span>
-    </div>
-    <p class="dlhelp" id="dlHelp" aria-live="polite"></p>
+    <p class="note">Đọc hết các bước bên dưới, nút tải gói skill nằm ở cuối trang.</p>
   </header>
 
   <section class="sec" aria-labelledby="h-share">
@@ -136,7 +135,7 @@ p{margin:0}
     <ol class="steps">
       <li class="step">
         <h3>Tải skill lên tài khoản Claude của bạn</h3>
-        <p>Mở Claude trên máy tính hoặc trình duyệt (claude.ai), vào <b>Cài đặt</b>, mục <b>Skills</b>, chọn tải lên và chọn file vừa tải. Bật skill <b>giao-thuc-truong-tho-ca-the-hoa</b>.</p>
+        <p>Mở Claude trên máy tính hoặc trình duyệt (claude.ai), vào <b>Cài đặt</b>, mục <b>Skills</b>, chọn tải lên và chọn file gói skill (tải ở cuối trang này). Bật skill <b>giao-thuc-truong-tho-ca-the-hoa</b>.</p>
         <p class="mini">Làm bước 1 và 2 trên <b>máy tính</b>. Không cần mở hay giải nén file .zip: trên điện thoại, mở file .zip sẽ chỉ thấy chữ lộn xộn. Cần đăng nhập Claude; nếu chưa thấy mục Skills, hãy bật trong phần Năng lực (Capabilities) của Cài đặt.</p>
       </li>
       <li class="step">
@@ -198,6 +197,17 @@ p{margin:0}
   <footer class="readme">
     <p><b>Đọc trước khi dùng.</b> Giao thức trường thọ giúp hướng về đồng hồ và xu hướng sinh học, không phải là lời khuyên chữa bệnh. Tài liệu hỗ trợ lối sống song song với điều trị, không thay thế kết luận y khoa của bác sĩ. Gene là xu hướng; xét nghiệm và triệu chứng quyết định can thiệp. Dữ liệu sức khoẻ và gene là dữ liệu nhạy cảm: sẽ do chính chủ chọn tải lên ứng dụng, hoặc nếu người khác tải giúp phải có sự đồng ý.</p>
   </footer>
+  <section class="get" aria-labelledby="h-get">
+    <p class="eyebrow" style="color:#ffe9a6">Đã đọc xong hướng dẫn</p>
+    <h2 id="h-get">Tải gói skill Thuận Gene Trường Thọ</h2>
+    <p>Tải trên <b>máy tính</b>, rồi làm bước 1: tải file lên mục Skills trong Cài đặt Claude. Không cần mở hay giải nén file.</p>
+    <div class="actions">
+      <a class="btn gold" id="dl" href="giao-thuc-truong-tho-ca-the-hoa.zip" download="giao-thuc-truong-tho-ca-the-hoa.zip">Tải gói skill (.zip)</a>
+      <a class="btn ghost light" id="dl2" href="https://drive.google.com/file/d/15qYxvzsXKbQsdZhb4epl-m-DbIZg6gDk/view?usp=sharing" target="_blank" rel="noopener">Tải qua Google Drive</a>
+      <span class="note" id="dlNote">Gói gồm phương pháp và app, không chứa hồ sơ của ai.</span>
+    </div>
+    <p class="dlhelp" id="dlHelp" aria-live="polite"></p>
+  </section>
 </main>
 
 <script>
