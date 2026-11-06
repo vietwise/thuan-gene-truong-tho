@@ -78,9 +78,7 @@ h1{font-family:var(--display);font-size:30px;line-height:1.2;margin:0}
     var url = 'https://claude.ai/artifact/' + id;
     var go = document.getElementById('go'); go.href = url;
     var fromIcon = /[?&]mo=1\b/.test(location.search);
-    var bounced = false; try { bounced = sessionStorage.getItem('tt-went') === '1'; } catch (e) {}
-    if (fromIcon && !bounced) {
-      try { sessionStorage.setItem('tt-went', '1'); } catch (e) {}
+    if (fromIcon) {
       // opened from the home-screen icon: go straight into the app
       document.getElementById('pin').hidden = true;
       open.hidden = false;
