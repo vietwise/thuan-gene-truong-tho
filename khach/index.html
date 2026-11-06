@@ -137,13 +137,38 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
 .trow .bar{grid-column:1 / -1;height:8px}
 .trow b{text-align:right;font-variant-numeric:tabular-nums}
 .hist li{margin:4px 0}
+.btn.sm{min-height:38px;padding:6px 12px;font-size:14px;border-radius:11px}
+.review{border:2px solid var(--warn);background:var(--warn-soft)}
+.review .lbl{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--warn)}
+.rvitem{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line)}
+.lightrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.chip{border:1.5px dashed var(--moss);background:var(--sheet);color:var(--moss);border-radius:999px;padding:7px 12px;font-size:13.5px;font-weight:700;cursor:pointer}
+.chip.on{background:var(--moss);color:#fff;border-style:solid}
+.feel .frow{display:grid;gap:6px;margin-top:12px}
+.scale{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;max-width:340px}
+.scale button{min-height:42px;border:1.5px solid var(--purple);background:var(--sheet);color:var(--purple);border-radius:11px;font-weight:700;cursor:pointer}
+.scale button.on{background:var(--purple);color:#fff}
+.scale-l{display:flex;justify-content:space-between;max-width:340px;font-size:12px;color:var(--muted)}
+.feel input{font:inherit;min-height:44px;border:1.5px solid var(--line);border-radius:11px;padding:8px 12px;background:var(--sheet);color:var(--ink);width:140px}
+details.grp>summary{list-style:none;display:flex;justify-content:space-between;align-items:baseline;cursor:pointer;padding:4px 2px 8px;border-bottom:2px solid var(--purple);margin-bottom:10px}
+details.grp>summary::-webkit-details-marker{display:none}
+.gname{font-family:var(--display);font-size:19px;color:var(--purple)}
+.gname::before{content:'▸ ';font-size:14px} details[open]>summary .gname::before{content:'▾ '}
+.gcount{font-size:13.5px;color:var(--muted);font-weight:600}
+.why{margin-top:6px;font-size:13.5px} .why summary{color:var(--magenta);cursor:pointer;font-weight:600} .why p{margin:4px 0 0;color:var(--muted)}
+.pill.core{background:var(--magenta-soft);color:var(--magenta)} .pill.snz{background:var(--warn-soft);color:var(--warn)}
+.heat .hl{border-radius:50%}
+.ftab{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+.ftab th,.ftab td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+.ftab th:first-child,.ftab td:first-child{text-align:left}
+.ftab th{font-size:12.5px;color:var(--muted);font-weight:600}
 @media (prefers-reduced-motion:reduce){.bar span{transition:none}.quote{transition:none}}
 </style>
 </head>
 <body>
 <header class="top" id="top" hidden>
   <div class="brandrow"><img src="icon-192.png" alt="" width="44" height="44"><div><b id="hName">Trường Thọ</b><small id="hSub">Thuận Gene Trường Thọ · Chuyên gia Nhất Phương Hồng</small></div></div>
-  <nav class="tabs" aria-label="Mục"><button data-v="today" class="on">Hôm nay</button><button data-v="summary">Tóm tắt</button><button data-v="detail">Giao thức</button><button data-v="stats">Tiến độ</button><button data-v="me">Hồ sơ</button></nav>
+  <nav class="tabs" aria-label="Mục"><button data-v="today" class="on">Hôm nay</button><button data-v="stats">Tiến độ</button><button data-v="docs">Tài liệu</button><button data-v="me">Hồ sơ</button></nav>
 </header>
 <main id="main"></main>
 <input type="file" id="file" accept=".json,application/json,text/plain" hidden>
@@ -190,9 +215,9 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
   function wd(d) { return ((d || new Date()).getDay() + 6) % 7 + 1; }
 
   // ---------- storage (this phone only) ----------
-  var store = { profiles: {}, done: {}, skip: {}, active: null, notify: null, shown: {} };
+  var store = { profiles: {}, done: {}, skip: {}, active: null, notify: null, shown: {}, snooze: {}, light: {}, feel: {}, review: {}, lastBackup: null };
   var memOnly = false;
-  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.profiles) store = s; } catch (e) { memOnly = true; } store.skip = store.skip || {}; store.shown = store.shown || {}; }
+  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.profiles) store = s; } catch (e) { memOnly = true; } ['skip', 'shown', 'snooze', 'light', 'feel', 'review'].forEach(function (k) { store[k] = store[k] || {}; }); }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) { memOnly = true; } }
 
   // ---------- import ----------
@@ -217,18 +242,38 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
     if (!core.reminders || !core.reminders.length) throw new Error('File chưa có giao thức. Chuyên gia cần tạo giao thức trước khi gửi.');
     var pick = function (list) { return list.filter(function (s) { return typeof secs[s[0]] === 'string' && secs[s[0]].trim(); }).map(function (s) { return { key: s[0], title: s[1], md: secs[s[0]] }; }); };
     var rs = withWater(core.reminders, weightFrom(c.scaleText)).map(function (r, i) {
-      return { id: String(r.id || ('r' + i)), time: String(r.time || ''), title: String(r.title || ''), type: String(r.type || ''), ml: mlOf(r), detail: String(r.detail || ''), genes: String(r.genes || ''), days: Array.isArray(r.days) && r.days.length ? r.days.map(Number) : [1, 2, 3, 4, 5, 6, 7], phase: String(r.phase || 'both'), star: !!r.star };
+      return { id: String(r.id || ('r' + i)), time: String(r.time || ''), title: String(r.title || ''), type: String(r.type || ''), ml: mlOf(r), detail: String(r.detail || ''), genes: String(r.genes || ''), days: Array.isArray(r.days) && r.days.length ? r.days.map(Number) : [1, 2, 3, 4, 5, 6, 7], phase: String(r.phase || 'both'), star: !!r.star, core: !!r.core };
     });
     return {
       id: String(c.id || ('k' + Date.now())), name: c.name || 'Hồ sơ của tôi', alias: c.alias || '',
       title: core.title || 'Giao thức trường thọ', goal: core.goal || '',
       phases: (core.phases || []).map(function (p) { return { id: p.id, name: p.name || ('Giai đoạn ' + p.id), when: p.when || '' }; }),
-      phase: Number(c.phase || 1), reminders: rs, summary: pick(SUMMARY), detail: pick(DETAILED),
+      phase: Number(c.phase || 1), reminders: rs, coreFlag: rs.some(function (r) { return r.core; }), summary: pick(SUMMARY), detail: pick(DETAILED),
       emergency: core.emergency || [], exportedAt: o.exportedAt || '', importedAt: new Date().toISOString()
     };
   }
+  var BACKUP_APP = 'truong-tho-khach-sao-luu';
+  function mergeInto(dst, src) {
+    Object.keys(src || {}).forEach(function (k) {
+      var v = src[k];
+      if (v && typeof v === 'object' && !Array.isArray(v)) { if (!dst[k] || typeof dst[k] !== 'object') dst[k] = {}; mergeInto(dst[k], v); }
+      else if (dst[k] === undefined) dst[k] = v;
+    });
+  }
+  function restore(o) {
+    var d = o.data || {}, ids = Object.keys(d.profiles || {});
+    if (!ids.length) throw new Error('File sao lưu không có hồ sơ nào.');
+    ids.forEach(function (id) { var a = store.profiles[id], b = d.profiles[id]; if (!a || String(b.exportedAt || '') >= String(a.exportedAt || '')) store.profiles[id] = b; });
+    ['done', 'skip', 'feel', 'light', 'review'].forEach(function (k) { mergeInto(store[k], d[k]); });
+    store.active = d.active && store.profiles[d.active] ? d.active : ids[0];
+    save(); lastImport = 'restore'; return store.profiles[store.active];
+  }
+  var lastImport = '';
   function importText(text) {
-    var p = fromFile(JSON.parse(text));
+    var o = JSON.parse(text);
+    if (o && o.app === BACKUP_APP) return restore(o);
+    lastImport = 'profile';
+    var p = fromFile(o);
     var old = store.profiles[p.id], today = ymd();
     if (old && old.phase) p.phase = old.phase;
     p.since = (old && old.since) || {}; p.history = (old && old.history) || [];
@@ -243,7 +288,7 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
   $('#file').addEventListener('change', function (e) {
     var f = e.target.files && e.target.files[0]; if (!f) return;
     var r = new FileReader();
-    r.onload = function () { try { var p = importText(String(r.result)); view = 'today'; render(); flash('Đã nhập hồ sơ ' + p.name + '.'); } catch (err) { flash('Không mở được file: ' + (err.message || err)); render(); } };
+    r.onload = function () { try { var p = importText(String(r.result)); view = 'today'; render(); flash(lastImport === 'restore' ? 'Đã khôi phục bản sao lưu của ' + p.name + ', cả tiến độ cũ.' : 'Đã nhập hồ sơ ' + p.name + '.'); } catch (err) { flash('Không mở được file: ' + (err.message || err)); render(); } };
     r.onerror = function () { flash('Không đọc được file.'); };
     r.readAsText(f, 'utf-8'); e.target.value = '';
   });
@@ -257,13 +302,22 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
     return p.reminders.filter(function (r) { return r.days.indexOf(w) >= 0 && (r.phase === 'both' || !hasP2 || r.phase === String(p.phase)); })
       .sort(function (a, b) { return a.time.localeCompare(b.time); });
   }
+  function isCore(p, r) { if (p.coreFlag) return !!r.core; var t = plain(r.type); return t === 'thuoc' || t === 'uong nuoc' || t === 'giac ngu'; }
+  function isLight(p, k) { return !!((store.light[p.id] || {})[k]); }
+  function plan(p, d) { var l = todays(p, d); return isLight(p, ymd(d)) ? l.filter(function (r) { return isCore(p, r); }) : l; }
+  function snoozeUntil(p, day, rid) { return ((store.snooze[p.id] || {})[day] || {})[rid] || 0; }
+  function snoozed(p, day, rid) { return snoozeUntil(p, day, rid) > Date.now(); }
+  function mins(t) { var a = String(t).split(':'); return (+a[0]) * 60 + (+a[1] || 0); }
+  function hhmm(ms) { var d = new Date(ms); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
   function doneMap(p, day) { var d = store.done[p.id] = store.done[p.id] || {}; return d[day] = d[day] || {}; }
   function skipMap(p, day) { var d = store.skip[p.id] = store.skip[p.id] || {}; return d[day] = d[day] || {}; }
   function handled(p, day, rid) { return !!(doneMap(p, day)[rid] || skipMap(p, day)[rid]); }
   function act(pid, day, rid, how) {
     var p = store.profiles[pid]; if (!p) return;
-    if (how === 'done') { doneMap(p, day)[rid] = 1; delete skipMap(p, day)[rid]; }
-    else if (how === 'skip') { skipMap(p, day)[rid] = 1; delete doneMap(p, day)[rid]; }
+    var sz = (store.snooze[p.id] = store.snooze[p.id] || {}); sz[day] = sz[day] || {};
+    if (how === 'done') { doneMap(p, day)[rid] = 1; delete skipMap(p, day)[rid]; delete sz[day][rid]; }
+    else if (how === 'skip') { skipMap(p, day)[rid] = 1; delete doneMap(p, day)[rid]; delete sz[day][rid]; }
+    else if (how === 'snooze') { sz[day][rid] = Date.now() + SNOOZE_MIN * 60000; (store.shown[day] = store.shown[day] || {})[rid] = 0; }
     save(); closeNote(rid);
   }
 
@@ -274,27 +328,53 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
     if (!('serviceWorker' in navigator)) return;
     navigator.serviceWorker.getRegistration().then(function (reg) { if (!reg || !reg.getNotifications) return; reg.getNotifications({ tag: 'tt-' + rid }).then(function (ns) { ns.forEach(function (n) { n.close(); }); }); }).catch(function () {});
   }
+  var SNOOZE_MIN = 30, NOTIFY_WINDOW = 120, REVIEW_AT = '21:00';
   function dueNow(p) {
     var day = ymd(), hm = nowHM();
-    return todays(p, new Date()).filter(function (r) { return r.time && r.time <= hm && !handled(p, day, r.id); });
+    return plan(p, new Date()).filter(function (r) { return r.time && r.time <= hm && !handled(p, day, r.id) && !snoozed(p, day, r.id); });
+  }
+  function showNote(title, opts) {
+    var fb = function () { try { new Notification(title, opts); } catch (e) {} };
+    if (!navigator.serviceWorker) return fb();
+    navigator.serviceWorker.getRegistration().then(function (reg) { if (reg && reg.showNotification) return reg.showNotification(title, opts); fb(); }).catch(fb);
   }
   function tick() {
     var p = cur(); if (!p) return;
-    var due = dueNow(p), day = ymd(), now = Date.now();
+    var due = dueNow(p), day = ymd(), now = Date.now(), hm = nowHM();
     var banner = $('#dueBanner'); if (banner) renderDue(p, banner, due);
     if (store.notify !== 'on' || !canNotify() || Notification.permission !== 'granted') return;
     store.shown[day] = store.shown[day] || {};
+    var three = (Notification.maxActions || 0) >= 3;
     due.forEach(function (r) {
+      // stop pinging 2 hours after the time (the evening review picks it up), unless the person snoozed it
+      if (!snoozeUntil(p, day, r.id) && mins(hm) - mins(r.time) > NOTIFY_WINDOW) return;
       var last = store.shown[day][r.id] || 0;
       if (now - last < REPEAT_MIN * 60000) return;
       store.shown[day][r.id] = now; save();
-      var title = r.time + ' · ' + r.title, opts = { body: r.detail + (r.ml ? ' (' + r.ml + ' ml)' : ''), tag: 'tt-' + r.id, renotify: true, requireInteraction: true, icon: 'icon-192.png', badge: 'favicon-64.png',
-        data: { pid: p.id, day: day, rid: r.id }, actions: [{ action: 'done', title: 'Xong' }, { action: 'skip', title: 'Bỏ qua hôm nay' }] };
-      navigator.serviceWorker && navigator.serviceWorker.getRegistration().then(function (reg) {
-        if (reg && reg.showNotification) return reg.showNotification(title, opts);
-        try { new Notification(title, opts); } catch (e) {}
-      }).catch(function () { try { new Notification(title, opts); } catch (e) {} });
+      var acts = [{ action: 'done', title: 'Xong' }]; if (three) acts.push({ action: 'snooze', title: 'Hoãn 30 phút' }); acts.push({ action: 'skip', title: 'Bỏ qua hôm nay' });
+      showNote(r.time + ' · ' + r.title, { body: r.detail + (r.ml ? ' (' + r.ml + ' ml)' : ''), tag: 'tt-' + r.id, renotify: true, requireInteraction: true, icon: 'icon-192.png', badge: 'favicon-64.png', data: { pid: p.id, day: day, rid: r.id }, actions: acts });
     });
+    if (hm >= REVIEW_AT && !store.shown[day].__review && !reviewed(p, day)) {
+      var n = unmarked(p, day, new Date()).length;
+      if (n) { store.shown[day].__review = now; save(); showNote('Tổng kết hôm nay', { body: n + ' việc chưa đánh dấu. Việc nào đã làm thì bấm Đã làm để tiến độ được tính đúng.', tag: 'tt-review', icon: 'icon-192.png', badge: 'favicon-64.png', data: {} }); }
+    }
+  }
+  function reviewed(p, k) { return !!((store.review[p.id] || {})[k]); }
+  function unmarked(p, k, d) {
+    var isT = k === ymd(), hm = nowHM();
+    return plan(p, d).filter(function (r) { return (!isT || !r.time || r.time <= hm) && !handled(p, k, r.id); });
+  }
+  function reviewTarget(p) {
+    var now = new Date(), y = new Date(now.getTime() - 864e5), yk = ymd(y), start = ymd(new Date(p.importedAt || Date.now())), u;
+    if (yk >= start && !reviewed(p, yk)) { u = unmarked(p, yk, y); if (u.length) return { k: yk, label: 'hôm qua', items: u }; }
+    if (nowHM() >= REVIEW_AT && !reviewed(p, ymd(now))) { u = unmarked(p, ymd(now), now); if (u.length) return { k: ymd(now), label: 'hôm nay', items: u }; }
+    return null;
+  }
+  function reviewCard(rv) {
+    return '<section class="card review" aria-live="polite"><span class="lbl">Tổng kết ' + rv.label + ' · ' + rv.items.length + ' việc chưa đánh dấu</span>' +
+      '<p class="small" style="margin:4px 0 4px">Việc nào bạn đã làm mà quên bấm thì bấm <b>Đã làm</b>, để tiến độ được tính đúng.</p>' +
+      rv.items.map(function (r) { return '<div class="rvitem"><span><b>' + esc(r.time) + '</b> ' + esc(r.title) + '</span><span class="row" style="gap:6px"><button class="btn sm" type="button" data-rv="done" data-r="' + esc(r.id) + '">Đã làm</button><button class="btn ghost sm" type="button" data-rv="skip" data-r="' + esc(r.id) + '">Không làm</button></span></div>'; }).join('') +
+      '<div class="row" style="margin-top:10px"><button class="btn gold" type="button" id="rvEnd">Xong tổng kết</button></div><p class="small muted" style="margin:6px 0 0">Bấm Xong tổng kết thì những việc còn lại được ghi là không làm.</p></section>';
   }
   function askNotify() {
     if (!canNotify()) { store.notify = 'unsupported'; save(); render(); return; }
@@ -304,9 +384,9 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
     if (!due.length) { el.hidden = true; el.innerHTML = ''; return; }
     el.hidden = false;
     el.innerHTML = '<span class="lbl">Đến giờ · ' + due.length + ' việc chờ bạn</span>' + due.slice(0, 3).map(function (r) {
-      return '<div class="dueitem"><p class="big">' + esc(r.time) + ' · ' + esc(r.title) + '</p><p style="margin:0">' + esc(r.detail) + (r.ml ? ' (' + r.ml + ' ml)' : '') + '</p><div class="row" style="margin-top:8px"><button class="btn" type="button" data-act="done" data-r="' + esc(r.id) + '">Xong</button><button class="btn ghost" type="button" data-act="skip" data-r="' + esc(r.id) + '">Bỏ qua hôm nay</button></div></div>';
+      return '<div class="dueitem"><p class="big">' + esc(r.time) + ' · ' + esc(r.title) + '</p><p style="margin:0">' + esc(r.detail) + (r.ml ? ' (' + r.ml + ' ml)' : '') + '</p><div class="row" style="margin-top:8px;gap:8px"><button class="btn" type="button" data-act="done" data-r="' + esc(r.id) + '">Xong</button><button class="btn ghost" type="button" data-act="snooze" data-r="' + esc(r.id) + '">Hoãn ' + SNOOZE_MIN + ' phút</button><button class="btn ghost" type="button" data-act="skip" data-r="' + esc(r.id) + '">Bỏ qua hôm nay</button></div></div>';
     }).join('');
-    $$('button[data-act]', el).forEach(function (b) { b.addEventListener('click', function () { act(p.id, ymd(), b.dataset.r, b.dataset.act); render(); }); });
+    $$('button[data-act]', el).forEach(function (b) { b.addEventListener('click', function () { act(p.id, ymd(), b.dataset.r, b.dataset.act); keepScroll = true; render(); }); });
   }
   function nowHM() { var n = new Date(); return String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0'); }
 
@@ -369,8 +449,7 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
     $('#hName').textContent = p.name;
     $$('.tabs button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === view); });
     if (view === 'today') renderToday(p, m);
-    else if (view === 'summary') renderDoc(p, m, p.summary, 'Bản tóm tắt cốt lõi', 'Những điều không thể bỏ qua: di truyền, lối sống, lâm sàng.', true);
-    else if (view === 'detail') renderDoc(p, m, p.detail, 'Giao thức chi tiết', 'Bản đầy đủ. Chạm vào từng mục để mở.', false);
+    else if (view === 'docs') renderDocs(p, m);
     else if (view === 'stats') renderStats(p, m);
     else renderMe(p, m);
     if (!keepScroll) window.scrollTo(0, 0);
@@ -394,49 +473,93 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
       '<p style="margin:0;max-width:44ch">Thẻ nhắc theo giờ mỗi ngày và bản tóm tắt giao thức trường thọ của bạn. Dùng được cả khi không có mạng.</p>' +
       '<button class="btn gold" id="pick" type="button">Nhập hồ sơ từ chuyên gia</button><p class="status" id="status" aria-live="polite">' + esc(flashMsg) + '</p></section>' +
       '<section class="card"><h2>Bắt đầu thế nào?</h2><ol class="steps" style="margin-top:8px"><li>Chuyên gia gửi bạn <b>file hồ sơ</b> (đuôi .json) qua Zalo hoặc email.</li><li>Lưu file vào điện thoại: Zalo/Email → giữ vào file → <b>Lưu vào Tệp</b> (iPhone) hoặc <b>Tải xuống</b> (Android).</li><li>Bấm <b>Nhập hồ sơ từ chuyên gia</b> ở trên, chọn file đó.</li><li>Thêm app ra màn hình chính: Safari → Chia sẻ → <b>Thêm vào MH chính</b>; Chrome → ⋮ → <b>Thêm vào màn hình chính</b>.</li></ol>' +
-      '<p class="note" style="margin-top:12px">Hồ sơ chỉ lưu trên điện thoại này. App không gửi dữ liệu đi đâu.</p></section>' + readme();
+      '<p class="note" style="margin-top:12px">Hồ sơ chỉ lưu trên điện thoại này. App không gửi dữ liệu đi đâu. Đã có file sao lưu từ máy cũ? Bấm nút trên và chọn file đó.</p></section>' + readme();
   }
   function bindWelcome() { $('#pick').addEventListener('click', function () { $('#file').click(); }); }
+  var SL = ['Sáng', 'Trưa', 'Chiều', 'Tối'], openG = {}, feelEdit = false;
+  var FEEL = [['sleep', 'Giấc ngủ đêm qua'], ['energy', 'Năng lượng'], ['digest', 'Tiêu hoá']];
+  function slotIx(t) { var h = parseInt(t, 10); return isNaN(h) ? 0 : h < 11 ? 0 : h < 14 ? 1 : h < 18 ? 2 : 3; }
+  function feelOf(p, k) { var f = (store.feel[p.id] = store.feel[p.id] || {}); return f[k] = f[k] || {}; }
+  function lastKg(p) { var f = store.feel[p.id] || {}, ks = Object.keys(f).sort().reverse(); for (var i = 0; i < ks.length; i++) if (f[ks[i]].kg) return f[ks[i]].kg; return 0; }
+  function num(v) { return String(v).replace('.', ','); }
+  function cardHtml(p, r, day, dm, sm, isNow) {
+    var t = plain(r.type).replace(/ /g, ''), su = snoozeUntil(p, day, r.id), snz = su > Date.now() && !dm[r.id];
+    return '<li class="rcard t-' + t + (dm[r.id] ? ' done' : '') + (sm[r.id] ? ' skipped' : '') + (isNow ? ' now' : '') + '"><time>' + esc(r.time) + '</time><div><div class="rtitle">' + esc(r.title) + (r.star ? ' <span class="pill" title="Chờ xét nghiệm hoặc bác sĩ đồng ý">*</span>' : '') + '</div><div class="rdetail">' + esc(r.detail) + '</div>' +
+      '<div class="rmeta"><span class="pill">' + esc(r.type) + (r.ml ? ' · ' + r.ml + ' ml' : '') + '</span>' + (isCore(p, r) && !isWater(r) ? '<span class="pill core">Cốt lõi</span>' : '') + (snz ? '<span class="pill snz">Hoãn đến ' + hhmm(su) + '</span>' : '') + (sm[r.id] ? '<span>Đã bỏ qua</span>' : '') + '</div>' +
+      (r.genes ? '<details class="why"><summary>Vì sao việc này?</summary><p>Căn cứ: ' + esc(r.genes) + '. Đọc thêm ở tab Tài liệu.</p></details>' : '') +
+      '</div><label class="chk"><input type="checkbox" data-rid="' + esc(r.id) + '"' + (dm[r.id] ? ' checked' : '') + '><span>Xong</span></label></li>';
+  }
+  function feelCard(p, day) {
+    var f = feelOf(p, day), filled = FEEL.every(function (x) { return f[x[0]]; });
+    if (filled && !feelEdit) return '<p class="small muted" style="margin:0">Cảm nhận hôm nay: ngủ ' + f.sleep + ' · năng lượng ' + f.energy + ' · tiêu hoá ' + f.digest + (f.kg ? ' · ' + num(f.kg) + ' kg' : '') + ' / 5. <button class="linkbtn" id="feelEdit" type="button">Sửa</button></p>';
+    var kg = lastKg(p);
+    return '<section class="card feel"><h2>Hôm nay bạn thấy thế nào?</h2><p class="small muted" style="margin:4px 0 0">Chạm một số: 1 là rất kém, 5 là rất tốt. Mất 10 giây, giúp chuyên gia biết giao thức có hợp với bạn không.</p>' +
+      FEEL.map(function (x) { return '<div class="frow"><b class="small">' + x[1] + '</b><div class="scale" role="group" aria-label="' + x[1] + '">' + [1, 2, 3, 4, 5].map(function (v) { var on = Number(f[x[0]]) === v; return '<button type="button" data-f="' + x[0] + '" data-v="' + v + '" class="' + (on ? 'on' : '') + '" aria-pressed="' + on + '">' + v + '</button>'; }).join('') + '</div><div class="scale-l"><span>Rất kém</span><span>Rất tốt</span></div></div>'; }).join('') +
+      '<div class="frow"><label class="small" for="kg"><b>Cân nặng (kg)</b> <span class="muted">· tuần một lần là đủ, không bắt buộc</span></label><input id="kg" inputmode="decimal" autocomplete="off" placeholder="' + (kg ? num(kg) : 'ví dụ 58,5') + '" value="' + (f.kg ? num(f.kg) : '') + '"></div>' +
+      (filled ? '<div class="row" style="margin-top:10px"><button class="btn sm" type="button" id="feelDone">Lưu</button></div>' : '') + '</section>';
+  }
+  function backupDue(p) {
+    var age = function (iso) { return iso ? (Date.now() - new Date(iso).getTime()) / 864e5 : 1e9; };
+    return store.lastBackup ? age(store.lastBackup) >= 30 : age(p.importedAt) >= 7;
+  }
   function renderToday(p, m) {
-    var today = new Date(), day = ymd(today), rs = todays(p, today), dm = doneMap(p, day);
-    var sm = skipMap(p, day); var done = rs.filter(function (r) { return dm[r.id]; }).length;
+    var today = new Date(), day = ymd(today), light = isLight(p, day), all = todays(p, today), rs = plan(p, today), dm = doneMap(p, day), sm = skipMap(p, day);
+    var done = rs.filter(function (r) { return dm[r.id]; }).length;
     var wr = rs.filter(isWater), wT = wr.reduce(function (s, r) { return s + mlOf(r); }, 0), wD = wr.filter(function (r) { return dm[r.id]; }).reduce(function (s, r) { return s + mlOf(r); }, 0);
-    var hm = nowHM(), nextI = rs.findIndex(function (r) { return !dm[r.id] && !sm[r.id] && r.time >= hm; });
-    var nx = rs[nextI];
-    var hasP2 = p.phases.length > 1;
-    var q = pickQuote('', today.getDate());
+    var hm = nowHM(), nextI = rs.findIndex(function (r) { return !dm[r.id] && !sm[r.id] && !snoozed(p, day, r.id) && r.time >= hm; });
+    var nx = rs[nextI], nxId = nx && nx.id;
+    var hasP2 = p.phases.length > 1, q = pickQuote('', today.getDate()), rv = reviewTarget(p);
     var weekHtml = '';
     for (var k = 6; k >= 0; k--) {
-      var d = new Date(today.getTime() - k * 864e5), list = todays(p, d), dmk = (store.done[p.id] || {})[ymd(d)] || {};
+      var d = new Date(today.getTime() - k * 864e5), list = plan(p, d), dmk = (store.done[p.id] || {})[ymd(d)] || {};
       var n = list.filter(function (r) { return dmk[r.id]; }).length, pct = list.length ? Math.round(n * 100 / list.length) : 0;
-      weekHtml += '<div class="' + (k === 0 ? 'today' : '') + '"><i title="' + pct + '%"><b style="height:' + pct + '%"></b></i>' + DAYS[wd(d)] + '</div>';
+      weekHtml += '<div class="' + (k === 0 ? 'today' : '') + '"><i title="' + pct + '%"' + (isLight(p, ymd(d)) ? ' style="border-radius:50%"' : '') + '><b style="height:' + pct + '%"></b></i>' + DAYS[wd(d)] + '</div>';
     }
+    var groups = SL.map(function (name, i) {
+      var items = rs.filter(function (r) { return slotIx(r.time) === i; }); if (!items.length) return '';
+      var nd = items.filter(function (r) { return dm[r.id]; }).length, allH = items.every(function (r) { return dm[r.id] || sm[r.id]; });
+      var key = day + i, open = openG[key] !== undefined ? openG[key] : !allH;
+      return '<details class="grp" data-g="' + key + '"' + (open ? ' open' : '') + '><summary><span class="gname">' + name + '</span><span class="gcount">' + nd + '/' + items.length + ' xong' + (allH ? ' ✓' : '') + '</span></summary><ul class="rlist">' +
+        items.map(function (r) { return cardHtml(p, r, day, dm, sm, r.id === nxId); }).join('') + '</ul></details>';
+    }).join('');
+    var rest = light ? all.filter(function (r) { return !isCore(p, r); }) : [];
     m.innerHTML =
-      '<section class="card dayhead"><div class="row" style="justify-content:space-between"><h1>' + DAYN[wd(today)] + ', ' + today.toLocaleDateString('vi-VN') + '</h1></div>' +
+      '<section class="card dayhead"><h1>' + DAYN[wd(today)] + ', ' + today.toLocaleDateString('vi-VN') + '</h1>' +
       '<p class="small muted" style="margin:0">' + done + '/' + rs.length + ' việc đã xong hôm nay</p><div class="bar"><span style="width:' + (rs.length ? Math.round(done * 100 / rs.length) : 0) + '%"></span></div>' +
       (wT ? '<p class="small" style="margin:4px 0 0"><b>Nước hôm nay:</b> ' + wD.toLocaleString('vi-VN') + ' / ' + wT.toLocaleString('vi-VN') + ' ml</p><div class="bar wbar"><span style="width:' + Math.round(wD * 100 / wT) + '%"></span></div>' : '') +
-      (hasP2 ? '<div class="seg" role="group" aria-label="Giai đoạn">' + p.phases.map(function (ph) { return '<button type="button" data-ph="' + ph.id + '" class="' + (String(p.phase) === String(ph.id) ? 'on' : '') + '">' + esc(ph.name) + '</button>'; }).join('') + '</div>' : '') + '</section>' +
-      '<section class="card next due" id="dueBanner" hidden aria-live="polite"></section>' + notifyCard() +
+      (hasP2 ? '<div class="seg" role="group" aria-label="Giai đoạn">' + p.phases.map(function (ph) { return '<button type="button" data-ph="' + ph.id + '" class="' + (String(p.phase) === String(ph.id) ? 'on' : '') + '">' + esc(ph.name) + '</button>'; }).join('') + '</div>' : '') +
+      '<div class="lightrow"><button type="button" class="chip' + (light ? ' on' : '') + '" id="lightBtn" aria-pressed="' + light + '">' + (light ? 'Đang là ngày nhẹ' : 'Hôm nay là ngày nhẹ?') + '</button><span class="small muted">' +
+        (light ? 'Chỉ giữ ' + rs.length + ' việc cốt lõi. Ngày nhẹ không làm đứt chuỗi.' : 'Ốm, đi xa, bận: chỉ giữ việc cốt lõi' + (p.coreFlag ? ' chuyên gia đã đánh dấu' : ' (thuốc, nước, giấc ngủ)') + '.') + '</span></div></section>' +
+      (rv ? reviewCard(rv) : '') +
+      (rv && rv.label === 'hôm nay' ? '' : '<section class="card next due" id="dueBanner" hidden aria-live="polite"></section>') + notifyCard() +
+      (backupDue(p) ? '<p class="note" style="margin:0">Đổi điện thoại hay xoá trình duyệt là mất tiến độ. <button class="linkbtn" id="nudgeBk" type="button">Lưu bản sao ngay</button></p>' : '') +
       (nx ? '<section class="card next"><span class="lbl">Việc tiếp theo · ' + esc(nx.time) + '</span><p class="big">' + esc(nx.title) + '</p><p style="margin:0">' + esc(nx.detail) + '</p><div class="row" style="margin-top:10px"><button class="btn" type="button" data-done="' + esc(nx.id) + '">Đã làm xong</button></div></section>'
           : '<section class="card next"><span class="lbl">Hôm nay</span><p class="big">' + (rs.length && done === rs.length ? 'Đã xong tất cả. Cảm ơn bạn đã chăm cơ thể mình.' : 'Không còn việc nào sau giờ này.') + '</p></section>') +
-      '<ul class="rlist">' + rs.map(function (r, i) {
-        var t = plain(r.type).replace(/ /g, '');
-        return '<li class="rcard t-' + t + (dm[r.id] ? ' done' : '') + (sm[r.id] ? ' skipped' : '') + (i === nextI ? ' now' : '') + '"><time>' + esc(r.time) + '</time><div><div class="rtitle">' + esc(r.title) + (r.star ? ' <span class="pill" title="Chờ xét nghiệm hoặc bác sĩ đồng ý">*</span>' : '') + '</div><div class="rdetail">' + esc(r.detail) + '</div><div class="rmeta"><span class="pill">' + esc(r.type) + (r.ml ? ' · ' + r.ml + ' ml' : '') + '</span>' + (r.genes ? '<span>' + esc(r.genes) + '</span>' : '') + '</div></div>' +
-          '<label class="chk"><input type="checkbox" data-rid="' + esc(r.id) + '"' + (dm[r.id] ? ' checked' : '') + '><span>Xong</span></label></li>';
-      }).join('') + '</ul>' +
+      feelCard(p, day) + groups +
+      (rest.length ? '<details class="sec"><summary>' + rest.length + ' việc khác tạm nghỉ hôm nay</summary><ul class="small" style="padding-left:18px">' + rest.map(function (r) { return '<li>' + esc(r.time) + ' · ' + esc(r.title) + '</li>'; }).join('') + '</ul></details>' : '') +
       '<section class="card"><div class="row" style="justify-content:space-between"><h2>7 ngày qua</h2><button class="linkbtn" type="button" id="toStats">Tiến độ cả giai đoạn →</button></div><div class="week" style="margin-top:10px">' + weekHtml + '</div></section>' +
       '<section class="card"><h2>Nhắc bằng Lịch của điện thoại</h2><p class="small" style="margin:6px 0 10px">Điện thoại sẽ đổ chuông đúng giờ cho từng việc, kể cả khi không mở app và không có mạng. Lịch nhắc chạy 12 tuần, theo giai đoạn đang chọn.</p><button class="btn gold" id="ics" type="button">Thêm lịch nhắc vào điện thoại</button>' +
       '<p class="small muted" style="margin:8px 0 0">iPhone: chạm file vừa tải → <b>Thêm tất cả</b>. Android: mở file bằng Google Calendar. Đổi giai đoạn thì thêm lại.</p></section>' +
       quoteHtml(q, 'rq');
+    var again = function () { keepScroll = true; render(); };
     $('#toStats').addEventListener('click', function () { view = 'stats'; render(); });
-    $$('input[data-rid]', m).forEach(function (cb) { cb.addEventListener('change', function () { if (cb.checked) act(p.id, day, cb.dataset.rid, 'done'); else { delete doneMap(p, day)[cb.dataset.rid]; save(); } keepScroll = true; render(); }); });
+    $$('input[data-rid]', m).forEach(function (cb) { cb.addEventListener('change', function () { if (cb.checked) act(p.id, day, cb.dataset.rid, 'done'); else { delete doneMap(p, day)[cb.dataset.rid]; save(); } again(); }); });
+    $$('details.grp > summary', m).forEach(function (s2) { s2.addEventListener('click', function () { var d2 = s2.parentNode; openG[d2.dataset.g] = !d2.open; }); });
     $('#nYes') && $('#nYes').addEventListener('click', askNotify);
-    $('#nNo') && $('#nNo').addEventListener('click', function () { store.notify = 'off'; save(); renderToday(p, m); });
-    $('#nOff') && $('#nOff').addEventListener('click', function () { store.notify = 'off'; save(); renderToday(p, m); });
+    $('#nNo') && $('#nNo').addEventListener('click', function () { store.notify = 'off'; save(); again(); });
+    $('#nOff') && $('#nOff').addEventListener('click', function () { store.notify = 'off'; save(); again(); });
     $('#nOn') && $('#nOn').addEventListener('click', askNotify);
-    renderDue(p, $('#dueBanner'), dueNow(p));
-    $$('button[data-done]', m).forEach(function (b) { b.addEventListener('click', function () { act(p.id, day, b.dataset.done, 'done'); renderToday(p, m); }); });
-    $$('.seg button', m).forEach(function (b) { b.addEventListener('click', function () { p.phase = Number(b.dataset.ph); p.since = p.since || {}; if (!p.since[p.phase]) p.since[p.phase] = ymd(); save(); renderToday(p, m); }); });
+    $('#dueBanner') && renderDue(p, $('#dueBanner'), dueNow(p));
+    $$('button[data-done]', m).forEach(function (b) { b.addEventListener('click', function () { act(p.id, day, b.dataset.done, 'done'); again(); }); });
+    $$('.seg button', m).forEach(function (b) { b.addEventListener('click', function () { p.phase = Number(b.dataset.ph); p.since = p.since || {}; if (!p.since[p.phase]) p.since[p.phase] = ymd(); save(); again(); }); });
+    $('#lightBtn').addEventListener('click', function () { var l = (store.light[p.id] = store.light[p.id] || {}); if (l[day]) delete l[day]; else l[day] = 1; save(); again(); });
+    $$('button[data-rv]', m).forEach(function (b) { b.addEventListener('click', function () { act(p.id, rv.k, b.dataset.r, b.dataset.rv); again(); }); });
+    $('#rvEnd') && $('#rvEnd').addEventListener('click', function () { rv.items.forEach(function (r) { if (!handled(p, rv.k, r.id)) skipMap(p, rv.k)[r.id] = 1; }); var x = (store.review[p.id] = store.review[p.id] || {}); x[rv.k] = 1; save(); again(); });
+    $$('button[data-f]', m).forEach(function (b) { b.addEventListener('click', function () { var f = feelOf(p, day); f[b.dataset.f] = Number(b.dataset.v); feelEdit = true; save(); again(); }); });
+    $('#kg') && $('#kg').addEventListener('change', function (e) { var v = parseFloat(String(e.target.value).replace(',', '.')); var f = feelOf(p, day); if (v > 20 && v < 300) f.kg = Math.round(v * 10) / 10; else delete f.kg; save(); });
+    $('#feelDone') && $('#feelDone').addEventListener('click', function () { var i = $('#kg'); if (i) i.dispatchEvent(new Event('change')); feelEdit = false; again(); });
+    $('#feelEdit') && $('#feelEdit').addEventListener('click', function () { feelEdit = true; again(); });
+    $('#nudgeBk') && $('#nudgeBk').addEventListener('click', function () { saveBackup(function () { again(); }); });
     $('#ics').addEventListener('click', function () { downloadIcs(p); });
   }
   function notifyCard() {
@@ -455,10 +578,10 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
   function slotOf(t) { var h = parseInt(t, 10); return isNaN(h) ? 'Không giờ cố định' : h < 11 ? 'Sáng (trước 11 giờ)' : h < 14 ? 'Trưa (11–14 giờ)' : h < 18 ? 'Chiều (14–18 giờ)' : 'Tối (từ 18 giờ)'; }
   function stats(p) {
     var from = sinceOf(p), d = parseYmd(from), end = new Date(), todayK = ymd(end), hm = nowHM();
-    var o = { from: from, days: 0, sched: 0, done: 0, skip: 0, water: 0, waterGoal: 0, perDay: [], byType: {}, bySlot: {}, cur: 0, best: 0, kept: 0 };
+    var o = { from: from, days: 0, sched: 0, done: 0, skip: 0, water: 0, waterGoal: 0, perDay: [], byType: {}, bySlot: {}, cur: 0, best: 0, kept: 0, light: 0 };
     var run = 0, guard = 0;
     while (ymd(d) <= todayK && guard++ < 800) {
-      var k = ymd(d), isToday = k === todayK, list = todays(p, d);
+      var k = ymd(d), isToday = k === todayK, lt = isLight(p, k), list = plan(p, d);
       var dm = (store.done[p.id] || {})[k] || {}, sm = (store.skip[p.id] || {})[k] || {};
       var due = isToday ? list.filter(function (r) { return !r.time || r.time <= hm || dm[r.id] || sm[r.id]; }) : list;
       var n = 0, sk = 0;
@@ -469,15 +592,14 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
         (o.bySlot[sl] = o.bySlot[sl] || [0, 0]); o.bySlot[sl][1]++; o.bySlot[sl][0] += ok;
         if (isWater(r) && ok) o.water += mlOf(r);
       });
-      if (!isToday) o.waterGoal += list.filter(isWater).reduce(function (s, r) { return s + mlOf(r); }, 0);
-      else o.waterGoal += due.filter(isWater).reduce(function (s, r) { return s + mlOf(r); }, 0);
+      o.waterGoal += (isToday ? due : list).filter(isWater).reduce(function (s, r) { return s + mlOf(r); }, 0);
       var pct = due.length ? n / due.length : null, full = list.length ? n / list.length : null;
-      o.perDay.push({ k: k, d: new Date(d), pct: pct, n: n, of: due.length, today: isToday });
-      o.days++; o.sched += due.length; o.done += n; o.skip += sk;
       var keptDay = isToday ? (full !== null && full >= KEEP) : (pct !== null && pct >= KEEP);
+      o.perDay.push({ k: k, d: new Date(d), pct: pct, n: n, of: due.length, today: isToday, light: lt, kept: keptDay });
+      o.days++; o.sched += due.length; o.done += n; o.skip += sk; if (lt) o.light++;
       if (list.length) {
         if (keptDay) { run++; o.kept++; if (run > o.best) o.best = run; }
-        else if (!isToday) run = 0;
+        else if (!isToday && !lt) run = 0;   // a light day never breaks the streak
       }
       d.setDate(d.getDate() + 1);
     }
@@ -485,7 +607,26 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
     o.missed = o.sched - o.done - o.skip;
     o.waterAvg = o.days ? Math.round(o.water / o.days / 10) * 10 : 0;
     o.waterGoalAvg = o.days ? Math.round(o.waterGoal / o.days / 10) * 10 : 0;
+    o.feel = feelStats(p, o);
     return o;
+  }
+  function feelStats(p, st) {
+    var r = { n: 0, all: {}, kept: {}, other: {}, kg: [] }, add = function (o, k, v) { (o[k] = o[k] || [0, 0]); o[k][0] += v; o[k][1]++; };
+    st.perDay.forEach(function (x) {
+      var f = (store.feel[p.id] || {})[x.k]; if (!f) return; var any = false;
+      FEEL.forEach(function (m) { var v = Number(f[m[0]]); if (v) { any = true; add(r.all, m[0], v); add(x.kept ? r.kept : r.other, m[0], v); } });
+      if (any) r.n++; if (f.kg) r.kg.push(f.kg);
+    });
+    return r;
+  }
+  function avg(o, k) { return o[k] && o[k][1] ? num((o[k][0] / o[k][1]).toFixed(1)) : '—'; }
+  function feelHtml(fs) {
+    if (!fs.n) return '<section class="card"><h2>Cảm nhận theo ngày</h2><p class="small" style="margin:6px 0 0">Chưa có cảm nhận nào. Mỗi ngày chấm nhanh giấc ngủ, năng lượng, tiêu hoá ở tab Hôm nay; sau vài tuần app sẽ cho thấy ngày giữ nhịp bạn thấy khác thế nào.</p></section>';
+    var cmp = FEEL.some(function (m) { return fs.kept[m[0]] && fs.kept[m[0]][1] >= 2 && fs.other[m[0]] && fs.other[m[0]][1] >= 2; });
+    return '<section class="card"><h2>Cảm nhận theo ngày</h2><p class="small muted" style="margin:4px 0 0">Điểm trung bình trên 5, từ ' + fs.n + ' ngày đã chấm.</p><table class="ftab"><thead><tr><th></th><th>Trung bình</th>' + (cmp ? '<th>Ngày giữ nhịp</th><th>Ngày khác</th>' : '') + '</tr></thead><tbody>' +
+      FEEL.map(function (m) { return '<tr><td>' + m[1] + '</td><td><b>' + avg(fs.all, m[0]) + '</b></td>' + (cmp ? '<td>' + avg(fs.kept, m[0]) + '</td><td>' + avg(fs.other, m[0]) + '</td>' : '') + '</tr>'; }).join('') + '</tbody></table>' +
+      (fs.kg.length >= 2 ? '<p class="small" style="margin:10px 0 0"><b>Cân nặng:</b> ' + num(fs.kg[0]) + ' → ' + num(fs.kg[fs.kg.length - 1]) + ' kg</p>' : fs.kg.length ? '<p class="small" style="margin:10px 0 0"><b>Cân nặng:</b> ' + num(fs.kg[0]) + ' kg</p>' : '') +
+      (cmp ? '' : '<p class="small muted" style="margin:8px 0 0">Chấm thêm vài ngày nữa để so ngày giữ nhịp với ngày khác.</p>') + '</section>';
   }
   function verdict(st) {
     if (!st.sched) return ['Giai đoạn vừa bắt đầu', 'Làm xong việc đầu tiên trong ngày, con số sẽ hiện ở đây.', 't'];
@@ -506,10 +647,10 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
     for (var i = 0; i < pad; i++) h += '<i></i>';
     days.forEach(function (x) {
       var c = x.pct === null ? '' : x.pct >= KEEP ? 'h3' : x.pct >= 0.5 ? 'h2' : x.pct > 0 ? 'h1' : 'h0';
-      h += '<i class="' + c + (x.today ? ' ht' : '') + '" title="' + x.d.toLocaleDateString('vi-VN') + ': ' + x.n + '/' + x.of + '"></i>';
+      h += '<i class="' + c + (x.today ? ' ht' : '') + (x.light ? ' hl' : '') + '" title="' + x.d.toLocaleDateString('vi-VN') + ': ' + x.n + '/' + x.of + '"></i>';
     });
     return '<div class="heat" role="img" aria-label="Lịch giữ nhịp từng ngày">' + h + '</div>' +
-      '<div class="legend"><span><i style="background:var(--line)"></i>Chưa làm</span><span><i style="background:var(--magenta-soft);box-shadow:inset 0 0 0 1px var(--magenta)"></i>Dưới 50%</span><span><i style="background:var(--magenta);opacity:.55"></i>50–79%</span><span><i style="background:var(--magenta)"></i>Từ 80%</span></div>';
+      '<div class="legend"><span><i style="background:var(--line)"></i>Chưa làm</span><span><i style="background:var(--magenta-soft);box-shadow:inset 0 0 0 1px var(--magenta)"></i>Dưới 50%</span><span><i style="background:var(--magenta);opacity:.55"></i>50–79%</span><span><i style="background:var(--magenta)"></i>Từ 80%</span><span><i style="background:var(--magenta);border-radius:50%"></i>Ô tròn: ngày nhẹ</span></div>';
   }
   function shareText(p, st) {
     var f = function (k) { return parseYmd(k).toLocaleDateString('vi-VN'); };
@@ -517,7 +658,10 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
     return 'Tiến độ giao thức trường thọ — ' + p.name + '\n' + phaseName(p) + ', từ ' + f(st.from) + ' đến hôm nay (' + st.days + ' ngày)\n' +
       'Hoàn thành ' + st.rate + '% (' + st.done + '/' + st.sched + ' việc), bỏ qua ' + st.skip + ', chưa đánh dấu ' + st.missed + '\n' +
       'Ngày giữ nhịp (từ 80%): ' + st.kept + '/' + st.days + ' · chuỗi hiện tại ' + st.cur + ' ngày · dài nhất ' + st.best + ' ngày\n' +
+      (st.light ? 'Ngày nhẹ: ' + st.light + '\n' : '') +
       (st.waterGoalAvg ? 'Nước trung bình ' + st.waterAvg + ' / ' + st.waterGoalAvg + ' ml mỗi ngày\n' : '') +
+      (st.feel.n ? 'Cảm nhận (trên 5, ' + st.feel.n + ' ngày): ' + FEEL.map(function (m) { return m[1].toLowerCase() + ' ' + avg(st.feel.all, m[0]) + (st.feel.kept[m[0]] && st.feel.other[m[0]] ? ' (ngày giữ nhịp ' + avg(st.feel.kept, m[0]) + ', ngày khác ' + avg(st.feel.other, m[0]) + ')' : ''); }).join('; ') + '\n' : '') +
+      (st.feel.kg.length >= 2 ? 'Cân nặng ' + num(st.feel.kg[0]) + ' → ' + num(st.feel.kg[st.feel.kg.length - 1]) + ' kg\n' : '') +
       'Theo loại: ' + Object.keys(st.byType).map(function (k) { return k + ' ' + pctTxt(st.byType[k]) + '%'; }).join(', ') + '\n' +
       (weak.length ? 'Cần chú ý: ' + weak.join(', ') + '\n' : '') + '(Gửi từ app Thuận Gene Trường Thọ)';
   }
@@ -533,11 +677,11 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
       '<section class="kpis">' +
         '<div class="kpi fire"><b>' + st.cur + ' ngày</b><span>Chuỗi giữ nhịp hiện tại</span></div>' +
         '<div class="kpi"><b>' + st.best + ' ngày</b><span>Chuỗi dài nhất giai đoạn này</span></div>' +
-        '<div class="kpi"><b>' + st.kept + '/' + st.days + '</b><span>Ngày làm được từ 80%</span></div>' +
+        '<div class="kpi"><b>' + st.kept + '/' + st.days + '</b><span>Ngày làm được từ 80%' + (st.light ? ' · ' + st.light + ' ngày nhẹ' : '') + '</span></div>' +
         (st.waterGoalAvg ? '<div class="kpi water"><b>' + st.waterAvg.toLocaleString('vi-VN') + ' ml</b><span>Nước trung bình mỗi ngày / ' + st.waterGoalAvg.toLocaleString('vi-VN') + ' ml</span></div>' : '<div class="kpi"><b>' + st.skip + '</b><span>Việc đã bỏ qua</span></div>') +
       '</section>' +
       '<section class="card"><h2>Lịch giữ nhịp</h2><p class="small muted" style="margin:4px 0 10px">Mỗi ô là một ngày' + (st.days > 84 ? ' (12 tuần gần nhất)' : '') + '. Ô viền vàng là hôm nay.</p>' + heatHtml(st) + '</section>' +
-      quoteHtml(q) +
+      quoteHtml(q) + feelHtml(st.feel) +
       '<section class="card"><h2>Theo loại việc</h2><p class="small muted" style="margin:4px 0 0">Loại nào thấp là chỗ cần nhờ chuyên gia chỉnh cho vừa sức.</p>' + rowsHtml(st.byType) + '</section>' +
       '<section class="card"><h2>Theo khung giờ</h2>' + rowsHtml(st.bySlot) + '</section>' +
       '<section class="card"><h2>Mang tiến độ đi tư vấn</h2><p class="small" style="margin:6px 0 10px">Gửi bảng tóm tắt này cho chuyên gia trước buổi tư vấn tiếp theo. Bạn tự chọn gửi qua Zalo, email hay tin nhắn. App không tự gửi.</p><div class="row"><button class="btn" id="shareSt" type="button">Chia sẻ tiến độ</button><button class="btn ghost" id="resetSt" type="button">Đo lại từ hôm nay</button></div><p class="status" id="stMsg" aria-live="polite"></p></section>' +
@@ -555,25 +699,37 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
       p.since = p.since || {}; p.since[p.phase] = ymd(); save(); renderStats(p, m);
     });
   }
-  function renderDoc(p, m, secs, title, sub, open) {
-    if (!secs.length) { m.innerHTML = '<section class="card"><h1>' + esc(title) + '</h1><p>Hồ sơ chưa có phần này. Hỏi chuyên gia gửi bản đầy đủ.</p></section>'; return; }
-    m.innerHTML = '<section class="card"><h1>' + esc(title) + '</h1><p class="small muted" style="margin:4px 0 0">' + esc(sub) + '</p></section>' +
-      (open ? secs.map(function (s) { return '<article class="card doc">' + md(s.md) + '</article>'; }).join('')
-            : secs.map(function (s) { return '<details class="sec"><summary>' + esc(s.title) + '</summary><div class="doc">' + md(s.md) + '</div></details>'; }).join(''));
+  function renderDocs(p, m) {
+    var none = '<p class="small" style="margin:6px 0 0">Hồ sơ chưa có phần này. Hỏi chuyên gia gửi bản đầy đủ.</p>';
+    m.innerHTML = '<section class="card"><h1>Bản tóm tắt cốt lõi</h1><p class="small muted" style="margin:4px 0 0">Những điều không thể bỏ qua: di truyền, lối sống, lâm sàng.</p>' + (p.summary.length ? '' : none) + '</section>' +
+      p.summary.map(function (s) { return '<article class="card doc">' + md(s.md) + '</article>'; }).join('') +
+      '<section class="card"><h1>Giao thức chi tiết</h1><p class="small muted" style="margin:4px 0 0">Bản đầy đủ để đọc khi cần. Chạm vào từng mục để mở.</p>' + (p.detail.length ? '' : none) + '</section>' +
+      p.detail.map(function (s) { return '<details class="sec"><summary>' + esc(s.title) + '</summary><div class="doc">' + md(s.md) + '</div></details>'; }).join('');
+  }
+  function saveBackup(after, msgEl) {
+    var name = 'sao-luu-truong-tho-' + ymd() + '.json';
+    var txt = JSON.stringify({ app: BACKUP_APP, v: 1, savedAt: new Date().toISOString(), data: { profiles: store.profiles, done: store.done, skip: store.skip, feel: store.feel, light: store.light, review: store.review, active: store.active } });
+    var ok = function () { store.lastBackup = new Date().toISOString(); save(); if (msgEl) msgEl.textContent = 'Đã tạo bản sao ' + name + '. Cất vào Tệp, Drive hoặc Zalo của chính bạn.'; if (after) after(); };
+    var file = null; try { file = new File([txt], name, { type: 'application/json' }); } catch (e) {}
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: 'Sao lưu Trường Thọ' }).then(ok).catch(function () {}); return; }
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], { type: 'application/json' })); a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 4000); ok();
   }
   function renderMe(p, m) {
     var others = Object.keys(store.profiles).filter(function (id) { return id !== p.id; });
     m.innerHTML = '<section class="card"><h1>' + esc(p.name) + '</h1><p class="small muted" style="margin:4px 0 0">' + esc(p.title) + '</p>' + (p.goal ? '<p style="margin:10px 0 0"><b>Mục tiêu:</b> ' + esc(p.goal) + '</p>' : '') +
       '<p class="small muted" style="margin:10px 0 0">Chuyên gia gửi ngày ' + (p.exportedAt ? new Date(p.exportedAt).toLocaleDateString('vi-VN') : '—') + ' · nhập vào máy ngày ' + new Date(p.importedAt).toLocaleDateString('vi-VN') + '</p></section>' +
-      '<section class="card"><h2>Cập nhật hồ sơ</h2><p class="small" style="margin:6px 0 10px">Sau mỗi lần tư vấn, chuyên gia gửi file mới. Nhập file mới sẽ thay bản cũ, giữ nguyên các việc bạn đã đánh dấu xong.</p><button class="btn" id="pick" type="button">Nhập hồ sơ từ chuyên gia</button><p class="status" id="status" aria-live="polite">' + esc(flashMsg) + '</p></section>' +
+      '<section class="card"><h2>Cập nhật hồ sơ</h2><p class="small" style="margin:6px 0 10px">Sau mỗi lần tư vấn, chuyên gia gửi file mới. Nhập file mới sẽ thay bản cũ, giữ nguyên các việc bạn đã đánh dấu xong và cảm nhận đã ghi.</p><button class="btn" id="pick" type="button">Nhập hồ sơ từ chuyên gia</button><p class="status" id="status" aria-live="polite">' + esc(flashMsg) + '</p></section>' +
       (others.length ? '<section class="card"><h2>Hồ sơ khác trên máy</h2><div class="row" style="margin-top:8px">' + others.map(function (id) { return '<button class="btn ghost" type="button" data-sw="' + esc(id) + '">' + esc(store.profiles[id].name) + '</button>'; }).join('') + '</div></section>' : '') +
+      '<section class="card"><h2>Sao lưu và chuyển máy</h2><p class="small" style="margin:6px 0 10px">Hồ sơ và tiến độ chỉ nằm trên điện thoại này. Lưu một bản sao vào Tệp, Drive hoặc Zalo của chính bạn. Sang máy mới: mở app, bấm <b>Nhập hồ sơ từ chuyên gia</b>, chọn file sao lưu.</p><div class="row"><button class="btn gold" id="bk" type="button">Lưu bản sao</button></div><p class="small muted" style="margin:8px 0 0" id="bkMsg">' + (store.lastBackup ? 'Lần sao lưu gần nhất: ' + new Date(store.lastBackup).toLocaleDateString('vi-VN') + '.' : 'Chưa sao lưu lần nào.') + '</p></section>' +
       '<section class="card"><h2>Liên hệ chuyên gia</h2><p class="small" style="margin:6px 0 10px">' + EXPERT.name + '</p><div class="row"><code style="font-size:16px;font-weight:700;color:var(--purple);user-select:all">' + EXPERT.email + '</code><button class="btn ghost" id="cp" type="button">Sao chép email</button></div></section>' +
       '<section class="card"><h2>Xoá hồ sơ khỏi máy</h2><p class="small" style="margin:6px 0 10px">Xoá hồ sơ và các dấu đã làm xong trên điện thoại này.</p><div class="row"><button class="btn ghost" id="del" type="button">Xoá hồ sơ này</button><button class="btn" id="delYes" type="button" hidden>Xoá vĩnh viễn</button></div></section>' + readme();
     $('#pick').addEventListener('click', function () { $('#file').click(); });
+    $('#bk').addEventListener('click', function () { saveBackup(null, $('#bkMsg')); });
     $$('button[data-sw]', m).forEach(function (b) { b.addEventListener('click', function () { store.active = b.dataset.sw; save(); view = 'today'; render(); }); });
     $('#cp').addEventListener('click', function (e) { var b = e.currentTarget; try { navigator.clipboard.writeText(EXPERT.email).then(function () { b.textContent = 'Đã sao chép'; }, function () { b.textContent = 'Bôi đen để sao chép'; }); } catch (x) { b.textContent = 'Bôi đen để sao chép'; } });
     $('#del').addEventListener('click', function () { $('#delYes').hidden = false; $('#del').textContent = 'Huỷ'; $('#del').onclick = function () { renderMe(p, m); }; });
-    $('#delYes').addEventListener('click', function () { delete store.profiles[p.id]; delete store.done[p.id]; store.active = Object.keys(store.profiles)[0] || null; save(); view = 'today'; render(); });
+    $('#delYes').addEventListener('click', function () { delete store.profiles[p.id]; ['done', 'skip', 'feel', 'light', 'review', 'snooze'].forEach(function (k) { delete store[k][p.id]; }); store.active = Object.keys(store.profiles)[0] || null; save(); view = 'today'; render(); });
   }
   function readme() {
     return '<footer class="readme"><b>Đọc trước khi dùng.</b> Giao thức trường thọ giúp hướng về đồng hồ và xu hướng sinh học, không phải là lời khuyên chữa bệnh. Tài liệu hỗ trợ lối sống song song với điều trị, không thay thế kết luận y khoa của bác sĩ. Gene là xu hướng; xét nghiệm và triệu chứng quyết định can thiệp. Dữ liệu sức khoẻ và gene là dữ liệu nhạy cảm: sẽ do chính chủ chọn tải lên ứng dụng, hoặc nếu người khác tải giúp phải có sự đồng ý.' + (memOnly ? '<br><b>Lưu ý:</b> trình duyệt đang chặn lưu dữ liệu, hồ sơ sẽ mất khi đóng app. Hãy mở bằng Safari hoặc Chrome thường (không ẩn danh).' : '') + '</footer>';
@@ -581,9 +737,9 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
   $$('.tabs button').forEach(function (b) { b.addEventListener('click', function () { view = b.dataset.v; flashMsg = ''; render(); }); });
 
   // refresh "next up" each minute and when the app comes back to the screen
-  setInterval(function () { if (view === 'today' && cur() && !document.hidden) { keepScroll = true; render(); } tick(); }, 30000);
+  setInterval(function () { var typing = document.activeElement && document.activeElement.id === 'kg'; if (view === 'today' && cur() && !document.hidden && !typing) { keepScroll = true; render(); } tick(); }, 30000);
   if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', function (e) { var d = e.data || {}; if (d.type === 'tt-act') { act(d.pid, d.day, d.rid, d.act); render(); } });
-  document.addEventListener('visibilitychange', function () { if (!document.hidden && (view === 'today' || view === 'stats') && cur()) { keepScroll = true; render(); } });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && (view === 'today' || view === 'stats') && cur() && !(document.activeElement && document.activeElement.id === 'kg')) { keepScroll = true; render(); } });
 
   load();
   (function fromUrl2() { try { var u = new URL(location.href), a = u.searchParams.get('act'); if (a) { act(u.searchParams.get('pid'), u.searchParams.get('day'), u.searchParams.get('rid'), a); history.replaceState(null, '', location.pathname); } } catch (e) {} })();
