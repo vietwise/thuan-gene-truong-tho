@@ -49,7 +49,7 @@ h1{font-family:var(--display);font-size:30px;line-height:1.2;margin:0}
         <li><b>iPhone:</b> trang này phải mở trong <b>Safari</b> (không mở trong app Claude hay Zalo). <b>Chưa bấm nút Mở App</b>, chạm ngay <span class="k">Chia sẻ</span> → <span class="k">Thêm vào MH chính</span>. Kiểm tra tên là "Trường Thọ" và hình là logo tím, <b>tắt "Open as Web App"</b>, rồi bấm <b>Thêm</b>.</li>
         <li><b>Android:</b> mở bằng Chrome, <b>chưa bấm nút Mở App</b>, chạm <span class="k">⋮</span> → <span class="k">Thêm vào màn hình chính</span> → <b>Thêm</b>.</li>
       </ol>
-      <p class="mini">Thêm <b>chính trang tím này</b> (địa chỉ vietwise.github.io) ra màn hình chính, trước khi bấm Mở App. Mỗi lần chạm biểu tượng, trang này hiện ra, bấm <b>Mở App Trường Thọ</b> là vào app. Lần đầu Claude hỏi đăng nhập một lần trong Safari hoặc Chrome.</p>
+      <p class="mini">Thêm <b>chính trang tím này</b> (địa chỉ vietwise.github.io) ra màn hình chính, trước khi bấm Mở App. Sau đó chạm biểu tượng là vào thẳng app. Lần đầu Claude hỏi đăng nhập một lần trong Safari hoặc Chrome.</p>
     </div>
   </section>
 
@@ -77,6 +77,19 @@ h1{font-family:var(--display);font-size:30px;line-height:1.2;margin:0}
   else {
     var url = 'https://claude.ai/artifact/' + id;
     var go = document.getElementById('go'); go.href = url;
+    var fromIcon = /[?&]mo=1\b/.test(location.search);
+    var bounced = false; try { bounced = sessionStorage.getItem('tt-went') === '1'; } catch (e) {}
+    if (fromIcon && !bounced) {
+      try { sessionStorage.setItem('tt-went', '1'); } catch (e) {}
+      // opened from the home-screen icon: go straight into the app
+      document.getElementById('pin').hidden = true;
+      open.hidden = false;
+      document.getElementById('status').textContent = 'Đang mở app…';
+      location.replace(url);
+      return;
+    }
+    // the icon saves this address, so mark it: next time the icon opens the app directly
+    if (!fromIcon) { try { history.replaceState(null, '', location.pathname + '?mo=1' + location.hash); } catch (e) {} }
     open.hidden = false;
   }
   document.getElementById('form').addEventListener('submit', function (e) {
