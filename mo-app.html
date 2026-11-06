@@ -51,8 +51,6 @@ h1{font-family:var(--display);font-size:30px;line-height:1.2;margin:0}
       </ol>
       <p class="mini">Thêm <b>chính trang tím này</b> (địa chỉ vietwise.github.io) ra màn hình chính, trước khi bấm Mở App. Mỗi lần chạm biểu tượng, trang này hiện ra, bấm <b>Mở App Trường Thọ</b> là vào app. Lần đầu Claude hỏi đăng nhập một lần trong Safari hoặc Chrome.</p>
     </div>
-    <button class="btn ghost" id="change" type="button">Đổi sang app khác</button>
-    <p class="mini" style="color:#fff;opacity:.85;margin:0">Chỉ cần khi bạn dựng lại app và có link mới.</p>
   </section>
 
   <section id="setup" hidden style="width:100%">
@@ -80,7 +78,6 @@ h1{font-family:var(--display);font-size:30px;line-height:1.2;margin:0}
     var url = 'https://claude.ai/artifact/' + id;
     var go = document.getElementById('go'); go.href = url;
     open.hidden = false;
-    document.getElementById('change').addEventListener('click', function () { showSetup(); });
   }
   document.getElementById('form').addEventListener('submit', function (e) {
     e.preventDefault();
