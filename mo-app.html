@@ -49,7 +49,7 @@ h1{font-family:var(--display);font-size:30px;line-height:1.2;margin:0}
         <li><b>iPhone:</b> trang này phải mở trong <b>Safari</b> (không mở trong app Claude hay Zalo). <b>Chưa bấm nút Mở App</b>, chạm ngay <span class="k">Chia sẻ</span> → <span class="k">Thêm vào MH chính</span>. Kiểm tra tên là "Trường Thọ" và hình là logo tím, <b>tắt "Open as Web App"</b>, rồi bấm <b>Thêm</b>.</li>
         <li><b>Android:</b> mở bằng Chrome, <b>chưa bấm nút Mở App</b>, chạm <span class="k">⋮</span> → <span class="k">Thêm vào màn hình chính</span> → <b>Thêm</b>.</li>
       </ol>
-      <p class="mini">Từ lần sau, chạm biểu tượng là app tự mở. Hãy đăng nhập Claude trong Safari hoặc Chrome một lần trước.</p>
+      <p class="mini">Thêm <b>chính trang tím này</b> (địa chỉ vietwise.github.io) ra màn hình chính, trước khi bấm Mở App. Mỗi lần chạm biểu tượng, trang này hiện ra, bấm <b>Mở App Trường Thọ</b> là vào app. Lần đầu Claude hỏi đăng nhập một lần trong Safari hoặc Chrome.</p>
     </div>
     <button class="btn ghost" id="change" type="button">Đổi link app</button>
   </section>
@@ -79,13 +79,6 @@ h1{font-family:var(--display);font-size:30px;line-height:1.2;margin:0}
     var url = 'https://claude.ai/artifact/' + id;
     var go = document.getElementById('go'); go.href = url;
     open.hidden = false;
-    var seen = store('tt-opened-' + id);
-    if (seen) {
-      document.getElementById('pin').hidden = true;
-      document.getElementById('status').textContent = 'Đang mở app…';
-      setTimeout(function () { location.replace(url); }, 700);
-    }
-    go.addEventListener('click', function () { store('tt-opened-' + id, '1'); });
     document.getElementById('change').addEventListener('click', function () { showSetup(); });
   }
   document.getElementById('form').addEventListener('submit', function (e) {
