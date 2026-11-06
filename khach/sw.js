@@ -1,5 +1,5 @@
 // Thuận Gene Trường Thọ — app khách: chạy offline và xử lý nút trên thông báo
-var CACHE = 'tt-khach-v4';
+var CACHE = 'tt-khach-v5';
 var FILES = ['./', './index.html', './manifest.webmanifest', './marked.min.js', './purify.min.js', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './favicon-64.png'];
 self.addEventListener('install', function (e) { e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(FILES); }).then(function () { return self.skipWaiting(); })); });
 self.addEventListener('activate', function (e) { e.waitUntil(caches.keys().then(function (ks) { return Promise.all(ks.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); })); }).then(function () { return self.clients.claim(); })); });

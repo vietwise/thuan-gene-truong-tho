@@ -183,26 +183,33 @@ details.grp>summary::-webkit-details-marker{display:none}
   var SUMMARY = [['s1','Phần 1 — Di truyền'],['s2','Phần 2 — Lối sống'],['s3','Phần 3 — Lâm sàng']];
   var DAYN = ['', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
   var DAYS = ['', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
-  // three kinds: health (s), living in tune with nature (t), perseverance (b)
+  // kho quotes chính chủ (hongs-brain/production/Kho Quotes Chinh Chu/quotes.json): sức khỏe (s), thuận tự nhiên (t), bền chí (b)
   var QUOTES = [
-    ['s', 'Sức khỏe là vốn quý nhất của con người...', 'Lời ông bà'],
-    ['s', 'Có sức khỏe là có tất cả. Mất sức khỏe là mất tất cả...', 'Lời ông bà'],
-    ['s', 'Hãy để thức ăn là thuốc của bạn, và thuốc là thức ăn của bạn...', 'Hippocrates (tương truyền)'],
-    ['s', 'Chăm cơ thể hôm nay là gửi tiết kiệm cho chính mình mười năm sau...', ''],
-    ['s', 'Mỗi ngụm nước, mỗi bước chân, mỗi giấc ngủ đúng giờ là một lời yêu thương chính mình...', ''],
-    ['s', 'Mỗi việc nhỏ đúng giờ hôm nay là một lời cảm ơn cơ thể...', ''],
-    ['t', 'Thuận tự nhiên - Tự nhiên thuận...', 'Nhất Phương Hồng'],
-    ['t', 'Tôi tin vào sự lập trình Toàn hảo của Tạo Hóa với lòng biết ơn vô hạn...', 'Nhất Phương Hồng'],
-    ['t', 'Thiên nhiên không bao giờ vội vã, vậy mà mọi thứ vẫn được hoàn thành...', 'Lão Tử (tương truyền)'],
-    ['t', 'Ăn theo mùa, ngủ theo trời, sống theo nhịp gene của mình...', ''],
-    ['t', 'Cơ thể không cần được sửa chữa. Nó cần được lắng nghe đúng nhịp...', ''],
-    ['t', 'Mặt trời mọc thì thức, mặt trời lặn thì nghỉ. Đồng hồ sinh học vốn đã biết đường...', ''],
-    ['b', 'Có công mài sắt, có ngày nên kim...', 'Tục ngữ'],
-    ['b', 'Nước chảy đá mòn...', 'Tục ngữ'],
-    ['b', 'Hành trình ngàn dặm bắt đầu từ một bước chân...', 'Lão Tử'],
-    ['b', 'Không cần hoàn hảo mỗi ngày. Chỉ cần quay lại ngay hôm sau...', ''],
-    ['b', 'Thói quen nhỏ lặp lại đủ lâu sẽ thành nền móng của sức khỏe...', ''],
-    ['b', 'Bỏ qua một hôm không sao. Bỏ cuộc mới là điều đáng tiếc...', '']
+    ["s", "Cơ thể con người càng ngày càng được công nhận là một cỗ máy tinh vi và tuyệt diệu vô cùng...", "Nhất Phương Hồng · Báo Sức Khỏe & Đời Sống"],
+    ["s", "Khi bạn hiểu đúng về nước, bạn bắt đầu biết yêu thương bản thân theo cách khoa học nhất...", "Nhất Phương Hồng · Chuyện Của Nước"],
+    ["s", "Hãy để mỗi giọt nước trở thành một lời chúc phúc cho sức khỏe và một di sản bền vững cho tương lai...", "Nhất Phương Hồng · Chuyện Của Nước"],
+    ["s", "Tuổi tác chỉ là một con số, còn chất lượng sống lại nằm ở cách chúng ta vận hành bộ máy sinh học của chính mình...", "Nhất Phương Hồng · Minh Triết Phái Đẹp 40+"],
+    ["s", "Khi chất lượng sống được ưu tiên, mỗi năm trôi qua sẽ không phải là gánh nặng, mà là một sự tích lũy thêm về trải nghiệm và niềm vui...", "Nhất Phương Hồng · Minh Triết Phái Đẹp 40+"],
+    ["s", "Đừng chỉ chọn một máy lọc nước, hãy chọn một lối sống...", "Nhất Phương Hồng · Chuyện Của Nước"],
+    ["s", "Sống thuận gene đơn giản là giữ cỗ máy hoàn hảo một cách hợp lý...", "Nhất Phương Hồng · chuyến Tây Tạng 2026"],
+    ["s", "Gene là Manh mối, Sinh mệnh là Tài nguyên, Sứ mệnh là Di sản...", "Nhất Phương Hồng · Minh Triết Phái Đẹp 40+"],
+    ["s", "Trước khi uống, bạn dành vài giây tĩnh lặng, gửi gắm sự yêu thương và lòng biết ơn vào ly nước...", "Nhất Phương Hồng · Chuyện Của Nước"],
+    ["t", "Tôi tin vào sự lập trình Toàn hảo của Tạo Hóa với lòng biết ơn vô hạn...", "Nhất Phương Hồng"],
+    ["t", "Thuận tự nhiên - Tự nhiên thuận...", "Nhất Phương Hồng"],
+    ["t", "Mặt trời chiếu sáng cho mọi sự sống, không phân biệt...", "Nhất Phương Hồng · Kinh Tế Tâm Linh"],
+    ["t", "Khi nước được trả lại \"nhịp đập\" tự nhiên, nó sẽ truyền chính sức sống đó vào mọi sinh vật chạm vào nó...", "Nhất Phương Hồng · Chuyện Của Nước"],
+    ["t", "Nếu bạn đã sống thuận tự nhiên từ giai đoạn trẻ, sự chuyển tiếp vào tuổi mãn kinh sẽ vô cùng an nhiên...", "Nhất Phương Hồng · Minh Triết Phái Đẹp 40+"],
+    ["t", "Tạo hóa vô cùng công bằng và tuyệt đối không bao giờ có chuyện \"vắt chanh bỏ vỏ\" đối với cơ thể người phụ nữ...", "Nhất Phương Hồng · Minh Triết Phái Đẹp 40+"],
+    ["t", "Đừng áp dụng một công thức chung cho tất cả mọi vấn đề trong cuộc sống...", "Nhất Phương Hồng · Chuyện Của Nước"],
+    ["t", "Năng lượng của bạn không hề tuột dốc mà còn gia tăng sự minh triết và bình an...", "Nhất Phương Hồng · Minh Triết Phái Đẹp 40+"],
+    ["b", "Lão hóa là một quy luật tự nhiên, nhưng \"lão hóa lành mạnh\" (Healthy Aging) lại là một lựa chọn mang tính chiến lược...", "Nhất Phương Hồng · Minh Triết Phái Đẹp 40+"],
+    ["b", "Thời gian vừa là tài nguyên vừa là kỷ luật...", "Nhất Phương Hồng · Nhìn Cây Sửa Đất"],
+    ["b", "Đừng nhầm lẫn sự tuỳ tiện với sự tự do bạn nhé...", "Nhất Phương Hồng · chuyến Tây Tạng 2026"],
+    ["b", "Nỗi sợ con mèo là bởi vì mình nghĩ mình là chuột...", "Nhất Phương Hồng · bài giảng Học từ loài bướm"],
+    ["b", "Hãy khai phá châu ngọc quý bên trong mình, sử dụng nó để giúp ích cho nhân loại, trân trọng cuộc đời, và trở thành phiên bản tốt nhất của chính mình...", "Nhất Phương Hồng · Nhìn Cây Sửa Đất"],
+    ["b", "Hãy học cách \"cấu trúc hóa\" cuộc đời mình, loại bỏ những \"tạp chất\" phiền muộn để trở thành một nguồn năng lượng tích cực, tự nuôi dưỡng chính mình và lan tỏa sinh khí cho thế giới xung quanh...", "Nhất Phương Hồng · Chuyện Của Nước"],
+    ["b", "Kỷ luật không nên tập trung vào trừng phạt mà là vào việc học hỏi từ sai lầm...", "Nhất Phương Hồng · Nhìn Cây Sửa Đất"],
+    ["b", "Mỗi khi bạn cầm một ly nước trên tay, hãy dừng lại một nhịp để nhìn thấu suốt hành trình của nó...", "Nhất Phương Hồng · Chuyện Của Nước"]
   ];
   function quoteHtml(q, id) { return '<blockquote class="quote"' + (id ? ' id="' + id + '"' : '') + '>' + esc(q[1]) + (q[2] ? '<cite>— ' + esc(q[2]) + '</cite>' : '') + '</blockquote>'; }
   function pickQuote(kind, seed) { var l = QUOTES.filter(function (q) { return !kind || q[0] === kind; }); return l[Math.abs(seed) % l.length]; }
