@@ -37,7 +37,7 @@ button{font:inherit;color:inherit}
 .brandrow b{font-family:var(--display);font-size:19px;line-height:1.15;display:block}
 .brandrow small{opacity:.9;font-size:12.5px}
 .tabs{display:flex;gap:4px;max-width:720px;margin:10px auto 0;overflow-x:auto}
-.tabs button{flex:1;min-width:76px;border:0;background:transparent;color:#fff;opacity:.82;padding:10px 6px 11px;font-weight:600;font-size:14.5px;border-bottom:3px solid transparent;cursor:pointer}
+.tabs button{flex:1 0 auto;white-space:nowrap;min-width:0;border:0;background:transparent;color:#fff;opacity:.82;padding:10px 8px 11px;font-weight:600;font-size:14px;border-bottom:3px solid transparent;cursor:pointer}
 .tabs button.on{opacity:1;border-bottom-color:var(--yellow)}
 main{max-width:720px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px));display:grid;gap:16px}
 .card{background:var(--sheet);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}
@@ -113,15 +113,37 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
 .note{font-size:14px;background:var(--purple-soft);border-radius:12px;padding:10px 12px}
 .status{min-height:1.3em;font-size:14px}
 .readme{font-size:13.5px;color:var(--muted);border-top:3px solid var(--magenta);padding-top:12px}
-.quote{font-family:var(--display);font-style:italic;font-size:17px;border-left:4px solid var(--magenta);background:var(--saffron-soft);padding:12px 14px}
+.quote{margin:0;font-family:var(--display);font-style:italic;font-size:17px;border-left:4px solid var(--magenta);background:var(--saffron-soft);padding:12px 14px}
 .quote cite{display:block;font-style:normal;font-family:var(--body);font-size:13.5px;font-weight:700;color:var(--purple);margin-top:4px}
-@media (prefers-reduced-motion:reduce){.bar span{transition:none}}
+.quote{transition:opacity .6s}
+.quote.fade{opacity:0}
+/* progress */
+.big-pct{font-family:var(--display);font-size:46px;line-height:1;color:var(--purple);font-variant-numeric:tabular-nums}
+.verdict{font-family:var(--display);font-size:18px;margin:6px 0 2px}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.kpi{background:var(--purple-soft);border-radius:14px;padding:12px}
+.kpi b{font-family:var(--display);font-size:24px;color:var(--purple);display:block;font-variant-numeric:tabular-nums;line-height:1.2}
+.kpi span{font-size:13px;color:var(--muted)}
+.kpi.water{background:var(--water-soft)} .kpi.water b{color:var(--water)}
+.kpi.fire{background:var(--saffron-soft)} .kpi.fire b{color:var(--ink)}
+.heat{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;max-width:340px}
+.heat i{display:block;aspect-ratio:1;border-radius:5px;background:transparent}
+.heat .hd{font-size:11px;color:var(--muted);text-align:center;font-style:normal}
+.heat .h0{background:var(--line)} .heat .h1{background:var(--magenta-soft);box-shadow:inset 0 0 0 1px var(--magenta)} .heat .h2{background:var(--magenta);opacity:.55} .heat .h3{background:var(--magenta)}
+.heat .ht{outline:2px solid var(--yellow);outline-offset:1px}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px;align-items:center}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+.trow{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:3px 10px;align-items:center;margin-top:10px}
+.trow .bar{grid-column:1 / -1;height:8px}
+.trow b{text-align:right;font-variant-numeric:tabular-nums}
+.hist li{margin:4px 0}
+@media (prefers-reduced-motion:reduce){.bar span{transition:none}.quote{transition:none}}
 </style>
 </head>
 <body>
 <header class="top" id="top" hidden>
   <div class="brandrow"><img src="icon-192.png" alt="" width="44" height="44"><div><b id="hName">Trường Thọ</b><small id="hSub">Thuận Gene Trường Thọ · Chuyên gia Nhất Phương Hồng</small></div></div>
-  <nav class="tabs" aria-label="Mục"><button data-v="today" class="on">Hôm nay</button><button data-v="summary">Tóm tắt</button><button data-v="detail">Giao thức</button><button data-v="me">Hồ sơ</button></nav>
+  <nav class="tabs" aria-label="Mục"><button data-v="today" class="on">Hôm nay</button><button data-v="summary">Tóm tắt</button><button data-v="detail">Giao thức</button><button data-v="stats">Tiến độ</button><button data-v="me">Hồ sơ</button></nav>
 </header>
 <main id="main"></main>
 <input type="file" id="file" accept=".json,application/json,text/plain" hidden>
@@ -136,7 +158,29 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
   var SUMMARY = [['s1','Phần 1 — Di truyền'],['s2','Phần 2 — Lối sống'],['s3','Phần 3 — Lâm sàng']];
   var DAYN = ['', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
   var DAYS = ['', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
-  var QUOTES = [['Tôi tin vào sự lập trình Toàn hảo của Tạo Hóa với lòng biết ơn vô hạn...', 'Nhất Phương Hồng'], ['Thuận tự nhiên - Tự nhiên thuận...', 'Nhất Phương Hồng'], ['Mỗi việc nhỏ đúng giờ hôm nay là một lời cảm ơn cơ thể...', ''], ['Cơ thể không cần được sửa chữa. Nó cần được lắng nghe đúng nhịp...', '']];
+  // three kinds: health (s), living in tune with nature (t), perseverance (b)
+  var QUOTES = [
+    ['s', 'Sức khỏe là vốn quý nhất của con người...', 'Lời ông bà'],
+    ['s', 'Có sức khỏe là có tất cả. Mất sức khỏe là mất tất cả...', 'Lời ông bà'],
+    ['s', 'Hãy để thức ăn là thuốc của bạn, và thuốc là thức ăn của bạn...', 'Hippocrates (tương truyền)'],
+    ['s', 'Chăm cơ thể hôm nay là gửi tiết kiệm cho chính mình mười năm sau...', ''],
+    ['s', 'Mỗi ngụm nước, mỗi bước chân, mỗi giấc ngủ đúng giờ là một lời yêu thương chính mình...', ''],
+    ['s', 'Mỗi việc nhỏ đúng giờ hôm nay là một lời cảm ơn cơ thể...', ''],
+    ['t', 'Thuận tự nhiên - Tự nhiên thuận...', 'Nhất Phương Hồng'],
+    ['t', 'Tôi tin vào sự lập trình Toàn hảo của Tạo Hóa với lòng biết ơn vô hạn...', 'Nhất Phương Hồng'],
+    ['t', 'Thiên nhiên không bao giờ vội vã, vậy mà mọi thứ vẫn được hoàn thành...', 'Lão Tử (tương truyền)'],
+    ['t', 'Ăn theo mùa, ngủ theo trời, sống theo nhịp gene của mình...', ''],
+    ['t', 'Cơ thể không cần được sửa chữa. Nó cần được lắng nghe đúng nhịp...', ''],
+    ['t', 'Mặt trời mọc thì thức, mặt trời lặn thì nghỉ. Đồng hồ sinh học vốn đã biết đường...', ''],
+    ['b', 'Có công mài sắt, có ngày nên kim...', 'Tục ngữ'],
+    ['b', 'Nước chảy đá mòn...', 'Tục ngữ'],
+    ['b', 'Hành trình ngàn dặm bắt đầu từ một bước chân...', 'Lão Tử'],
+    ['b', 'Không cần hoàn hảo mỗi ngày. Chỉ cần quay lại ngay hôm sau...', ''],
+    ['b', 'Thói quen nhỏ lặp lại đủ lâu sẽ thành nền móng của sức khỏe...', ''],
+    ['b', 'Bỏ qua một hôm không sao. Bỏ cuộc mới là điều đáng tiếc...', '']
+  ];
+  function quoteHtml(q, id) { return '<blockquote class="quote"' + (id ? ' id="' + id + '"' : '') + '>' + esc(q[1]) + (q[2] ? '<cite>— ' + esc(q[2]) + '</cite>' : '') + '</blockquote>'; }
+  function pickQuote(kind, seed) { var l = QUOTES.filter(function (q) { return !kind || q[0] === kind; }); return l[Math.abs(seed) % l.length]; }
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
@@ -185,8 +229,14 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
   }
   function importText(text) {
     var p = fromFile(JSON.parse(text));
-    var old = store.profiles[p.id];
+    var old = store.profiles[p.id], today = ymd();
     if (old && old.phase) p.phase = old.phase;
+    p.since = (old && old.since) || {}; p.history = (old && old.history) || [];
+    if (old && old.exportedAt !== p.exportedAt) {
+      var st = stats(old); if (st.sched) p.history.unshift({ from: st.from, to: today, phase: phaseName(old), rate: st.rate, days: st.days, best: st.best });
+      p.history = p.history.slice(0, 12); p.since = {};
+    }
+    if (!p.since[p.phase]) p.since[p.phase] = today;
     store.profiles[p.id] = p; store.active = p.id; save();
     return p;
   }
@@ -321,8 +371,21 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
     if (view === 'today') renderToday(p, m);
     else if (view === 'summary') renderDoc(p, m, p.summary, 'Bản tóm tắt cốt lõi', 'Những điều không thể bỏ qua: di truyền, lối sống, lâm sàng.', true);
     else if (view === 'detail') renderDoc(p, m, p.detail, 'Giao thức chi tiết', 'Bản đầy đủ. Chạm vào từng mục để mở.', false);
+    else if (view === 'stats') renderStats(p, m);
     else renderMe(p, m);
-    window.scrollTo(0, 0);
+    if (!keepScroll) window.scrollTo(0, 0);
+    keepScroll = false; rotateQuote();
+  }
+  var keepScroll = false, quoteTimer = null;
+  function rotateQuote() {
+    clearInterval(quoteTimer);
+    var el = $('#rq'); if (!el) return;
+    var i = Math.floor(Math.random() * QUOTES.length);
+    quoteTimer = setInterval(function () {
+      var e = $('#rq'); if (!e) { clearInterval(quoteTimer); return; }
+      e.classList.add('fade');
+      setTimeout(function () { i = (i + 1) % QUOTES.length; var q = QUOTES[i]; e.innerHTML = esc(q[1]) + (q[2] ? '<cite>— ' + esc(q[2]) + '</cite>' : ''); e.classList.remove('fade'); }, 600);
+    }, 15000);
   }
   function welcome() {
     var demo = Object.keys(store.profiles).length;
@@ -341,7 +404,7 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
     var hm = nowHM(), nextI = rs.findIndex(function (r) { return !dm[r.id] && !sm[r.id] && r.time >= hm; });
     var nx = rs[nextI];
     var hasP2 = p.phases.length > 1;
-    var q = QUOTES[today.getDate() % QUOTES.length];
+    var q = pickQuote('', today.getDate());
     var weekHtml = '';
     for (var k = 6; k >= 0; k--) {
       var d = new Date(today.getTime() - k * 864e5), list = todays(p, d), dmk = (store.done[p.id] || {})[ymd(d)] || {};
@@ -361,18 +424,19 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
         return '<li class="rcard t-' + t + (dm[r.id] ? ' done' : '') + (sm[r.id] ? ' skipped' : '') + (i === nextI ? ' now' : '') + '"><time>' + esc(r.time) + '</time><div><div class="rtitle">' + esc(r.title) + (r.star ? ' <span class="pill" title="Chờ xét nghiệm hoặc bác sĩ đồng ý">*</span>' : '') + '</div><div class="rdetail">' + esc(r.detail) + '</div><div class="rmeta"><span class="pill">' + esc(r.type) + (r.ml ? ' · ' + r.ml + ' ml' : '') + '</span>' + (r.genes ? '<span>' + esc(r.genes) + '</span>' : '') + '</div></div>' +
           '<label class="chk"><input type="checkbox" data-rid="' + esc(r.id) + '"' + (dm[r.id] ? ' checked' : '') + '><span>Xong</span></label></li>';
       }).join('') + '</ul>' +
-      '<section class="card"><h2>7 ngày qua</h2><div class="week" style="margin-top:10px">' + weekHtml + '</div></section>' +
+      '<section class="card"><div class="row" style="justify-content:space-between"><h2>7 ngày qua</h2><button class="linkbtn" type="button" id="toStats">Tiến độ cả giai đoạn →</button></div><div class="week" style="margin-top:10px">' + weekHtml + '</div></section>' +
       '<section class="card"><h2>Nhắc bằng Lịch của điện thoại</h2><p class="small" style="margin:6px 0 10px">Điện thoại sẽ đổ chuông đúng giờ cho từng việc, kể cả khi không mở app và không có mạng. Lịch nhắc chạy 12 tuần, theo giai đoạn đang chọn.</p><button class="btn gold" id="ics" type="button">Thêm lịch nhắc vào điện thoại</button>' +
       '<p class="small muted" style="margin:8px 0 0">iPhone: chạm file vừa tải → <b>Thêm tất cả</b>. Android: mở file bằng Google Calendar. Đổi giai đoạn thì thêm lại.</p></section>' +
-      '<blockquote class="quote">' + esc(q[0]) + (q[1] ? '<cite>— ' + esc(q[1]) + '</cite>' : '') + '</blockquote>';
-    $$('input[data-rid]', m).forEach(function (cb) { cb.addEventListener('change', function () { if (cb.checked) act(p.id, day, cb.dataset.rid, 'done'); else { delete doneMap(p, day)[cb.dataset.rid]; save(); } renderToday(p, m); }); });
+      quoteHtml(q, 'rq');
+    $('#toStats').addEventListener('click', function () { view = 'stats'; render(); });
+    $$('input[data-rid]', m).forEach(function (cb) { cb.addEventListener('change', function () { if (cb.checked) act(p.id, day, cb.dataset.rid, 'done'); else { delete doneMap(p, day)[cb.dataset.rid]; save(); } keepScroll = true; render(); }); });
     $('#nYes') && $('#nYes').addEventListener('click', askNotify);
     $('#nNo') && $('#nNo').addEventListener('click', function () { store.notify = 'off'; save(); renderToday(p, m); });
     $('#nOff') && $('#nOff').addEventListener('click', function () { store.notify = 'off'; save(); renderToday(p, m); });
     $('#nOn') && $('#nOn').addEventListener('click', askNotify);
     renderDue(p, $('#dueBanner'), dueNow(p));
     $$('button[data-done]', m).forEach(function (b) { b.addEventListener('click', function () { act(p.id, day, b.dataset.done, 'done'); renderToday(p, m); }); });
-    $$('.seg button', m).forEach(function (b) { b.addEventListener('click', function () { p.phase = Number(b.dataset.ph); save(); renderToday(p, m); }); });
+    $$('.seg button', m).forEach(function (b) { b.addEventListener('click', function () { p.phase = Number(b.dataset.ph); p.since = p.since || {}; if (!p.since[p.phase]) p.since[p.phase] = ymd(); save(); renderToday(p, m); }); });
     $('#ics').addEventListener('click', function () { downloadIcs(p); });
   }
   function notifyCard() {
@@ -382,6 +446,114 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
     if (st === 'denied' || (st === 'on' && canNotify() && Notification.permission === 'denied')) return '<p class="small muted" style="margin:0">Điện thoại đang chặn thông báo của app. Mở Cài đặt → Thông báo → Trường Thọ để cho phép, hoặc dùng lịch nhắc ở dưới.</p>';
     if (st === 'unsupported') return '<p class="small muted" style="margin:0">Trình duyệt này chưa hỗ trợ thông báo. Trên iPhone, hãy thêm app ra màn hình chính rồi mở từ biểu tượng, hoặc dùng lịch nhắc ở dưới.</p>';
     return '<p class="small muted" style="margin:0">Thông báo đang tắt. <button class="linkbtn" id="nOn" type="button">Bật thông báo</button></p>';
+  }
+  // ---------- progress for the phase being measured ----------
+  var KEEP = 0.8;
+  function phaseName(p) { var ph = (p.phases || []).filter(function (x) { return String(x.id) === String(p.phase); })[0]; return ph ? ph.name : 'Giai đoạn ' + (p.phase || 1); }
+  function sinceOf(p) { return (p.since && p.since[p.phase]) || ymd(new Date(p.importedAt || Date.now())); }
+  function parseYmd(s) { var a = s.split('-'); return new Date(+a[0], +a[1] - 1, +a[2]); }
+  function slotOf(t) { var h = parseInt(t, 10); return isNaN(h) ? 'Không giờ cố định' : h < 11 ? 'Sáng (trước 11 giờ)' : h < 14 ? 'Trưa (11–14 giờ)' : h < 18 ? 'Chiều (14–18 giờ)' : 'Tối (từ 18 giờ)'; }
+  function stats(p) {
+    var from = sinceOf(p), d = parseYmd(from), end = new Date(), todayK = ymd(end), hm = nowHM();
+    var o = { from: from, days: 0, sched: 0, done: 0, skip: 0, water: 0, waterGoal: 0, perDay: [], byType: {}, bySlot: {}, cur: 0, best: 0, kept: 0 };
+    var run = 0, guard = 0;
+    while (ymd(d) <= todayK && guard++ < 800) {
+      var k = ymd(d), isToday = k === todayK, list = todays(p, d);
+      var dm = (store.done[p.id] || {})[k] || {}, sm = (store.skip[p.id] || {})[k] || {};
+      var due = isToday ? list.filter(function (r) { return !r.time || r.time <= hm || dm[r.id] || sm[r.id]; }) : list;
+      var n = 0, sk = 0;
+      due.forEach(function (r) {
+        var ok = !!dm[r.id], s2 = !ok && !!sm[r.id]; n += ok; sk += s2;
+        var t = r.type || 'Khác', sl = slotOf(r.time);
+        (o.byType[t] = o.byType[t] || [0, 0]); o.byType[t][1]++; o.byType[t][0] += ok;
+        (o.bySlot[sl] = o.bySlot[sl] || [0, 0]); o.bySlot[sl][1]++; o.bySlot[sl][0] += ok;
+        if (isWater(r) && ok) o.water += mlOf(r);
+      });
+      if (!isToday) o.waterGoal += list.filter(isWater).reduce(function (s, r) { return s + mlOf(r); }, 0);
+      else o.waterGoal += due.filter(isWater).reduce(function (s, r) { return s + mlOf(r); }, 0);
+      var pct = due.length ? n / due.length : null, full = list.length ? n / list.length : null;
+      o.perDay.push({ k: k, d: new Date(d), pct: pct, n: n, of: due.length, today: isToday });
+      o.days++; o.sched += due.length; o.done += n; o.skip += sk;
+      var keptDay = isToday ? (full !== null && full >= KEEP) : (pct !== null && pct >= KEEP);
+      if (list.length) {
+        if (keptDay) { run++; o.kept++; if (run > o.best) o.best = run; }
+        else if (!isToday) run = 0;
+      }
+      d.setDate(d.getDate() + 1);
+    }
+    o.cur = run; o.rate = o.sched ? Math.round(o.done * 100 / o.sched) : 0;
+    o.missed = o.sched - o.done - o.skip;
+    o.waterAvg = o.days ? Math.round(o.water / o.days / 10) * 10 : 0;
+    o.waterGoalAvg = o.days ? Math.round(o.waterGoal / o.days / 10) * 10 : 0;
+    return o;
+  }
+  function verdict(st) {
+    if (!st.sched) return ['Giai đoạn vừa bắt đầu', 'Làm xong việc đầu tiên trong ngày, con số sẽ hiện ở đây.', 't'];
+    if (st.rate >= 85) return ['Rất bền chí', 'Cơ thể đang nhận được nhịp đều đặn mà nó cần. Giữ nhịp này.', 's'];
+    if (st.rate >= 65) return ['Đang vào nhịp', 'Phần lớn việc đã thành thói quen. Xem khung giờ nào hay bị lỡ để chỉnh.', 'b'];
+    if (st.rate >= 40) return ['Đã có nền', 'Chọn 3 việc quan trọng nhất và giữ cho bằng được trong tuần này.', 'b'];
+    return ['Bắt đầu lại từ việc nhỏ', 'Không sao cả. Chọn một việc dễ nhất mỗi ngày, làm đều, rồi thêm dần.', 'b'];
+  }
+  function pctTxt(a) { return a[1] ? Math.round(a[0] * 100 / a[1]) : 0; }
+  function rowsHtml(obj) {
+    return Object.keys(obj).sort(function (a, b) { return pctTxt(obj[b]) - pctTxt(obj[a]); }).map(function (k) {
+      var v = pctTxt(obj[k]); return '<div class="trow"><span>' + esc(k) + ' <span class="small muted">(' + obj[k][0] + '/' + obj[k][1] + ')</span></span><b>' + v + '%</b><div class="bar"><span style="width:' + v + '%"></span></div></div>';
+    }).join('');
+  }
+  function heatHtml(st) {
+    var days = st.perDay.slice(-84); if (!days.length) return '';
+    var pad = wd(days[0].d) - 1, h = DAYS.slice(1).map(function (x) { return '<i class="hd">' + x + '</i>'; }).join('');
+    for (var i = 0; i < pad; i++) h += '<i></i>';
+    days.forEach(function (x) {
+      var c = x.pct === null ? '' : x.pct >= KEEP ? 'h3' : x.pct >= 0.5 ? 'h2' : x.pct > 0 ? 'h1' : 'h0';
+      h += '<i class="' + c + (x.today ? ' ht' : '') + '" title="' + x.d.toLocaleDateString('vi-VN') + ': ' + x.n + '/' + x.of + '"></i>';
+    });
+    return '<div class="heat" role="img" aria-label="Lịch giữ nhịp từng ngày">' + h + '</div>' +
+      '<div class="legend"><span><i style="background:var(--line)"></i>Chưa làm</span><span><i style="background:var(--magenta-soft);box-shadow:inset 0 0 0 1px var(--magenta)"></i>Dưới 50%</span><span><i style="background:var(--magenta);opacity:.55"></i>50–79%</span><span><i style="background:var(--magenta)"></i>Từ 80%</span></div>';
+  }
+  function shareText(p, st) {
+    var f = function (k) { return parseYmd(k).toLocaleDateString('vi-VN'); };
+    var weak = Object.keys(st.byType).sort(function (a, b) { return pctTxt(st.byType[a]) - pctTxt(st.byType[b]); }).slice(0, 2);
+    return 'Tiến độ giao thức trường thọ — ' + p.name + '\n' + phaseName(p) + ', từ ' + f(st.from) + ' đến hôm nay (' + st.days + ' ngày)\n' +
+      'Hoàn thành ' + st.rate + '% (' + st.done + '/' + st.sched + ' việc), bỏ qua ' + st.skip + ', chưa đánh dấu ' + st.missed + '\n' +
+      'Ngày giữ nhịp (từ 80%): ' + st.kept + '/' + st.days + ' · chuỗi hiện tại ' + st.cur + ' ngày · dài nhất ' + st.best + ' ngày\n' +
+      (st.waterGoalAvg ? 'Nước trung bình ' + st.waterAvg + ' / ' + st.waterGoalAvg + ' ml mỗi ngày\n' : '') +
+      'Theo loại: ' + Object.keys(st.byType).map(function (k) { return k + ' ' + pctTxt(st.byType[k]) + '%'; }).join(', ') + '\n' +
+      (weak.length ? 'Cần chú ý: ' + weak.join(', ') + '\n' : '') + '(Gửi từ app Thuận Gene Trường Thọ)';
+  }
+  function renderStats(p, m) {
+    var st = stats(p), v = verdict(st), f = function (k) { return parseYmd(k).toLocaleDateString('vi-VN'); };
+    var q = pickQuote(v[2], st.days + st.done);
+    var hist = (p.history || []);
+    m.innerHTML =
+      '<section class="card"><p class="small muted" style="margin:0">' + esc(phaseName(p)) + ' · đo từ ' + f(st.from) + ' · ' + st.days + ' ngày</p>' +
+      '<div class="row" style="align-items:flex-end;margin-top:8px;gap:14px"><span class="big-pct">' + st.rate + '%</span><span class="small muted" style="padding-bottom:6px">việc đã làm xong<br>' + st.done + ' / ' + st.sched + ' việc đến giờ</span></div>' +
+      '<div class="bar" style="margin-top:10px"><span style="width:' + st.rate + '%"></span></div>' +
+      '<p class="verdict">' + esc(v[0]) + '</p><p class="small" style="margin:0">' + esc(v[1]) + '</p></section>' +
+      '<section class="kpis">' +
+        '<div class="kpi fire"><b>' + st.cur + ' ngày</b><span>Chuỗi giữ nhịp hiện tại</span></div>' +
+        '<div class="kpi"><b>' + st.best + ' ngày</b><span>Chuỗi dài nhất giai đoạn này</span></div>' +
+        '<div class="kpi"><b>' + st.kept + '/' + st.days + '</b><span>Ngày làm được từ 80%</span></div>' +
+        (st.waterGoalAvg ? '<div class="kpi water"><b>' + st.waterAvg.toLocaleString('vi-VN') + ' ml</b><span>Nước trung bình mỗi ngày / ' + st.waterGoalAvg.toLocaleString('vi-VN') + ' ml</span></div>' : '<div class="kpi"><b>' + st.skip + '</b><span>Việc đã bỏ qua</span></div>') +
+      '</section>' +
+      '<section class="card"><h2>Lịch giữ nhịp</h2><p class="small muted" style="margin:4px 0 10px">Mỗi ô là một ngày' + (st.days > 84 ? ' (12 tuần gần nhất)' : '') + '. Ô viền vàng là hôm nay.</p>' + heatHtml(st) + '</section>' +
+      quoteHtml(q) +
+      '<section class="card"><h2>Theo loại việc</h2><p class="small muted" style="margin:4px 0 0">Loại nào thấp là chỗ cần nhờ chuyên gia chỉnh cho vừa sức.</p>' + rowsHtml(st.byType) + '</section>' +
+      '<section class="card"><h2>Theo khung giờ</h2>' + rowsHtml(st.bySlot) + '</section>' +
+      '<section class="card"><h2>Mang tiến độ đi tư vấn</h2><p class="small" style="margin:6px 0 10px">Gửi bảng tóm tắt này cho chuyên gia trước buổi tư vấn tiếp theo. Bạn tự chọn gửi qua Zalo, email hay tin nhắn. App không tự gửi.</p><div class="row"><button class="btn" id="shareSt" type="button">Chia sẻ tiến độ</button><button class="btn ghost" id="resetSt" type="button">Đo lại từ hôm nay</button></div><p class="status" id="stMsg" aria-live="polite"></p></section>' +
+      (hist.length ? '<section class="card"><h2>Các kỳ trước</h2><ul class="hist small" style="padding-left:18px;margin:8px 0 0">' + hist.map(function (h) { return '<li>' + esc(h.phase) + ', ' + f(h.from) + ' – ' + f(h.to) + ': <b>' + h.rate + '%</b> trong ' + h.days + ' ngày, chuỗi dài nhất ' + h.best + ' ngày</li>'; }).join('') + '</ul></section>' : '') +
+      '<p class="small muted" style="margin:0">Chỉ tính các việc đã đến giờ. Mỗi lần nhập hồ sơ mới từ chuyên gia, app lưu kỳ cũ vào "Các kỳ trước" và bắt đầu đo kỳ mới. Đổi giai đoạn thì đo riêng giai đoạn đó.</p>';
+    $('#shareSt').addEventListener('click', function () {
+      var t = shareText(p, st), msg = $('#stMsg');
+      if (navigator.share) { navigator.share({ title: 'Tiến độ giao thức trường thọ', text: t }).catch(function () {}); return; }
+      try { navigator.clipboard.writeText(t).then(function () { msg.textContent = 'Đã sao chép. Dán vào Zalo hoặc email gửi chuyên gia.'; }, function () { msg.textContent = t; }); } catch (e) { msg.textContent = t; }
+    });
+    $('#resetSt').addEventListener('click', function (e) {
+      var b = e.currentTarget;
+      if (b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = 'Bấm lần nữa để đo lại'; return; }
+      if (st.sched) { p.history = p.history || []; p.history.unshift({ from: st.from, to: ymd(), phase: phaseName(p), rate: st.rate, days: st.days, best: st.best }); p.history = p.history.slice(0, 12); }
+      p.since = p.since || {}; p.since[p.phase] = ymd(); save(); renderStats(p, m);
+    });
   }
   function renderDoc(p, m, secs, title, sub, open) {
     if (!secs.length) { m.innerHTML = '<section class="card"><h1>' + esc(title) + '</h1><p>Hồ sơ chưa có phần này. Hỏi chuyên gia gửi bản đầy đủ.</p></section>'; return; }
@@ -409,9 +581,9 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
   $$('.tabs button').forEach(function (b) { b.addEventListener('click', function () { view = b.dataset.v; flashMsg = ''; render(); }); });
 
   // refresh "next up" each minute and when the app comes back to the screen
-  setInterval(function () { if (view === 'today' && cur() && !document.hidden) render(); tick(); }, 30000);
+  setInterval(function () { if (view === 'today' && cur() && !document.hidden) { keepScroll = true; render(); } tick(); }, 30000);
   if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', function (e) { var d = e.data || {}; if (d.type === 'tt-act') { act(d.pid, d.day, d.rid, d.act); render(); } });
-  document.addEventListener('visibilitychange', function () { if (!document.hidden && view === 'today' && cur()) render(); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && (view === 'today' || view === 'stats') && cur()) { keepScroll = true; render(); } });
 
   load();
   (function fromUrl2() { try { var u = new URL(location.href), a = u.searchParams.get('act'); if (a) { act(u.searchParams.get('pid'), u.searchParams.get('day'), u.searchParams.get('rid'), a); history.replaceState(null, '', location.pathname); } } catch (e) {} })();
