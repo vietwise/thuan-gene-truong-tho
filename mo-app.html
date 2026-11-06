@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Trường Thọ</title>
+<meta name="apple-mobile-web-app-title" content="Trường Thọ">
+<meta name="application-name" content="Trường Thọ">
+<meta name="theme-color" content="#8a459a">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="64x64" href="favicon-64.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&family=Lora:wght@600;700&display=swap">
+<style>
+:root{--bg:#8a459a;--bg2:#ca41bc;--card:#fffdf8;--ink:#2b2030;--muted:#6c5f6f;--yellow:#f5c70f;--line:#e6dccd;--display:"Lora",Georgia,serif;--body:"Be Vietnam Pro","Segoe UI",Arial,sans-serif;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;background:linear-gradient(160deg,var(--bg),var(--bg2));color:#fff;font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:520px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px;display:grid;gap:20px;justify-items:center;text-align:center}
+img.logo{width:132px;height:132px;border-radius:28px;box-shadow:0 0 0 3px rgba(245,199,15,.75),0 10px 28px rgba(0,0,0,.3)}
+h1{font-family:var(--display);font-size:30px;line-height:1.2;margin:0}
+.by{opacity:.9;font-size:14px;margin:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:12px 26px;border-radius:16px;border:0;background:var(--yellow);color:#2b2030;font:700 17px/1.2 var(--body);text-decoration:none;cursor:pointer}
+.btn.ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.85);font-weight:600;min-height:44px}
+.card{background:var(--card);color:var(--ink);border-radius:18px;padding:18px;text-align:left;display:grid;gap:10px;width:100%}
+.card h2{font-family:var(--display);font-size:19px;margin:0;color:#8a459a}
+.card ol{margin:0;padding-left:20px;display:grid;gap:6px}
+.card label{font-weight:600;font-size:14px}
+.card input{width:100%;min-height:46px;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;font:16px var(--body);color:var(--ink);background:#fff}
+.card input:focus-visible,.btn:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+.mini{font-size:13px;color:var(--muted);margin:0}
+.err{color:#b3261e;font-size:14px;min-height:1.2em;margin:0}
+.k{font-weight:700;color:#ca41bc}
+.status{font-size:15px;margin:0;min-height:1.4em}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <img class="logo" src="icon-512.png" alt="Logo Thuận Gene Trường Thọ NPH" width="132" height="132">
+  <h1>Thuận Gene Trường Thọ</h1>
+  <p class="by">App tạo bởi Chuyên gia Nhất Phương Hồng và Trợ lý Ai</p>
+
+  <section id="open" hidden style="display:grid;gap:14px;justify-items:center;width:100%">
+    <a class="btn" id="go" href="#">Mở App Trường Thọ</a>
+    <p class="status" id="status" aria-live="polite"></p>
+    <div class="card" id="pin">
+      <h2>Đặt ra màn hình chính, đúng logo</h2>
+      <ol>
+        <li><b>iPhone:</b> mở trang này bằng Safari, chạm <span class="k">Chia sẻ</span> → <span class="k">Thêm vào MH chính</span> → <b>Thêm</b>.</li>
+        <li><b>Android:</b> mở bằng Chrome, chạm <span class="k">⋮</span> → <span class="k">Thêm vào màn hình chính</span> → <b>Thêm</b>.</li>
+      </ol>
+      <p class="mini">Từ lần sau, chạm biểu tượng là app tự mở. Hãy đăng nhập Claude trong Safari hoặc Chrome một lần trước.</p>
+    </div>
+    <button class="btn ghost" id="change" type="button">Đổi link app</button>
+  </section>
+
+  <section id="setup" hidden style="width:100%">
+    <form class="card" id="form" novalidate>
+      <h2>Gắn app của bạn với biểu tượng này</h2>
+      <p>Dán link app Giao Thức Trường Thọ <b>của chính bạn</b> (Claude đưa link này sau khi dựng app, dạng <code>claude.ai/artifact/…</code>).</p>
+      <label for="link">Link app của bạn</label>
+      <input id="link" name="link" type="url" inputmode="url" autocomplete="off" placeholder="https://claude.ai/artifact/…">
+      <p class="err" id="err" aria-live="polite"></p>
+      <button class="btn" type="submit">Tạo biểu tượng cho app của tôi</button>
+      <p class="mini">Link chỉ nằm trong địa chỉ trang này trên máy bạn. Không gửi đi đâu. Đừng chia sẻ trang sau khi đã gắn link: đó là app riêng của bạn.</p>
+    </form>
+  </section>
+</main>
+<script>
+(function () {
+  var RE = /claude\.ai\/(?:code\/)?artifact\/([A-Za-z0-9_-]{8,64})/;
+  var ID_RE = /^[A-Za-z0-9_-]{8,64}$/;
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+  var id = decodeURIComponent((location.hash || '').slice(1));
+  var open = document.getElementById('open'), setup = document.getElementById('setup');
+  function showSetup() { open.hidden = true; setup.hidden = false; }
+  if (!ID_RE.test(id)) { showSetup(); }
+  else {
+    var url = 'https://claude.ai/artifact/' + id;
+    var go = document.getElementById('go'); go.href = url;
+    open.hidden = false;
+    var seen = store('tt-opened-' + id);
+    if (seen) {
+      document.getElementById('pin').hidden = true;
+      document.getElementById('status').textContent = 'Đang mở app…';
+      setTimeout(function () { location.replace(url); }, 700);
+    }
+    go.addEventListener('click', function () { store('tt-opened-' + id, '1'); });
+    document.getElementById('change').addEventListener('click', function () { showSetup(); });
+  }
+  document.getElementById('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = document.getElementById('link').value.trim(), m = v.match(RE);
+    var err = document.getElementById('err');
+    if (!m) { err.textContent = 'Link chưa đúng. Link app có dạng https://claude.ai/artifact/ rồi một dãy chữ số.'; return; }
+    err.textContent = '';
+    location.hash = encodeURIComponent(m[1]);
+    location.reload();
+  });
+})();
+</script>
+</body>
+</html>
