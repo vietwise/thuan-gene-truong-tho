@@ -51,18 +51,19 @@ h1{font-family:var(--display);font-size:30px;line-height:1.2;margin:0}
       </ol>
       <p class="mini">Thêm <b>chính trang tím này</b> (địa chỉ vietwise.github.io) ra màn hình chính, trước khi bấm Mở App. Mỗi lần chạm biểu tượng, trang này hiện ra, bấm <b>Mở App Trường Thọ</b> là vào app. Lần đầu Claude hỏi đăng nhập một lần trong Safari hoặc Chrome.</p>
     </div>
-    <button class="btn ghost" id="change" type="button">Đổi link app</button>
+    <button class="btn ghost" id="change" type="button">Đổi sang app khác</button>
+    <p class="mini" style="color:#fff;opacity:.85;margin:0">Chỉ cần khi bạn dựng lại app và có link mới.</p>
   </section>
 
   <section id="setup" hidden style="width:100%">
     <form class="card" id="form" novalidate>
-      <h2>Gắn app của bạn với biểu tượng này</h2>
-      <p>Dán link app Giao Thức Trường Thọ <b>của chính bạn</b> (Claude đưa link này sau khi dựng app, dạng <code>claude.ai/artifact/…</code>).</p>
+      <h2>Cho biểu tượng biết mở app nào</h2>
+      <p>Mỗi người có một app riêng, với một link riêng. Trang này dùng chung cho mọi người, nên cần bạn dán link app <b>của chính bạn</b> một lần. Nhờ vậy biểu tượng trên màn hình chính sẽ mở đúng app của bạn.</p><p class="mini">Link app là link Claude đưa sau khi dựng app, dạng <code>claude.ai/artifact/…</code>. Dán xong, trang hiện nút "Mở App" và hướng dẫn thêm ra màn hình chính.</p>
       <label for="link">Link app của bạn</label>
       <input id="link" name="link" type="url" inputmode="url" autocomplete="off" placeholder="https://claude.ai/artifact/…">
       <p class="err" id="err" aria-live="polite"></p>
       <button class="btn" type="submit">Tạo biểu tượng cho app của tôi</button>
-      <p class="mini">Link chỉ nằm trong địa chỉ trang này trên máy bạn. Không gửi đi đâu. Đừng chia sẻ trang sau khi đã gắn link: đó là app riêng của bạn.</p>
+      <p class="mini">Link chỉ nằm trên điện thoại của bạn, không gửi đi đâu. Sau khi gắn, trang này dẫn vào app riêng của bạn, nên đừng gửi nó cho người khác. Muốn giới thiệu, hãy gửi trang cài app.</p>
     </form>
   </section>
 </main>
