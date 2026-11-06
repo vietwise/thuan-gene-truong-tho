@@ -87,6 +87,9 @@ p{margin:0}
 .cmp-no{background:var(--no-soft);border:1.5px solid var(--no)}
 .cmp-no h3{color:var(--no)}
 @media (prefers-reduced-motion:no-preference){.btn{transition:background .15s,transform .15s}.btn:active{transform:scale(.98)}}
+.btn.ghost.light{color:#fff;border-color:rgba(255,255,255,.85)}
+.dlhelp{font-size:14px;background:rgba(255,255,255,.16);border-radius:12px;padding:0 12px;margin:0}
+.dlhelp:not(:empty){padding:10px 12px}
 </style>
 
 </head>
@@ -103,8 +106,9 @@ p{margin:0}
     <p class="lead">Tải báo cáo giải mã gene, kết quả khám sức khoẻ, ảnh cân điện tử hoặc đồng hồ, vài dòng về lối sống. Nhận lại giao thức trường thọ chi tiết, bản tóm tắt cốt lõi và thẻ nhắc theo giờ mỗi ngày.</p>
     <p class="tag">Thuận tự nhiên - Tự nhiên thuận.</p>
     <div class="actions">
-      <a class="btn gold" id="dl" href="giao-thuc-truong-tho-ca-the-hoa.zip" download>Tải gói skill (.zip)</a>
-      <span class="note" id="dlNote">Bấm là tải ngay. Gói gồm phương pháp và app, không chứa hồ sơ của ai.</span>
+      <a class="btn gold" id="dl" href="giao-thuc-truong-tho-ca-the-hoa.zip" download="giao-thuc-truong-tho-ca-the-hoa.zip">Tải gói skill (.zip)</a>
+      <a class="btn ghost light" id="dl2" href="https://drive.google.com/file/d/1sX-87UzfibyeTcYruR9XaVL2UvG37dsC/view?usp=sharing" target="_blank" rel="noopener">Tải qua Google Drive</a>
+      <span class="note" id="dlNote">Gói gồm phương pháp và app, không chứa hồ sơ của ai.</span>
     </div>
       </header>
 
@@ -204,6 +208,16 @@ p{margin:0}
     catch (e) { btn.textContent = 'Bôi đen để sao chép'; }
   }
   document.getElementById('copyPhrase').addEventListener('click', function (e) { copy(e.currentTarget, document.getElementById('phrase').textContent); });
+  var ua = navigator.userAgent || '';
+  var inApp = /FBAN|FBAV|FB_IAB|Instagram|Zalo|Line\/|Messenger|TikTok|; wv\)/i.test(ua);
+  var ios = /iPhone|iPad|iPod/i.test(ua);
+  var help = document.getElementById('dlHelp');
+  if (inApp) help.textContent = 'Bạn đang mở trang trong Zalo/Facebook, nơi thường chặn tải file. Bấm ⋯ hoặc ⋮ ở góc màn hình, chọn "Mở bằng trình duyệt" (Safari hoặc Chrome), rồi bấm tải lại.';
+  document.getElementById('dl').addEventListener('click', function () {
+    help.textContent = inApp ? help.textContent
+      : ios ? 'Đang tải… Trên iPhone, chạm "Tải về" nếu Safari hỏi. File nằm trong ứng dụng Tệp (Files) → mục Tải về. Không thấy gì? Bấm "Tải qua Google Drive".'
+      : 'Đang tải… File nằm trong thư mục Tải xuống (Downloads) của máy. Không thấy gì? Bấm "Tải qua Google Drive".';
+  });
   var a = document.getElementById('dl');
   if (a.getAttribute('href').indexOf('__') === 0) { a.removeAttribute('href'); a.setAttribute('aria-disabled', 'true'); document.getElementById('dlNote').textContent = 'Link tải đang được cập nhật.'; }
 })();
