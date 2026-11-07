@@ -137,6 +137,9 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
 .trow .bar{grid-column:1 / -1;height:8px}
 .trow b{text-align:right;font-variant-numeric:tabular-nums}
 .hist li{margin:4px 0}
+.pick{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line);cursor:pointer}
+.pick input{width:22px;height:22px;margin-top:2px;accent-color:var(--purple);flex:none}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
 .btn.sm{min-height:38px;padding:6px 12px;font-size:14px;border-radius:11px}
 .review{border:2px solid var(--warn);background:var(--warn-soft)}
 .review .lbl{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--warn)}
@@ -224,7 +227,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   // ---------- storage (this phone only) ----------
   var store = { profiles: {}, done: {}, skip: {}, active: null, notify: null, shown: {}, snooze: {}, light: {}, feel: {}, review: {}, lastBackup: null };
   var memOnly = false;
-  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.profiles) store = s; } catch (e) { memOnly = true; } ['skip', 'shown', 'snooze', 'light', 'feel', 'review'].forEach(function (k) { store[k] = store[k] || {}; }); }
+  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.profiles) store = s; } catch (e) { memOnly = true; } ['skip', 'shown', 'snooze', 'light', 'feel', 'review', 'icsOff'].forEach(function (k) { store[k] = store[k] || {}; }); }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) { memOnly = true; } }
 
   // ---------- import ----------
@@ -271,7 +274,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     var d = o.data || {}, ids = Object.keys(d.profiles || {});
     if (!ids.length) throw new Error('File sao lưu không có hồ sơ nào.');
     ids.forEach(function (id) { var a = store.profiles[id], b = d.profiles[id]; if (!a || String(b.exportedAt || '') >= String(a.exportedAt || '')) store.profiles[id] = b; });
-    ['done', 'skip', 'feel', 'light', 'review'].forEach(function (k) { mergeInto(store[k], d[k]); });
+    ['done', 'skip', 'feel', 'light', 'review', 'icsOff'].forEach(function (k) { mergeInto(store[k], d[k]); });
     store.active = d.active && store.profiles[d.active] ? d.active : ids[0];
     save(); lastImport = 'restore'; return store.profiles[store.active];
   }
@@ -400,9 +403,40 @@ details.grp>summary::-webkit-details-marker{display:none}
   // ---------- calendar (.ics) so the phone's own Calendar rings, even offline ----------
   function icsEsc(s) { return String(s || '').replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/([,;])/g, '\\$1'); }
   function fold(line) { var out = '', s = line; while (s.length > 70) { out += s.slice(0, 70) + '\r\n '; s = s.slice(70); } return out + s; }
-  function buildIcs(p) {
+  function icsAll(p) {
     var hasP2 = p.phases.length > 1;
-    var rs = p.reminders.filter(function (r) { return /^\d{1,2}:\d{2}$/.test(r.time) && (r.phase === 'both' || !hasP2 || r.phase === String(p.phase)); });
+    return p.reminders.filter(function (r) { return /^\d{1,2}:\d{2}$/.test(r.time) && (r.phase === 'both' || !hasP2 || r.phase === String(p.phase)); }).sort(function (x, y) { return mins(x.time) - mins(y.time); });
+  }
+  function icsOff(p) { var o = (store.icsOff = store.icsOff || {}); return o[p.id] = o[p.id] || {}; }
+  function icsPicked(p) { var off = icsOff(p); return icsAll(p).filter(function (r) { return !off[r.id]; }); }
+  function daysTxt(r) { return r.days.length >= 7 ? 'mỗi ngày' : r.days.map(function (x) { return DAYS[x]; }).join(', '); }
+  var icsOpen = false;
+  function icsCard(p) {
+    var all = icsAll(p), off = icsOff(p), n = all.length - all.filter(function (r) { return off[r.id]; }).length;
+    var medOff = all.some(function (r) { return off[r.id] && plain(r.type) === 'thuoc'; });
+    var head = '<section class="card"><h2>Nhắc bằng Lịch của điện thoại</h2><p class="small" style="margin:6px 0 10px">Điện thoại sẽ đổ chuông đúng giờ cho từng việc, kể cả khi không mở app và không có mạng. Lịch nhắc chạy 12 tuần, theo giai đoạn đang chọn.</p>';
+    if (!icsOpen) return head + '<button class="btn gold" id="icsPick" type="button">Chọn việc để thêm vào lịch</button><p class="small muted" style="margin:8px 0 0">Bạn được bỏ bớt những việc không cần chuông trước khi thêm.</p></section>';
+    var groups = SL.map(function (name, i) {
+      var items = all.filter(function (r) { return slotIx(r.time) === i; }); if (!items.length) return '';
+      return '<p class="small" style="margin:12px 0 4px"><b>' + name + '</b></p>' + items.map(function (r) {
+        return '<label class="pick"><input type="checkbox" data-ics="' + esc(r.id) + '"' + (off[r.id] ? '' : ' checked') + '><span><b>' + esc(r.time) + '</b> ' + esc(r.title) + (r.ml ? ' (' + r.ml + ' ml)' : '') + '<br><span class="small muted">' + esc(r.type) + ' · ' + daysTxt(r) + '</span></span></label>';
+      }).join('');
+    }).join('');
+    return head + '<div class="row" style="gap:8px"><button class="btn ghost sm" type="button" id="icsAllOn">Chọn tất cả</button><button class="btn ghost sm" type="button" id="icsAllOff">Bỏ chọn hết</button></div>' + groups +
+      (medOff ? '<p class="note" style="margin-top:10px">Bạn vừa bỏ chuông cho <b>thuốc</b>. Bỏ chuông không có nghĩa là ngưng thuốc: vẫn uống đúng đơn bác sĩ, và vẫn đánh dấu trong app.</p>' : '') +
+      '<div class="row" style="margin-top:12px;gap:8px"><button class="btn gold" id="ics" type="button"' + (n ? '' : ' disabled') + '>Thêm ' + n + ' việc vào lịch</button><button class="btn ghost" id="icsClose" type="button">Đóng</button></div>' +
+      '<p class="small muted" style="margin:8px 0 0">Việc bỏ khỏi lịch vẫn còn trong app và vẫn tính tiến độ. iPhone: chạm file vừa tải → <b>Thêm tất cả</b>. Android: mở file bằng Google Calendar. Muốn đổi lựa chọn sau này: xoá lịch "Trường Thọ" cũ trong ứng dụng Lịch rồi thêm lại.</p></section>';
+  }
+  function bindIcs(p, again) {
+    $('#icsPick') && $('#icsPick').addEventListener('click', function () { icsOpen = true; again(); });
+    $('#icsClose') && $('#icsClose').addEventListener('click', function () { icsOpen = false; again(); });
+    $$('input[data-ics]').forEach(function (c) { c.addEventListener('change', function () { var o = icsOff(p); if (c.checked) delete o[c.dataset.ics]; else o[c.dataset.ics] = 1; save(); again(); }); });
+    $('#icsAllOn') && $('#icsAllOn').addEventListener('click', function () { store.icsOff[p.id] = {}; save(); again(); });
+    $('#icsAllOff') && $('#icsAllOff').addEventListener('click', function () { var o = icsOff(p); icsAll(p).forEach(function (r) { o[r.id] = 1; }); save(); again(); });
+    $('#ics') && $('#ics').addEventListener('click', function () { downloadIcs(p); icsOpen = false; again(); flash('Đã tạo lịch nhắc ' + icsPicked(p).length + ' việc. Mở file vừa tải để thêm vào Lịch.'); });
+  }
+  function buildIcs(p) {
+    var rs = icsPicked(p);
     var BY = ['', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
     var start = new Date(); var stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
     var until = new Date(start.getTime() + 84 * 864e5);
@@ -545,8 +579,7 @@ details.grp>summary::-webkit-details-marker{display:none}
       feelCard(p, day) + groups +
       (rest.length ? '<details class="sec"><summary>' + rest.length + ' việc khác tạm nghỉ hôm nay</summary><ul class="small" style="padding-left:18px">' + rest.map(function (r) { return '<li>' + esc(r.time) + ' · ' + esc(r.title) + '</li>'; }).join('') + '</ul></details>' : '') +
       '<section class="card"><div class="row" style="justify-content:space-between"><h2>7 ngày qua</h2><button class="linkbtn" type="button" id="toStats">Tiến độ cả giai đoạn →</button></div><div class="week" style="margin-top:10px">' + weekHtml + '</div></section>' +
-      '<section class="card"><h2>Nhắc bằng Lịch của điện thoại</h2><p class="small" style="margin:6px 0 10px">Điện thoại sẽ đổ chuông đúng giờ cho từng việc, kể cả khi không mở app và không có mạng. Lịch nhắc chạy 12 tuần, theo giai đoạn đang chọn.</p><button class="btn gold" id="ics" type="button">Thêm lịch nhắc vào điện thoại</button>' +
-      '<p class="small muted" style="margin:8px 0 0">iPhone: chạm file vừa tải → <b>Thêm tất cả</b>. Android: mở file bằng Google Calendar. Đổi giai đoạn thì thêm lại.</p></section>' +
+      icsCard(p) +
       quoteHtml(q, 'rq');
     var again = function () { keepScroll = true; render(); };
     $('#toStats').addEventListener('click', function () { view = 'stats'; render(); });
@@ -567,7 +600,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     $('#feelDone') && $('#feelDone').addEventListener('click', function () { var i = $('#kg'); if (i) i.dispatchEvent(new Event('change')); feelEdit = false; again(); });
     $('#feelEdit') && $('#feelEdit').addEventListener('click', function () { feelEdit = true; again(); });
     $('#nudgeBk') && $('#nudgeBk').addEventListener('click', function () { saveBackup(function () { again(); }); });
-    $('#ics').addEventListener('click', function () { downloadIcs(p); });
+    bindIcs(p, again);
   }
   function notifyCard() {
     var st = store.notify;
@@ -715,7 +748,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   }
   function saveBackup(after, msgEl) {
     var name = 'sao-luu-truong-tho-' + ymd() + '.json';
-    var txt = JSON.stringify({ app: BACKUP_APP, v: 1, savedAt: new Date().toISOString(), data: { profiles: store.profiles, done: store.done, skip: store.skip, feel: store.feel, light: store.light, review: store.review, active: store.active } });
+    var txt = JSON.stringify({ app: BACKUP_APP, v: 1, savedAt: new Date().toISOString(), data: { profiles: store.profiles, done: store.done, skip: store.skip, feel: store.feel, light: store.light, review: store.review, icsOff: store.icsOff, active: store.active } });
     var ok = function () { store.lastBackup = new Date().toISOString(); save(); if (msgEl) msgEl.textContent = 'Đã tạo bản sao ' + name + '. Cất vào Tệp, Drive hoặc Zalo của chính bạn.'; if (after) after(); };
     var file = null; try { file = new File([txt], name, { type: 'application/json' }); } catch (e) {}
     if (file && navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: 'Sao lưu Trường Thọ' }).then(ok).catch(function () {}); return; }
@@ -736,7 +769,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     $$('button[data-sw]', m).forEach(function (b) { b.addEventListener('click', function () { store.active = b.dataset.sw; save(); view = 'today'; render(); }); });
     $('#cp').addEventListener('click', function (e) { var b = e.currentTarget; try { navigator.clipboard.writeText(EXPERT.email).then(function () { b.textContent = 'Đã sao chép'; }, function () { b.textContent = 'Bôi đen để sao chép'; }); } catch (x) { b.textContent = 'Bôi đen để sao chép'; } });
     $('#del').addEventListener('click', function () { $('#delYes').hidden = false; $('#del').textContent = 'Huỷ'; $('#del').onclick = function () { renderMe(p, m); }; });
-    $('#delYes').addEventListener('click', function () { delete store.profiles[p.id]; ['done', 'skip', 'feel', 'light', 'review', 'snooze'].forEach(function (k) { delete store[k][p.id]; }); store.active = Object.keys(store.profiles)[0] || null; save(); view = 'today'; render(); });
+    $('#delYes').addEventListener('click', function () { delete store.profiles[p.id]; ['done', 'skip', 'feel', 'light', 'review', 'snooze', 'icsOff'].forEach(function (k) { delete store[k][p.id]; }); store.active = Object.keys(store.profiles)[0] || null; save(); view = 'today'; render(); });
   }
   function readme() {
     return '<footer class="readme"><b>Đọc trước khi dùng.</b> Giao thức trường thọ giúp hướng về đồng hồ và xu hướng sinh học, không phải là lời khuyên chữa bệnh. Tài liệu hỗ trợ lối sống song song với điều trị, không thay thế kết luận y khoa của bác sĩ. Gene là xu hướng; xét nghiệm và triệu chứng quyết định can thiệp. Dữ liệu sức khoẻ và gene là dữ liệu nhạy cảm: sẽ do chính chủ chọn tải lên ứng dụng, hoặc nếu người khác tải giúp phải có sự đồng ý.' + (memOnly ? '<br><b>Lưu ý:</b> trình duyệt đang chặn lưu dữ liệu, hồ sơ sẽ mất khi đóng app. Hãy mở bằng Safari hoặc Chrome thường (không ẩn danh).' : '') + '</footer>';
