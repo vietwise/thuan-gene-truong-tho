@@ -140,6 +140,11 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
 .pick{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line);cursor:pointer}
 .pick input{width:22px;height:22px;margin-top:2px;accent-color:var(--purple);flex:none}
 .btn[disabled]{opacity:.45;cursor:not-allowed}
+.offer{border:2px solid var(--yellow);background:var(--saffron-soft)}
+.offer .big{font-family:var(--display);font-size:19px;font-weight:700;color:var(--purple)}
+.offer .lbl{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+.offer a.btn{text-decoration:none;display:inline-flex;align-items:center}
+.cat li{margin:8px 0}
 .btn.sm{min-height:38px;padding:6px 12px;font-size:14px;border-radius:11px}
 .review{border:2px solid var(--warn);background:var(--warn-soft)}
 .review .lbl{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--warn)}
@@ -227,7 +232,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   // ---------- storage (this phone only) ----------
   var store = { profiles: {}, done: {}, skip: {}, active: null, notify: null, shown: {}, snooze: {}, light: {}, feel: {}, review: {}, lastBackup: null };
   var memOnly = false;
-  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.profiles) store = s; } catch (e) { memOnly = true; } ['skip', 'shown', 'snooze', 'light', 'feel', 'review', 'icsOff'].forEach(function (k) { store[k] = store[k] || {}; }); }
+  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.profiles) store = s; } catch (e) { memOnly = true; } ['skip', 'shown', 'snooze', 'light', 'feel', 'review', 'icsOff', 'offerSeen'].forEach(function (k) { store[k] = store[k] || {}; }); }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) { memOnly = true; } }
 
   // ---------- import ----------
@@ -578,6 +583,7 @@ details.grp>summary::-webkit-details-marker{display:none}
           : '<section class="card next"><span class="lbl">Hôm nay</span><p class="big">' + (rs.length && done === rs.length ? 'Đã xong tất cả. Cảm ơn bạn đã chăm cơ thể mình.' : 'Không còn việc nào sau giờ này.') + '</p></section>') +
       feelCard(p, day) + groups +
       (rest.length ? '<details class="sec"><summary>' + rest.length + ' việc khác tạm nghỉ hôm nay</summary><ul class="small" style="padding-left:18px">' + rest.map(function (r) { return '<li>' + esc(r.time) + ' · ' + esc(r.title) + '</li>'; }).join('') + '</ul></details>' : '') +
+      offerCard(p) +
       '<section class="card"><div class="row" style="justify-content:space-between"><h2>7 ngày qua</h2><button class="linkbtn" type="button" id="toStats">Tiến độ cả giai đoạn →</button></div><div class="week" style="margin-top:10px">' + weekHtml + '</div></section>' +
       icsCard(p) +
       quoteHtml(q, 'rq');
@@ -600,7 +606,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     $('#feelDone') && $('#feelDone').addEventListener('click', function () { var i = $('#kg'); if (i) i.dispatchEvent(new Event('change')); feelEdit = false; again(); });
     $('#feelEdit') && $('#feelEdit').addEventListener('click', function () { feelEdit = true; again(); });
     $('#nudgeBk') && $('#nudgeBk').addEventListener('click', function () { saveBackup(function () { again(); }); });
-    bindIcs(p, again);
+    bindIcs(p, again); bindOffers(p, again);
   }
   function notifyCard() {
     var st = store.notify;
@@ -739,6 +745,67 @@ details.grp>summary::-webkit-details-marker{display:none}
       p.since = p.since || {}; p.since[p.phase] = ymd(); save(); renderStats(p, m);
     });
   }
+  // ---------- expert suggestions (goi-y.json on the site; cached for offline) ----------
+  function offers() { return (store.offerCache && store.offerCache.items) || []; }
+  function loadOffers() {
+    if (!window.fetch) return;
+    fetch('goi-y.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (o) {
+      if (!o || !Array.isArray(o.items)) return;
+      var changed = JSON.stringify(o) !== JSON.stringify(store.offerCache); store.offerCache = o; save();
+      if (changed && cur() && (view === 'today' || view === 'stats' || view === 'me')) { keepScroll = true; render(); }
+    }).catch(function () {});
+  }
+  function offerCtx(p) {
+    var st = stats(p), recent = st.perDay.slice(-7), f = store.feel[p.id] || {}, low = 0, rated = 0;
+    recent.forEach(function (x) { var v = f[x.k]; if (v && (v.energy || v.sleep)) { rated++; if (Math.min(v.energy || 5, v.sleep || 5) <= 2) low++; } });
+    var avgE = 0, nE = 0; recent.forEach(function (x) { var v = f[x.k]; if (v && v.energy) { avgE += Math.min(v.energy, v.sleep || 5); nE++; } });
+    return { days: st.days, rate: st.rate, kept: st.kept, waterPct: st.waterGoal ? Math.round(st.water * 100 / st.waterGoal) : 100, feelDays: rated, feelAvg: nE ? avgE / nE : 5, name: p.name };
+  }
+  function offerOk(o, c) {
+    var w = o.when; if (!w) return false;
+    if (w.minDays && c.days < w.minDays) return false;
+    if (w.minRate && c.rate < w.minRate) return false;
+    if (w.minKept && c.kept < w.minKept) return false;
+    if (w.maxWaterPct && c.waterPct > w.maxWaterPct) return false;
+    if (w.minFeelDays && c.feelDays < w.minFeelDays) return false;
+    if (w.maxFeel && c.feelAvg > w.maxFeel) return false;
+    return true;
+  }
+  function pickOffer(p) {
+    var c = offerCtx(p), seen = store.offerSeen, cd = ((store.offerCache && store.offerCache.cooldownDays) || 14) * 864e5;
+    var o = offers().filter(function (o) { var s2 = seen[o.id] || {}; return !s2.never && !(s2.later && Date.now() - s2.later < cd) && offerOk(o, c); })[0];
+    return o ? { o: o, c: c } : null;
+  }
+  function fill(t, c) { return String(t || '').replace(/\{(\w+)\}/g, function (_, k) { return c[k] !== undefined ? c[k] : ''; }); }
+  function offerHref(o, p) {
+    if (o.url) return o.url;
+    var em = (store.offerCache && store.offerCache.email) || EXPERT.email;
+    return 'mailto:' + em + '?subject=' + encodeURIComponent(o.title + ' — ' + p.name);
+  }
+  function offerCard(p) {
+    var x = pickOffer(p); if (!x) return '';
+    var o = x.o, act = o.share ? '<button class="btn" type="button" data-oshare="' + esc(o.id) + '">' + esc(o.cta || 'Chia sẻ') + '</button>' : '<a class="btn" href="' + esc(offerHref(o, p)) + '" target="_blank" rel="noopener" data-ogo="' + esc(o.id) + '">' + esc(o.cta || 'Tìm hiểu') + '</a>';
+    return '<section class="card offer"><span class="lbl">Gợi ý từ chuyên gia</span><p class="big" style="margin:4px 0">' + esc(o.title) + '</p>' + (o.why ? '<p style="margin:0">' + esc(fill(o.why, x.c)) + '</p>' : '') +
+      '<div class="row" style="margin-top:10px;gap:8px;align-items:center">' + act + '<button class="btn ghost sm" type="button" data-olater="' + esc(o.id) + '">Để sau</button><button class="linkbtn" type="button" data-onever="' + esc(o.id) + '">Không quan tâm</button></div></section>';
+  }
+  function bindOffers(p, again) {
+    var mark = function (id, k) { var s2 = (store.offerSeen[id] = store.offerSeen[id] || {}); s2[k] = k === 'never' ? 1 : Date.now(); save(); };
+    $$('[data-olater]').forEach(function (b) { b.addEventListener('click', function () { mark(b.dataset.olater, 'later'); again(); }); });
+    $$('[data-onever]').forEach(function (b) { b.addEventListener('click', function () { mark(b.dataset.onever, 'never'); again(); }); });
+    $$('[data-ogo]').forEach(function (b) { b.addEventListener('click', function () { mark(b.dataset.ogo, 'later'); setTimeout(again, 300); }); });
+    $$('[data-oshare]').forEach(function (b) { b.addEventListener('click', function () {
+      var o = offers().filter(function (x) { return x.id === b.dataset.oshare; })[0]; if (!o) return; mark(o.id, 'later');
+      if (navigator.share) navigator.share({ title: o.title, text: o.share }).catch(function () {});
+      else { try { navigator.clipboard.writeText(o.share); flash('Đã sao chép lời mời. Dán vào Zalo gửi người thân.'); } catch (e) {} }
+      again();
+    }); });
+  }
+  function catalogHtml(p) {
+    var l = offers().filter(function (o) { return o.catalog; }); if (!l.length) return '';
+    return '<section class="card"><h2>Sản phẩm và dịch vụ của chuyên gia</h2><ul class="cat" style="padding-left:18px;margin:8px 0 0">' + l.map(function (o) {
+      return '<li><a href="' + esc(offerHref(o, p)) + '" target="_blank" rel="noopener"><b>' + esc(o.title) + '</b></a>' + (o.short ? '<br><span class="small muted">' + esc(o.short) + '</span>' : '') + '</li>';
+    }).join('') + '</ul><p class="small muted" style="margin:8px 0 0">Bấm vào tên để xem hoặc gửi email hỏi chuyên gia. App không gửi gì đi thay bạn.</p></section>';
+  }
   function renderDocs(p, m) {
     var none = '<p class="small" style="margin:6px 0 0">Hồ sơ chưa có phần này. Hỏi chuyên gia gửi bản đầy đủ.</p>';
     m.innerHTML = '<section class="card"><h1>Bản tóm tắt cốt lõi</h1><p class="small muted" style="margin:4px 0 0">Những điều không thể bỏ qua: di truyền, lối sống, lâm sàng.</p>' + (p.summary.length ? '' : none) + '</section>' +
@@ -762,6 +829,7 @@ details.grp>summary::-webkit-details-marker{display:none}
       '<section class="card"><h2>Cập nhật hồ sơ</h2><p class="small" style="margin:6px 0 10px">Sau mỗi lần tư vấn, chuyên gia gửi file mới. Nhập file mới sẽ thay bản cũ, giữ nguyên các việc bạn đã đánh dấu xong và cảm nhận đã ghi.</p><button class="btn" id="pick" type="button">Nhập hồ sơ từ chuyên gia</button><p class="status" id="status" aria-live="polite">' + esc(flashMsg) + '</p></section>' +
       (others.length ? '<section class="card"><h2>Hồ sơ khác trên máy</h2><div class="row" style="margin-top:8px">' + others.map(function (id) { return '<button class="btn ghost" type="button" data-sw="' + esc(id) + '">' + esc(store.profiles[id].name) + '</button>'; }).join('') + '</div></section>' : '') +
       '<section class="card"><h2>Sao lưu và chuyển máy</h2><p class="small" style="margin:6px 0 10px">Hồ sơ và tiến độ chỉ nằm trên điện thoại này. Lưu một bản sao vào Tệp, Drive hoặc Zalo của chính bạn. Sang máy mới: mở app, bấm <b>Nhập hồ sơ từ chuyên gia</b>, chọn file sao lưu.</p><div class="row"><button class="btn gold" id="bk" type="button">Lưu bản sao</button></div><p class="small muted" style="margin:8px 0 0" id="bkMsg">' + (store.lastBackup ? 'Lần sao lưu gần nhất: ' + new Date(store.lastBackup).toLocaleDateString('vi-VN') + '.' : 'Chưa sao lưu lần nào.') + '</p></section>' +
+      catalogHtml(p) +
       '<section class="card"><h2>Liên hệ chuyên gia</h2><p class="small" style="margin:6px 0 10px">' + EXPERT.name + '</p><div class="row"><code style="font-size:16px;font-weight:700;color:var(--purple);user-select:all">' + EXPERT.email + '</code><button class="btn ghost" id="cp" type="button">Sao chép email</button></div></section>' +
       '<section class="card"><h2>Xoá hồ sơ khỏi máy</h2><p class="small" style="margin:6px 0 10px">Xoá hồ sơ và các dấu đã làm xong trên điện thoại này.</p><div class="row"><button class="btn ghost" id="del" type="button">Xoá hồ sơ này</button><button class="btn" id="delYes" type="button" hidden>Xoá vĩnh viễn</button></div></section>' + readme();
     $('#pick').addEventListener('click', function () { $('#file').click(); });
@@ -785,6 +853,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   (function fromUrl2() { try { var u = new URL(location.href), a = u.searchParams.get('act'); if (a) { act(u.searchParams.get('pid'), u.searchParams.get('day'), u.searchParams.get('rid'), a); history.replaceState(null, '', location.pathname); } } catch (e) {} })();
   render(); setTimeout(tick, 1500);
   if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); }); }
+  loadOffers(); window.addEventListener('online', loadOffers);
 })();
 </script>
 </body>
