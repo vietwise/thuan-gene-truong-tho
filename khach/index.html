@@ -185,7 +185,7 @@ details.grp>summary::-webkit-details-marker{display:none}
 <script>
 (function () {
   'use strict';
-  var EXPERT = { name: 'Chuyên gia Nhất Phương Hồng', email: 'hongple99@gmail.com' };
+  var EXPERT = { name: 'Chuyên gia Nhất Phương Hồng', email: 'hongple99@gmail.com', zalo: 'https://zalo.me/0977206471' };
   var KEY = 'ttk.v1';
   var DETAILED = [['d01','1. Phân tích hệ thống'],['d02','2. Ba chuyên gia'],['d03','3. Phản biện chéo'],['d04','4. Giao thức thống nhất'],['d05','5. Lịch một ngày & nhịp tuần'],['d06','6. Thẻ nhắc hằng ngày'],['d07','7. Thuốc, thực phẩm & thảo dược đang dùng'],['d08','8. Thành phần cơ thể & thiết bị đeo'],['d09','9. Hồ sơ di truyền'],['d10','9b. Chùm siêu gene trường thọ'],['d11','10. Theo dõi phenotype'],['d12','11. Biomarker'],['d13','12. An toàn & câu hỏi mở']];
   var SUMMARY = [['s1','Phần 1 — Di truyền'],['s2','Phần 2 — Lối sống'],['s3','Phần 3 — Lâm sàng']];
@@ -779,6 +779,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   function fill(t, c) { return String(t || '').replace(/\{(\w+)\}/g, function (_, k) { return c[k] !== undefined ? c[k] : ''; }); }
   function offerHref(o, p) {
     if (o.url) return o.url;
+    var zl = (store.offerCache && store.offerCache.zalo) || EXPERT.zalo; if (zl) return zl;
     var em = (store.offerCache && store.offerCache.email) || EXPERT.email;
     return 'mailto:' + em + '?subject=' + encodeURIComponent(o.title + ' — ' + p.name);
   }
@@ -804,7 +805,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     var l = offers().filter(function (o) { return o.catalog; }); if (!l.length) return '';
     return '<section class="card"><h2>Sản phẩm và dịch vụ của chuyên gia</h2><ul class="cat" style="padding-left:18px;margin:8px 0 0">' + l.map(function (o) {
       return '<li><a href="' + esc(offerHref(o, p)) + '" target="_blank" rel="noopener"><b>' + esc(o.title) + '</b></a>' + (o.short ? '<br><span class="small muted">' + esc(o.short) + '</span>' : '') + '</li>';
-    }).join('') + '</ul><p class="small muted" style="margin:8px 0 0">Bấm vào tên để xem hoặc gửi email hỏi chuyên gia. App không gửi gì đi thay bạn.</p></section>';
+    }).join('') + '</ul><p class="small muted" style="margin:8px 0 0">Bấm vào tên để xem hoặc nhắn Zalo hỏi chuyên gia. App không gửi gì đi thay bạn.</p></section>';
   }
   function renderDocs(p, m) {
     var none = '<p class="small" style="margin:6px 0 0">Hồ sơ chưa có phần này. Hỏi chuyên gia gửi bản đầy đủ.</p>';
@@ -830,7 +831,7 @@ details.grp>summary::-webkit-details-marker{display:none}
       (others.length ? '<section class="card"><h2>Hồ sơ khác trên máy</h2><div class="row" style="margin-top:8px">' + others.map(function (id) { return '<button class="btn ghost" type="button" data-sw="' + esc(id) + '">' + esc(store.profiles[id].name) + '</button>'; }).join('') + '</div></section>' : '') +
       '<section class="card"><h2>Sao lưu và chuyển máy</h2><p class="small" style="margin:6px 0 10px">Hồ sơ và tiến độ chỉ nằm trên điện thoại này. Lưu một bản sao vào Tệp, Drive hoặc Zalo của chính bạn. Sang máy mới: mở app, bấm <b>Nhập hồ sơ từ chuyên gia</b>, chọn file sao lưu.</p><div class="row"><button class="btn gold" id="bk" type="button">Lưu bản sao</button></div><p class="small muted" style="margin:8px 0 0" id="bkMsg">' + (store.lastBackup ? 'Lần sao lưu gần nhất: ' + new Date(store.lastBackup).toLocaleDateString('vi-VN') + '.' : 'Chưa sao lưu lần nào.') + '</p></section>' +
       catalogHtml(p) +
-      '<section class="card"><h2>Liên hệ chuyên gia</h2><p class="small" style="margin:6px 0 10px">' + EXPERT.name + '</p><div class="row"><code style="font-size:16px;font-weight:700;color:var(--purple);user-select:all">' + EXPERT.email + '</code><button class="btn ghost" id="cp" type="button">Sao chép email</button></div></section>' +
+      '<section class="card"><h2>Liên hệ chuyên gia</h2><p class="small" style="margin:6px 0 10px">' + EXPERT.name + '</p><div class="row" style="margin-bottom:10px"><a class="btn" href="' + EXPERT.zalo + '" target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center">Nhắn Zalo cho chuyên gia</a></div><div class="row"><code style="font-size:16px;font-weight:700;color:var(--purple);user-select:all">' + EXPERT.email + '</code><button class="btn ghost" id="cp" type="button">Sao chép email</button></div></section>' +
       '<section class="card"><h2>Xoá hồ sơ khỏi máy</h2><p class="small" style="margin:6px 0 10px">Xoá hồ sơ và các dấu đã làm xong trên điện thoại này.</p><div class="row"><button class="btn ghost" id="del" type="button">Xoá hồ sơ này</button><button class="btn" id="delYes" type="button" hidden>Xoá vĩnh viễn</button></div></section>' + readme();
     $('#pick').addEventListener('click', function () { $('#file').click(); });
     $('#bk').addEventListener('click', function () { saveBackup(null, $('#bkMsg')); });

@@ -1,5 +1,5 @@
 {
-  "_huong_dan": "Danh sách gợi ý của Chuyên gia Nhất Phương Hồng cho app khách. Sửa file này rồi đẩy lên GitHub là mọi khách thấy bản mới khi mở app có mạng. 'when' để trống thì gợi ý chỉ nằm trong danh mục ở tab Hồ sơ. Nút 'url' để trống thì mở email gửi chuyên gia. Chữ trong ngoặc nhọn được thay bằng số liệu của khách: {kept} ngày giữ nhịp, {days} số ngày, {rate} % hoàn thành, {waterPct} % nước.",
+  "_huong_dan": "Danh sách gợi ý của Chuyên gia Nhất Phương Hồng cho app khách. Sửa file này rồi đẩy lên GitHub là mọi khách thấy bản mới khi mở app có mạng. 'when' để trống thì gợi ý chỉ nằm trong danh mục ở tab Hồ sơ. Nút 'url' để trống thì mở Zalo của chuyên gia (không có Zalo thì mở email). Chữ trong ngoặc nhọn được thay bằng số liệu của khách: {kept} ngày giữ nhịp, {days} số ngày, {rate} % hoàn thành, {waterPct} % nước.",
   "updated": "2026-11-07",
   "email": "hongple99@gmail.com",
   "cooldownDays": 14,
@@ -8,9 +8,12 @@
       "id": "tu-van-lai",
       "title": "Tư vấn lại và chuyển sang giai đoạn tiếp theo",
       "why": "Bạn đã giữ nhịp {kept} ngày trong {days} ngày. Đây là lúc xem lại chỉ số, xét nghiệm lại và chỉnh giao thức cho giai đoạn mới.",
-      "cta": "Hẹn tư vấn lại",
+      "cta": "Nhắn Zalo hẹn tư vấn",
       "url": "",
-      "when": { "minDays": 42, "minRate": 65 },
+      "when": {
+        "minDays": 42,
+        "minRate": 65
+      },
       "catalog": true,
       "short": "Xem lại chỉ số, xét nghiệm lại, chỉnh giao thức theo giai đoạn."
     },
@@ -18,9 +21,12 @@
       "id": "nuoc",
       "title": "Sách Chuyện Của Nước",
       "why": "Lượng nước của bạn mới đạt khoảng {waterPct}% mục tiêu. Cuốn sách nhỏ này giúp bạn hiểu và yêu việc uống nước hơn.",
-      "cta": "Hỏi về sách",
+      "cta": "Nhắn Zalo hỏi sách",
       "url": "",
-      "when": { "minDays": 7, "maxWaterPct": 70 },
+      "when": {
+        "minDays": 7,
+        "maxWaterPct": 70
+      },
       "catalog": true,
       "short": "Cầm một ly nước, ngẫm một đời người."
     },
@@ -28,9 +34,13 @@
       "id": "song-thuan-gene",
       "title": "Khoá Sống Thuận Gene",
       "why": "Mấy ngày qua giấc ngủ hoặc năng lượng của bạn còn thấp. Khoá học đi cùng bạn từng tuần để sống đúng nhịp gene của mình.",
-      "cta": "Tìm hiểu khoá học",
+      "cta": "Nhắn Zalo hỏi khoá học",
       "url": "",
-      "when": { "minDays": 10, "minFeelDays": 5, "maxFeel": 3 },
+      "when": {
+        "minDays": 10,
+        "minFeelDays": 5,
+        "maxFeel": 3
+      },
       "catalog": true,
       "short": "Thực hành lối sống thuận gene theo tuần, có người đồng hành."
     },
@@ -39,8 +49,11 @@
       "title": "Mời người thân làm giao thức",
       "why": "Gene liên quan tới cả nhà. Bạn đã đi được {days} ngày, người thân của bạn cũng xứng đáng có một giao thức riêng.",
       "cta": "Gửi lời mời",
-      "share": "Mình đang theo giao thức trường thọ cá thể hoá theo gene của Chuyên gia Nhất Phương Hồng. Bạn muốn làm cho mình thì liên hệ chị Hồng: hongple99@gmail.com",
-      "when": { "minDays": 14, "minRate": 60 },
+      "share": "Mình đang theo giao thức trường thọ cá thể hoá theo gene của Chuyên gia Nhất Phương Hồng. Bạn muốn làm cho mình thì nhắn Zalo chị Hồng: https://zalo.me/0977206471",
+      "when": {
+        "minDays": 14,
+        "minRate": 60
+      },
       "catalog": false
     },
     {
@@ -62,10 +75,11 @@
     {
       "id": "sua-me",
       "title": "Sách 68 Ngộ Nhận và Giác Ngộ Nuôi Con Sữa Mẹ",
-      "cta": "Hỏi về sách",
+      "cta": "Nhắn Zalo hỏi sách",
       "url": "",
       "catalog": true,
       "short": "Cho mẹ bầu và bố mẹ có con nhỏ."
     }
-  ]
+  ],
+  "zalo": "https://zalo.me/0977206471"
 }
