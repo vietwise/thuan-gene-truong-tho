@@ -241,6 +241,9 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
 .fam{border-left:5px solid var(--purple)}.fam.done{opacity:.8}.famrow{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;margin-top:6px}.famrow time{font-weight:800;color:var(--purple)}
 .gem.gbig{width:96px;height:auto;margin:6px auto}
 
+.tiers{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.tiers>div{border:1px solid var(--line);border-radius:12px;padding:10px}.tiers>div.on{border:2px solid var(--purple);background:var(--purple-soft)}.tiers b{display:block;color:var(--purple)}.tiers ul{padding-left:16px;margin:6px 0 0;font-size:13.5px}
+.plans{padding-left:18px;margin:0}.plans li{margin:4px 0}.pprice{color:var(--magenta);font-weight:700}.lockc{border:2px dashed var(--purple)}
+#licCode{width:100%;font-family:ui-monospace,Menlo,monospace;font-size:13px}
 .upg{border:2px solid var(--yellow)}.upgbadge{display:inline-block;background:var(--yellow);color:var(--ink);font-weight:800;font-size:13px;border-radius:99px;padding:4px 12px;margin:6px 0 0}
 .legal dl{margin:10px 0 0;display:grid;gap:8px}.legal dt{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--purple)}.legal dd{margin:0}.legal a{color:var(--purple);font-weight:600}
 .lightrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -326,7 +329,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   // ---------- storage (this phone only) ----------
   var store = { profiles: {}, done: {}, skip: {}, active: null, notify: null, shown: {}, snooze: {}, light: {}, feel: {}, review: {}, lastBackup: null };
   var memOnly = false;
-  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.profiles) store = s; } catch (e) { memOnly = true; } ['skip', 'shown', 'snooze', 'light', 'feel', 'review', 'icsOff', 'offerSeen', 'oracle', 'why', 'breath', 'fam', 'adapt'].forEach(function (k) { store[k] = store[k] || {}; }); }
+  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.profiles) store = s; } catch (e) { memOnly = true; } ['skip', 'shown', 'snooze', 'light', 'feel', 'review', 'icsOff', 'offerSeen', 'oracle', 'why', 'breath', 'fam', 'adapt', 'lic'].forEach(function (k) { store[k] = store[k] || {}; }); }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) { memOnly = true; } }
 
   // ---------- import ----------
@@ -373,7 +376,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     var d = o.data || {}, ids = Object.keys(d.profiles || {});
     if (!ids.length) throw new Error('File sao lưu không có hồ sơ nào.');
     ids.forEach(function (id) { var a = store.profiles[id], b = d.profiles[id]; if (!a || String(b.exportedAt || '') >= String(a.exportedAt || '')) store.profiles[id] = b; });
-    ['done', 'skip', 'feel', 'light', 'review', 'icsOff', 'oracle', 'why', 'breath', 'fam', 'adapt'].forEach(function (k) { mergeInto(store[k], d[k]); });
+    ['done', 'skip', 'feel', 'light', 'review', 'icsOff', 'oracle', 'why', 'breath', 'fam', 'adapt', 'lic'].forEach(function (k) { mergeInto(store[k], d[k]); });
     store.active = d.active && store.profiles[d.active] ? d.active : ids[0];
     save(); lastImport = 'restore'; return store.profiles[store.active];
   }
@@ -392,6 +395,8 @@ details.grp>summary::-webkit-details-marker{display:none}
     }
     if (!p.since[p.phase]) p.since[p.phase] = today;
     store.profiles[p.id] = p; store.active = p.id; save();
+    var lc = o.client && o.client.license && o.client.license.code;
+    if (lc) applyCode(p, lc).then(function (pl) { flash('Đã nhập hồ sơ ' + p.name + ' và mở bản Đồng hành đến hết ' + parseYmd(pl.u).toLocaleDateString('vi-VN') + '.'); keepScroll = true; render(); }, function () {});
     return p;
   }
   $('#file').addEventListener('change', function (e) {
@@ -860,14 +865,14 @@ details.grp>summary::-webkit-details-marker{display:none}
       (wT ? '<p class="small" style="margin:4px 0 0"><b>Nước hôm nay:</b> ' + wD.toLocaleString('vi-VN') + ' / ' + wT.toLocaleString('vi-VN') + ' ml</p><div class="bar wbar"><span style="width:' + Math.round(wD * 100 / wT) + '%"></span></div>' : '') +
       (hasP2 ? '<div class="seg" role="group" aria-label="Giai đoạn">' + p.phases.map(function (ph) { return '<button type="button" data-ph="' + ph.id + '" class="' + (String(p.phase) === String(ph.id) ? 'on' : '') + '">' + esc(ph.name) + '</button>'; }).join('') + '</div>' : '') +
       '<div class="lightrow"><button type="button" class="chip' + (light ? ' on' : '') + '" id="lightBtn" aria-pressed="' + light + '">' + (light ? 'Đang là ngày nhẹ' : 'Hôm nay là ngày nhẹ?') + '</button><span class="small muted">' +
-        (light ? 'Chỉ giữ ' + rs.length + ' việc cốt lõi. Ngày nhẹ không làm đứt chuỗi.' : 'Ốm, đi xa, bận: chỉ giữ việc cốt lõi' + (p.coreFlag ? ' chuyên gia đã đánh dấu' : ' (thuốc, nước, giấc ngủ)') + '.') + '</span></div>' + gemRowHtml(p) + '</section>' +
-      oracleTodayHtml(p, day) +
-      (rv ? reviewCard(rv) + oracleReflectHtml(p, rv.k, rv.label) : (nowHM() >= REVIEW_AT ? oracleReflectHtml(p, day, 'hôm nay') : '')) +
+        (light ? 'Chỉ giữ ' + rs.length + ' việc cốt lõi. Ngày nhẹ không làm đứt chuỗi.' : 'Ốm, đi xa, bận: chỉ giữ việc cốt lõi' + (p.coreFlag ? ' chuyên gia đã đánh dấu' : ' (thuốc, nước, giấc ngủ)') + '.') + '</span></div>' + (full(p) ? gemRowHtml(p) : '') + '</section>' +
+      (full(p) ? oracleTodayHtml(p, day) : '') +
+      (rv ? reviewCard(rv) + (full(p) ? oracleReflectHtml(p, rv.k, rv.label) : '') : (nowHM() >= REVIEW_AT && full(p) ? oracleReflectHtml(p, day, 'hôm nay') : '')) +
       (rv && rv.label === 'hôm nay' ? '' : '<section class="card next due" id="dueBanner" hidden aria-live="polite"></section>') + notifyCard() +
       (backupDue(p) ? '<p class="note" style="margin:0">Đổi điện thoại hay xoá trình duyệt là mất tiến độ. <button class="linkbtn" id="nudgeBk" type="button">Lưu bản sao ngay</button></p>' : '') +
       (nx ? '<section class="card next"><span class="lbl">Việc tiếp theo · ' + esc(nx.time) + '</span><p class="big">' + esc(nx.title) + '</p><p style="margin:0">' + esc(nx.detail) + '</p><div class="row" style="margin-top:10px"><button class="btn" type="button" data-done="' + esc(nx.id) + '">Đã làm xong</button></div></section>'
           : '<section class="card next"><span class="lbl">Hôm nay</span><p class="big">' + (rs.length && done === rs.length ? 'Đã xong tất cả. Cảm ơn bạn đã chăm cơ thể mình.' : 'Không còn việc nào sau giờ này.') + '</p></section>') +
-      feelCard(p, day) + measCard(p, day) + groups + famCard(p, day) +
+      feelCard(p, day) + (full(p) ? measCard(p, day) : '') + groups + famCard(p, day) + (full(p) ? '' : lockCard('today')) +
       (rest.length ? '<details class="sec"><summary>' + rest.length + ' việc khác tạm nghỉ hôm nay</summary><ul class="small" style="padding-left:18px">' + rest.map(function (r) { return '<li>' + esc(r.time) + ' · ' + esc(r.title) + '</li>'; }).join('') + '</ul></details>' : '') +
       offerCard(p) +
       '<section class="card"><div class="row" style="justify-content:space-between"><h2>7 ngày qua</h2><button class="linkbtn" type="button" id="toStats">Tiến độ cả giai đoạn →</button></div><div class="week" style="margin-top:10px">' + weekHtml + '</div></section>' +
@@ -892,7 +897,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     $('#feelDone') && $('#feelDone').addEventListener('click', function () { var i = $('#kg'); if (i) i.dispatchEvent(new Event('change')); feelEdit = false; again(); });
     $('#feelEdit') && $('#feelEdit').addEventListener('click', function () { feelEdit = true; again(); });
     $('#nudgeBk') && $('#nudgeBk').addEventListener('click', function () { saveBackup(function () { again(); }); });
-    bindIcs(p, again); bindOffers(p, again); bindOracle(p, again); bindMeas(p, day); bindGems(p, again, m);
+    bindIcs(p, again); bindOffers(p, again); bindOracle(p, again); if (full(p)) bindMeas(p, day); bindGems(p, again, m); bindLock();
   }
   function notifyCard() {
     var st = store.notify;
@@ -914,7 +919,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   var gemSel = 'hieuky';
   function famOf(p) { var f = (store.fam[p.id] = store.fam[p.id] || {}); if (f.on === undefined) f.on = 1; if (!f.time) f.time = '19:30'; return f; }
   function famR(p) {
-    var f = famOf(p); if (!f.on) return null;
+    var f = famOf(p); if (!f.on || !full(p)) return null;
     return { id: '__game', time: f.time, title: 'Giờ chơi game-học cùng gia đình', detail: '15–20 phút cả nhà cùng chơi một trò ở Vườn Game-học Vietwise, rồi kể cho nhau nghe điều vui nhất hôm nay.', type: 'Gia đình', days: [1, 2, 3, 4, 5, 6, 7], phase: 'both', fam: true };
   }
   function famDue(p) { var r = famR(p), day = ymd(); return r && r.time <= nowHM() && !handled(p, day, r.id) && !snoozed(p, day, r.id) ? [r] : []; }
@@ -1013,15 +1018,79 @@ details.grp>summary::-webkit-details-marker{display:none}
     terms: 'https://vietwise.edu.vn/p/dieu-khoan-dich-vu', privacy: 'https://edubit.vn/chinh-sach-rieng-tu', pay: 'https://vietwise.edu.vn/p/huong-dan-thanh-toan'
   };
   function promoLeft() { var a = parseYmd(ymd()), b = parseYmd(PROMO_END); return Math.round((b - a) / 864e5); }
-  function upgradeHtml() {
-    var left = promoLeft(), on = left >= 0;
-    return '<section class="card upg"><h2>Nâng cấp</h2>' +
-      (on ? '<p class="upgbadge">Ưu đãi Sinh thần Founder</p><p class="big" style="margin:4px 0">Bạn đang dùng miễn phí đến hết 30/11/2026</p>' +
-            '<p style="margin:0">Phiên bản đầu tiên của app được cài và dùng miễn phí, nhân dịp sinh thần của Founder Nhất Phương Hồng. ' + (left === 0 ? 'Hôm nay là ngày cuối của ưu đãi.' : 'Còn <b>' + left + ' ngày</b> ưu đãi.') + '</p>'
-          : '<p class="big" style="margin:4px 0">Ưu đãi Sinh thần Founder đã kết thúc ngày 30/11/2026</p><p style="margin:0">Nhắn chuyên gia để biết gói sử dụng tiếp theo cho bạn.</p>') +
-      '<p class="small" style="margin:10px 0 0">Sắp tới app sẽ có các gói sử dụng có phí, chuyên gia mở quyền dùng theo gói bạn chọn. Thông tin gói và mức phí sẽ được báo trước khi áp dụng. Hồ sơ, tiến độ, Châu Lộc và châu ngọc trên máy bạn vẫn được giữ nguyên.</p>' +
-      '<div class="row" style="margin-top:12px;gap:8px"><a class="btn gold" href="' + EXPERT.zalo + '" target="_blank" rel="noopener">Nhắn Zalo hỏi gói nâng cấp</a><a class="btn ghost" href="' + LEGAL.pay + '" target="_blank" rel="noopener">Hướng dẫn thanh toán</a></div></section>';
+  function upgradeHtml(p) {
+    var t = tier(p), f = function (u) { return parseYmd(u).toLocaleDateString('vi-VN'); }, head;
+    if (t.k === 'paid') head = '<p class="upgbadge">' + esc(planName(t.g)) + '</p><p class="big" style="margin:4px 0">Bạn đang dùng bản Đồng hành đến hết ' + f(t.u) + '</p><p style="margin:0">Còn <b>' + daysTo(t.u) + ' ngày</b>. Gần hết hạn, chuyên gia sẽ gửi bạn mã gia hạn.</p>';
+    else if (t.k === 'promo') head = '<p class="upgbadge">Ưu đãi Sinh thần Founder</p><p class="big" style="margin:4px 0">Bạn đang dùng trọn bản Đồng hành miễn phí đến hết 30/11/2026</p><p style="margin:0">Phiên bản đầu tiên của app được cài và dùng miễn phí, nhân dịp sinh thần của Founder Nhất Phương Hồng. ' + (daysTo(PROMO_END) === 0 ? 'Hôm nay là ngày cuối của ưu đãi.' : 'Còn <b>' + daysTo(PROMO_END) + ' ngày</b> ưu đãi.') + '</p>';
+    else if (t.k === 'grace') head = '<p class="upgbadge">Sắp khoá bản Đồng hành</p><p class="big" style="margin:4px 0">Gói của bạn đã hết hạn ngày ' + f(t.u) + '</p><p style="margin:0">App vẫn mở đủ thêm <b>' + (GRACE_DAYS + daysTo(t.u)) + ' ngày</b>. Nhắn chuyên gia để gia hạn, rồi nhập mã mới ở dưới.</p>';
+    else head = '<p class="big" style="margin:4px 0">Bạn đang dùng bản Cơ bản</p><p style="margin:0">' + (t.u ? 'Gói Đồng hành đã hết hạn ngày ' + f(t.u) + '. ' : (ymd() > PROMO_END ? 'Ưu đãi Sinh thần Founder đã kết thúc ngày 30/11/2026. ' : '')) + 'Thẻ nhắc và tài liệu vẫn dùng bình thường. Nhập mã của chuyên gia để mở bản Đồng hành.</p>';
+    var plans = (store.offerCache && store.offerCache.plans) || [];
+    return '<section class="card upg" id="upg"><h2>Nâng cấp</h2>' + head +
+      '<div class="tiers"><div><b>Cơ bản</b><span class="small muted">miễn phí, dùng mãi</span><ul>' + FREE.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>' +
+      '<div class="on"><b>Đồng hành</b><span class="small muted">theo gói</span><ul><li>Mọi thứ của bản Cơ bản</li>' + PAID.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div></div>' +
+      (plans.length ? '<h3 style="margin:14px 0 6px">Các gói Đồng hành</h3><ul class="plans">' + plans.map(function (q) { return '<li><b>' + esc(q.name) + '</b> <span class="pprice">' + (q.price ? esc(q.price) : 'nhắn chuyên gia để biết phí') + '</span>' + (q.note ? '<br><span class="small muted">' + esc(q.note) + '</span>' : '') + '</li>'; }).join('') + '</ul>' : '') +
+      '<p class="small" style="margin:12px 0 6px"><b>Cách mở:</b> chọn gói và thanh toán theo hướng dẫn, chuyên gia gửi bạn mã kích hoạt qua Zalo hoặc email. Dán mã vào ô dưới. Mã cũng có sẵn trong file hồ sơ mới chuyên gia gửi, nhập file là tự mở.</p>' +
+      '<label class="small" for="licCode"><b>Mã kích hoạt</b></label><textarea id="licCode" rows="3" autocomplete="off" spellcheck="false" placeholder="TT-…"></textarea>' +
+      '<div class="row" style="margin-top:8px;gap:8px;align-items:center"><button class="btn" type="button" id="licGo">Kích hoạt</button><span class="small" id="licMsg" aria-live="polite"></span></div>' +
+      '<div class="row" style="margin-top:12px;gap:8px"><a class="btn gold" href="' + EXPERT.zalo + '" target="_blank" rel="noopener">Nhắn Zalo hỏi gói</a><a class="btn ghost" href="' + LEGAL.pay + '" target="_blank" rel="noopener">Hướng dẫn thanh toán</a></div>' +
+      '<p class="small muted" style="margin:10px 0 0">Gói đã mua không làm mất dữ liệu: hồ sơ, tiến độ, Châu Lộc và châu ngọc vẫn nằm trên máy bạn. Hết hạn thì app còn mở đủ thêm ' + GRACE_DAYS + ' ngày rồi mới về bản Cơ bản.</p></section>';
   }
+  function bindUpgrade(p) {
+    var b = $('#licGo'); if (!b) return;
+    b.addEventListener('click', function () {
+      var msg = $('#licMsg'), code = $('#licCode').value; msg.textContent = 'Đang kiểm tra…';
+      applyCode(p, code).then(function (pl) { flash('Đã mở bản Đồng hành đến hết ' + parseYmd(pl.u).toLocaleDateString('vi-VN') + '.'); keepScroll = true; render(); var m2 = $('#licMsg'); if (m2) m2.textContent = 'Đã kích hoạt ✓'; }, function (e) { msg.textContent = e.message; });
+    });
+  }
+  // ---------- gói Đồng hành: mã kích hoạt do chuyên gia ký (ECDSA P-256), app chỉ giữ khoá công khai để kiểm tra, chạy cả khi không có mạng ----------
+  var LIC_PUB = {"kty":"EC","x":"lz9PJpw4OsGT7uC4CN_bNfqCFD6vSn6DXFPNEComR_k","y":"q4mOaiMWGZJn6528v5rko_grw9YVxFSVba-cXMi1V8Y","crv":"P-256"};
+  var GRACE_DAYS = 7, LICOK = {}, licKey = null;
+  var PAID = ['Tiến độ cả giai đoạn, lịch giữ nhịp, bảng gửi chuyên gia', 'Lá bài thức tỉnh mỗi sáng và vườn thẻ 22 lá', 'Châu Lộc và 4 châu ngọc', 'Số đo và ảnh chụp cân, thiết bị đeo mỗi ngày', 'Giờ game-học cùng gia đình'];
+  var FREE = ['Thẻ nhắc hôm nay và thông báo đúng giờ', 'Nhắc bằng Lịch của điện thoại', 'Chấm cảm nhận mỗi ngày', 'Tài liệu giao thức, sao lưu, liên hệ chuyên gia'];
+  function b64u(s) { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; var b = atob(s), a = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
+  function verifyCode(code) {
+    var m = String(code || '').trim().replace(/\s+/g, '').match(/^TT-([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)$/);
+    if (!m) return Promise.reject(new Error('Mã không đúng dạng. Mã bắt đầu bằng TT- và có một dấu chấm ở giữa.'));
+    if (!(window.crypto && crypto.subtle)) return Promise.reject(new Error('Trình duyệt này không kiểm tra được mã. Hãy mở app bằng Safari hoặc Chrome.'));
+    var body = m[1], sig = b64u(m[2]);
+    return (licKey || (licKey = crypto.subtle.importKey('jwk', LIC_PUB, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']))).then(function (k) {
+      return crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, k, sig, new TextEncoder().encode(body));
+    }).then(function (ok) {
+      if (!ok) throw new Error('Mã không hợp lệ. Hãy sao chép lại nguyên mã chuyên gia gửi.');
+      var pl = JSON.parse(new TextDecoder().decode(b64u(body)));
+      if (!pl.u || !/^\d{4}-\d{2}-\d{2}$/.test(pl.u)) throw new Error('Mã không hợp lệ.');
+      return pl;
+    });
+  }
+  function planName(id) { var l = (store.offerCache && store.offerCache.plans) || []; var x = l.filter(function (q) { return q.id === id; })[0]; return x ? x.name : 'Gói Đồng hành'; }
+  function applyCode(p, code) {
+    return verifyCode(code).then(function (pl) {
+      if (pl.i && pl.i !== '*' && pl.i !== p.id) throw new Error('Mã này dành cho hồ sơ khác. Hãy nhắn chuyên gia để nhận đúng mã của bạn.');
+      var curU = (LICOK[p.id] || {}).u || '';
+      if (curU > pl.u) throw new Error('Bạn đang có gói dùng đến ' + parseYmd(curU).toLocaleDateString('vi-VN') + ', dài hơn mã này.');
+      store.lic[p.id] = { code: String(code).trim().replace(/\s+/g, ''), at: new Date().toISOString() }; LICOK[p.id] = pl; save(); return pl;
+    });
+  }
+  function checkLicenses() {
+    return Promise.all(Object.keys(store.lic).map(function (pid) {
+      var l = store.lic[pid]; return verifyCode(l && l.code).then(function (pl) { if (!pl.i || pl.i === '*' || pl.i === pid) LICOK[pid] = pl; else delete LICOK[pid]; }, function () { delete LICOK[pid]; });
+    }));
+  }
+  function tier(p) {
+    var t = ymd(), l = LICOK[p.id];
+    if (l && l.u >= t) return { k: 'paid', u: l.u, g: l.g };
+    if (t <= PROMO_END) return { k: 'promo', u: PROMO_END };
+    if (l && ymd(new Date(parseYmd(l.u).getTime() + GRACE_DAYS * 864e5)) >= t) return { k: 'grace', u: l.u, g: l.g };
+    return { k: 'basic', u: l ? l.u : '' };
+  }
+  function full(p) { return tier(p).k !== 'basic'; }
+  function daysTo(u) { return Math.round((parseYmd(u) - parseYmd(ymd())) / 864e5); }
+  function lockCard(where) {
+    return '<section class="card lockc"><span class="upgbadge">Bản Đồng hành</span><p class="big" style="margin:8px 0 4px">' + (where === 'stats' ? 'Tiến độ cả giai đoạn nằm trong bản Đồng hành' : 'Mở thêm lá bài, Châu Lộc, châu ngọc và số đo mỗi ngày') + '</p>' +
+      '<p class="small" style="margin:0">Thẻ nhắc, thông báo và tài liệu của bạn vẫn dùng bình thường. Mọi việc bạn đánh dấu vẫn được ghi lại: khi mở bản Đồng hành, tiến độ, Châu Lộc và châu ngọc hiện đủ từ ngày đầu.</p>' +
+      '<div class="row" style="margin-top:10px;gap:8px"><button class="btn gold" type="button" data-goupg>Xem gói và nhập mã</button></div></section>';
+  }
+  function bindLock() { $$('[data-goupg]').forEach(function (b) { b.addEventListener('click', function () { view = 'me'; render(); var e = $('#upg'); e && e.scrollIntoView({ block: 'start' }); }); }); }
   function legalHtml() {
     var row = function (k, v) { return '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>'; };
     return '<section class="card legal"><h2>Thông tin pháp nhân</h2><p class="small" style="margin:4px 0 0"><b>Vườn Game-học Vietwise</b> · <i>Gia đình vui Game-học – Châu ngọc hóa phúc lộc!</i></p><dl>' +
@@ -1141,6 +1210,7 @@ details.grp>summary::-webkit-details-marker{display:none}
       (os.seen >= 22 ? '<p class="small" style="margin:10px 0 0">Bạn đã gặp đủ 22 lá. Vườn Game-học Vietwise còn nhiều khu vườn khác cho cả nhà. <a href="' + GARDEN_URL + '" target="_blank" rel="noopener">Ghé xem</a></p>' : '') + '</section>';
   }
   function renderStats(p, m) {
+    if (!full(p)) { m.innerHTML = lockCard('stats') + '<section class="card"><h2>Bản Đồng hành có gì</h2><ul style="padding-left:18px;margin:8px 0 0">' + PAID.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></section>'; bindLock(); return; }
     var st = stats(p), v = verdict(st), f = function (k) { return parseYmd(k).toLocaleDateString('vi-VN'); };
     var q = pickQuote(v[2], st.days + st.done);
     var hist = (p.history || []);
@@ -1249,7 +1319,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   }
   function saveBackup(after, msgEl) {
     var name = 'sao-luu-truong-tho-' + ymd() + '.json';
-    var txt = JSON.stringify({ app: BACKUP_APP, v: 1, savedAt: new Date().toISOString(), data: { profiles: store.profiles, done: store.done, skip: store.skip, feel: store.feel, light: store.light, review: store.review, icsOff: store.icsOff, oracle: store.oracle, why: store.why, breath: store.breath, fam: store.fam, adapt: store.adapt, active: store.active } });
+    var txt = JSON.stringify({ app: BACKUP_APP, v: 1, savedAt: new Date().toISOString(), data: { profiles: store.profiles, done: store.done, skip: store.skip, feel: store.feel, light: store.light, review: store.review, icsOff: store.icsOff, oracle: store.oracle, why: store.why, breath: store.breath, fam: store.fam, adapt: store.adapt, lic: store.lic, active: store.active } });
     var ok = function () { store.lastBackup = new Date().toISOString(); save(); if (msgEl) msgEl.textContent = 'Đã tạo bản sao ' + name + '. Cất vào Tệp, Drive hoặc Zalo của chính bạn.'; if (after) after(); };
     var file = null; try { file = new File([txt], name, { type: 'application/json' }); } catch (e) {}
     if (file && navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: 'Sao lưu Trường Thọ' }).then(ok).catch(function () {}); return; }
@@ -1259,7 +1329,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   function renderMe(p, m) {
     var others = Object.keys(store.profiles).filter(function (id) { return id !== p.id; });
     m.innerHTML = '<section class="card"><h1>' + esc(p.name) + '</h1><p class="small muted" style="margin:4px 0 0">' + esc(p.title) + '</p>' + (p.goal ? '<p style="margin:10px 0 0"><b>Mục tiêu:</b> ' + esc(p.goal) + '</p>' : '') +
-      '<p class="small muted" style="margin:10px 0 0">Chuyên gia gửi ngày ' + (p.exportedAt ? new Date(p.exportedAt).toLocaleDateString('vi-VN') : '—') + ' · nhập vào máy ngày ' + new Date(p.importedAt).toLocaleDateString('vi-VN') + '</p></section>' + upgradeHtml() +
+      '<p class="small muted" style="margin:10px 0 0">Chuyên gia gửi ngày ' + (p.exportedAt ? new Date(p.exportedAt).toLocaleDateString('vi-VN') : '—') + ' · nhập vào máy ngày ' + new Date(p.importedAt).toLocaleDateString('vi-VN') + '</p></section>' + upgradeHtml(p) +
       '<section class="card"><h2>Cập nhật hồ sơ</h2><p class="small" style="margin:6px 0 10px">Sau mỗi lần tư vấn, chuyên gia gửi file mới. Nhập file mới sẽ thay bản cũ, giữ nguyên các việc bạn đã đánh dấu xong và cảm nhận đã ghi.</p><button class="btn" id="pick" type="button">Nhập hồ sơ từ chuyên gia</button><p class="status" id="status" aria-live="polite">' + esc(flashMsg) + '</p></section>' +
       (others.length ? '<section class="card"><h2>Hồ sơ khác trên máy</h2><div class="row" style="margin-top:8px">' + others.map(function (id) { return '<button class="btn ghost" type="button" data-sw="' + esc(id) + '">' + esc(store.profiles[id].name) + '</button>'; }).join('') + '</div></section>' : '') +
       '<section class="card"><h2>Sao lưu và chuyển máy</h2><p class="small" style="margin:6px 0 10px">Hồ sơ và tiến độ chỉ nằm trên điện thoại này. Lưu một bản sao vào Tệp, Drive hoặc Zalo của chính bạn. Sang máy mới: mở app, bấm <b>Nhập hồ sơ từ chuyên gia</b>, chọn file sao lưu.</p><div class="row"><button class="btn gold" id="bk" type="button">Lưu bản sao</button></div><p class="small muted" style="margin:8px 0 0" id="bkMsg">' + (store.lastBackup ? 'Lần sao lưu gần nhất: ' + new Date(store.lastBackup).toLocaleDateString('vi-VN') + '.' : 'Chưa sao lưu lần nào.') + '</p></section>' + famSettingsHtml(p) +
@@ -1267,11 +1337,11 @@ details.grp>summary::-webkit-details-marker{display:none}
       '<section class="card"><h2>Liên hệ chuyên gia</h2><p class="small" style="margin:6px 0 10px">' + EXPERT.name + '</p><div class="row" style="margin-bottom:10px"><a class="btn" href="' + EXPERT.zalo + '" target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center">Nhắn Zalo cho chuyên gia</a></div><div class="row"><code style="font-size:16px;font-weight:700;color:var(--purple);user-select:all">' + EXPERT.email + '</code><button class="btn ghost" id="cp" type="button">Sao chép email</button></div></section>' +
       '<section class="card"><h2>Xoá hồ sơ khỏi máy</h2><p class="small" style="margin:6px 0 10px">Xoá hồ sơ và các dấu đã làm xong trên điện thoại này.</p><div class="row"><button class="btn ghost" id="del" type="button">Xoá hồ sơ này</button><button class="btn" id="delYes" type="button" hidden>Xoá vĩnh viễn</button></div></section>' + legalHtml();
     $('#pick').addEventListener('click', function () { $('#file').click(); });
-    $('#bk').addEventListener('click', function () { saveBackup(null, $('#bkMsg')); }); bindFamSettings(p, function () { keepScroll = true; render(); });
+    $('#bk').addEventListener('click', function () { saveBackup(null, $('#bkMsg')); }); bindFamSettings(p, function () { keepScroll = true; render(); }); bindUpgrade(p);
     $$('button[data-sw]', m).forEach(function (b) { b.addEventListener('click', function () { store.active = b.dataset.sw; save(); view = 'today'; render(); }); });
     $('#cp').addEventListener('click', function (e) { var b = e.currentTarget; try { navigator.clipboard.writeText(EXPERT.email).then(function () { b.textContent = 'Đã sao chép'; }, function () { b.textContent = 'Bôi đen để sao chép'; }); } catch (x) { b.textContent = 'Bôi đen để sao chép'; } });
     $('#del').addEventListener('click', function () { $('#delYes').hidden = false; $('#del').textContent = 'Huỷ'; $('#del').onclick = function () { renderMe(p, m); }; });
-    $('#delYes').addEventListener('click', function () { delete store.profiles[p.id]; ['done', 'skip', 'feel', 'light', 'review', 'snooze', 'icsOff', 'oracle', 'why', 'breath', 'fam', 'adapt'].forEach(function (k) { delete store[k][p.id]; }); photosClear(p.id); store.active = Object.keys(store.profiles)[0] || null; save(); view = 'today'; render(); });
+    $('#delYes').addEventListener('click', function () { delete store.profiles[p.id]; ['done', 'skip', 'feel', 'light', 'review', 'snooze', 'icsOff', 'oracle', 'why', 'breath', 'fam', 'adapt', 'lic'].forEach(function (k) { delete store[k][p.id]; }); photosClear(p.id); store.active = Object.keys(store.profiles)[0] || null; save(); view = 'today'; render(); });
   }
   var FOOT_LINKS = [
     { t: 'Liên hệ chuyên gia qua Zalo', u: 'https://zalo.me/0977206471', z: 1 },
@@ -1302,6 +1372,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   load();
   (function fromUrl2() { try { var u = new URL(location.href), a = u.searchParams.get('act'); if (a) { act(u.searchParams.get('pid'), u.searchParams.get('day'), u.searchParams.get('rid'), a); history.replaceState(null, '', location.pathname); } } catch (e) {} })();
   render(); setTimeout(tick, 1500);
+  checkLicenses().then(function () { if (cur()) { keepScroll = true; render(); } });
   if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); }); }
   loadOffers(); window.addEventListener('online', loadOffers);
 })();

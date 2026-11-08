@@ -112,5 +112,29 @@
       "short": "Rút bài cùng người thân trên máy tính hoặc gửi link cho bạn bè."
     }
   ],
-  "zalo": "https://zalo.me/0977206471"
+  "zalo": "https://zalo.me/0977206471",
+  "_huong_dan_goi": "Các gói Đồng hành hiện ở tab Quản lý → Nâng cấp. 'price' để trống thì app ghi 'nhắn chuyên gia để biết phí'. Mã của gói 'id' phải trùng với gói chọn trong app chuyên gia khi tạo mã kích hoạt.",
+  "plans": [
+    {
+      "id": "dh3",
+      "name": "Đồng hành 3 tháng",
+      "months": 3,
+      "price": "",
+      "note": "Trọn một giai đoạn giao thức, khoảng 12 tuần."
+    },
+    {
+      "id": "dh6",
+      "name": "Đồng hành 6 tháng",
+      "months": 6,
+      "price": "",
+      "note": "Hai giai đoạn, có lần xem lại tiến độ và chỉnh giao thức ở giữa."
+    },
+    {
+      "id": "dh12",
+      "name": "Đồng hành 12 tháng",
+      "months": 12,
+      "price": "",
+      "note": "Cả năm thuận gene, theo nhịp bốn mùa."
+    }
+  ]
 }
