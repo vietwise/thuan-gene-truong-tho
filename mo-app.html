@@ -14,6 +14,7 @@
 <style>
 :root{--bg:#8a459a;--bg2:#ca41bc;--card:#fffdf8;--ink:#2b2030;--muted:#6c5f6f;--yellow:#f5c70f;--line:#e6dccd;--display:"Lora",Georgia,serif;--body:"Be Vietnam Pro","Segoe UI",Arial,sans-serif;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html,body{min-height:100%}
 body{margin:0;background:linear-gradient(160deg,var(--bg),var(--bg2));color:#fff;font-family:var(--body);font-size:16px;line-height:1.55}
 .wrap{max-width:520px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px;display:grid;gap:20px;justify-items:center;text-align:center}
@@ -31,7 +32,8 @@ h1{font-family:var(--display);font-size:30px;line-height:1.2;margin:0}
 .mini{font-size:13px;color:var(--muted);margin:0}
 .err{color:#b3261e;font-size:14px;min-height:1.2em;margin:0}
 .k{font-weight:700;color:#ca41bc}
-.status{font-size:15px;margin:0;min-height:1.4em}
+.status{font-size:15px;margin:0;min-height:0}
+.warn{margin:0;background:#fdecea;color:#8c1d18;border-left:4px solid #b3261e;border-radius:10px;padding:10px 12px;font-size:14.5px}
 </style>
 </head>
 <body>
@@ -41,16 +43,27 @@ h1{font-family:var(--display);font-size:30px;line-height:1.2;margin:0}
   <p class="by">App tạo bởi Chuyên gia Nhất Phương Hồng và Trợ lý Ai</p>
 
   <section id="open" hidden style="display:grid;gap:14px;justify-items:center;width:100%">
-    <a class="btn" id="go" href="#">Mở App Trường Thọ</a>
     <p class="status" id="status" aria-live="polite"></p>
     <div class="card" id="pin">
-      <h2>Đặt ra màn hình chính, đúng logo</h2>
-      <ol>
-        <li><b>iPhone:</b> trang này phải mở trong <b>Safari</b> (không mở trong app Claude hay Zalo). <b>Chưa bấm nút Mở App</b>, chạm ngay <span class="k">Chia sẻ</span> → <span class="k">Thêm vào MH chính</span>. Kiểm tra tên là "Thuận Gene Trường Thọ NPH" và hình là logo tím, <b>tắt "Open as Web App"</b>, rồi bấm <b>Thêm</b>.</li>
-        <li><b>Android:</b> mở bằng Chrome, <b>chưa bấm nút Mở App</b>, chạm <span class="k">⋮</span> → <span class="k">Thêm vào màn hình chính</span> → <b>Thêm</b>.</li>
+      <h2>Bước 1: Thêm biểu tượng ra màn hình chính</h2>
+      <p class="warn" id="inapp" hidden>Bạn đang mở trang này trong một app khác (Zalo, Facebook, Claude…). Chạm <span class="k">⋯</span> hoặc <span class="k">⋮</span> rồi chọn <b>Mở bằng Safari</b> (Android: <b>Mở bằng Chrome</b>), sau đó làm các bước dưới.</p>
+      <ol id="stepsIos">
+        <li>Ngay tại trang này, chạm nút <span class="k">Chia sẻ</span> (ô vuông có mũi tên lên) ở thanh dưới của Safari.</li>
+        <li>Chọn <span class="k">Thêm vào MH chính</span> (Add to Home Screen).</li>
+        <li>Kiểm tra: hình là <b>logo tím này</b>, tên "Thuận Gene Trường Thọ NPH", địa chỉ <b>vietwise.github.io</b>. <b>Tắt "Open as Web App"</b>.</li>
+        <li>Bấm <b>Thêm</b> (Add).</li>
       </ol>
-      <p class="mini">Thêm <b>chính trang tím này</b> (địa chỉ vietwise.github.io) ra màn hình chính, trước khi bấm Mở App. Sau đó chạm biểu tượng là vào thẳng app. Lần đầu Claude hỏi đăng nhập một lần trong Safari hoặc Chrome.</p>
+      <ol id="stepsAndroid" hidden>
+        <li>Ngay tại trang này, chạm <span class="k">⋮</span> ở góc trên của Chrome.</li>
+        <li>Chọn <span class="k">Thêm vào màn hình chính</span> rồi bấm <b>Thêm</b>.</li>
+      </ol>
+      <p class="mini">Logo chỉ được lấy từ chính trang tím này, nên phải thêm ở đây. Thêm xong, chạm biểu tượng là vào thẳng app.</p>
     </div>
+    <div class="card">
+      <h2>Bước 2: Mở app</h2>
+      <p style="margin:0">Chạm biểu tượng vừa thêm trên màn hình chính. Lần đầu Safari có thể hỏi đăng nhập Claude một lần.</p>
+    </div>
+    <a class="btn ghost" id="go" href="#">Chỉ mở app lần này (không thêm biểu tượng)</a>
   </section>
 
   <section id="setup" hidden style="width:100%">
@@ -89,6 +102,9 @@ h1{font-family:var(--display);font-size:30px;line-height:1.2;margin:0}
     // the icon saves this address, so mark it: next time the icon opens the app directly
     if (!fromIcon) { try { history.replaceState(null, '', location.pathname + '?mo=1' + location.hash); } catch (e) {} }
     open.hidden = false;
+    var ua = navigator.userAgent || '';
+    if (/Zalo|FBAN|FBAV|Instagram|Line\/|Messenger|Claude/i.test(ua)) document.getElementById('inapp').hidden = false;
+    if (/Android/i.test(ua)) { document.getElementById('stepsIos').hidden = true; document.getElementById('stepsAndroid').hidden = false; }
   }
   document.getElementById('form').addEventListener('submit', function (e) {
     e.preventDefault();
