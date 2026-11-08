@@ -84,6 +84,9 @@ h1{font-family:var(--display);font-size:30px;line-height:1.2;margin:0}
   var ID_RE = /^[A-Za-z0-9_-]{8,64}$/;
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
   var id = decodeURIComponent((location.hash || '').slice(1));
+  // bản app riêng của Chuyên gia Nhất Phương Hồng dùng logo vàng: chuyển sang trang có bộ biểu tượng vàng
+  var GOLD = ['7os2c9eQ6QF4oXtTduAFyL'];
+  if (GOLD.indexOf(id) >= 0) { location.replace('nph/mo-app.html' + location.search + location.hash); return; }
   var open = document.getElementById('open'), setup = document.getElementById('setup');
   function showSetup() { open.hidden = true; setup.hidden = false; }
   if (!ID_RE.test(id)) { showSetup(); }
