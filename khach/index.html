@@ -238,6 +238,7 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
 .mcl{display:flex;align-items:center;justify-content:center;gap:10px;margin:12px 0 4px}.mcl span{letter-spacing:.1em;text-transform:uppercase;font-weight:700;font-size:13px;opacity:.85}.mcl b{font-size:30px;color:#f5c70f}
 .mhow{text-align:left;background:rgba(71,110,112,.45);border-radius:12px;padding:8px 12px;margin:8px 0}.mhow summary{cursor:pointer;font-weight:700}
 .mhow table{width:100%;border-collapse:collapse;margin-top:6px;font-size:13.5px}.mhow td{padding:4px 2px;border-top:1px solid rgba(245,241,232,.25)}.mhow td+td{text-align:right;white-space:nowrap;padding-left:8px}.mhow p{font-size:12.5px;margin:8px 0 0;opacity:.9}
+.mgive{margin:0 0 10px;font-size:14px}.gform{display:grid;gap:4px;text-align:left;background:rgba(71,110,112,.45);border-radius:12px;padding:12px;margin:4px 0 10px}.gform input,.gform select{width:100%;font:inherit;font-size:16px;color:#2b2030}.gcard{margin:6px 0 10px}.gcard img{width:100%;max-width:360px;border-radius:12px;box-shadow:0 8px 22px rgba(0,0,0,.25);display:block;margin:0 auto}
 .mnote{font-size:12.5px;margin:10px 0 0;opacity:.92}.mine a{color:#f5c70f}
 .fam{border-left:5px solid var(--purple)}.fam.done{opacity:.8}.famrow{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;margin-top:6px}.famrow time{font-weight:800;color:var(--purple)}
 .gem.gbig{width:96px;height:auto;margin:6px auto}
@@ -330,7 +331,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   // ---------- storage (this phone only) ----------
   var store = { profiles: {}, done: {}, skip: {}, active: null, notify: null, shown: {}, snooze: {}, light: {}, feel: {}, review: {}, lastBackup: null };
   var memOnly = false;
-  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.profiles) store = s; } catch (e) { memOnly = true; } ['skip', 'shown', 'snooze', 'light', 'feel', 'review', 'icsOff', 'offerSeen', 'oracle', 'why', 'breath', 'fam', 'adapt', 'lic', 'icsEdit'].forEach(function (k) { store[k] = store[k] || {}; }); }
+  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.profiles) store = s; } catch (e) { memOnly = true; } ['skip', 'shown', 'snooze', 'light', 'feel', 'review', 'icsOff', 'offerSeen', 'oracle', 'why', 'breath', 'fam', 'adapt', 'lic', 'icsEdit', 'give'].forEach(function (k) { store[k] = store[k] || {}; }); }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) { memOnly = true; } }
 
   // ---------- import ----------
@@ -379,6 +380,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     if (!ids.length) throw new Error('File sao lưu không có hồ sơ nào.');
     ids.forEach(function (id) { var a = store.profiles[id], b = d.profiles[id]; if (!a || String(b.exportedAt || '') >= String(a.exportedAt || '')) store.profiles[id] = b; });
     ['done', 'skip', 'feel', 'light', 'review', 'icsOff', 'oracle', 'why', 'breath', 'fam', 'adapt', 'lic', 'icsEdit'].forEach(function (k) { mergeInto(store[k], d[k]); });
+    Object.keys(d.give || {}).forEach(function (pid) { var a = store.give[pid] || [], b = d.give[pid] || []; store.give[pid] = b.length > a.length ? b : a; });
     store.active = d.active && store.profiles[d.active] ? d.active : ids[0];
     save(); lastImport = 'restore'; return store.profiles[store.active];
   }
@@ -999,7 +1001,93 @@ details.grp>summary::-webkit-details-marker{display:none}
       if (list.length && !isLight(p, k) && !isT) prevMiss = !kept;
       d.setDate(d.getDate() + 1);
     }
+    g.earned = g.cl; g.given = gifts(p).reduce(function (a, x) { return a + (x.n || 0); }, 0); g.cl = Math.max(0, g.earned - g.given);
     return g;
+  }
+  // ---------- Thẻ hảo tâm: tặng Châu Lộc tượng trưng cho quỹ từ thiện, tạo ảnh để khách tự chia sẻ lên mạng xã hội ----------
+  var FUNDS_DEFAULT = [{ id: 'thuong-tre-tho', name: 'Quỹ Thương Trẻ Thơ' }, { id: 'robi-smile', name: 'Quỹ Robi Smile' }];
+  var giveOpen = false, giveCard = null;
+  function funds() { var f = store.offerCache && store.offerCache.funds; return Array.isArray(f) && f.length ? f : FUNDS_DEFAULT; }
+  function fundName(id) { var f = funds().filter(function (x) { return x.id === id; })[0]; return f ? f.name : id; }
+  function gifts(p) { var l = (store.give[p.id] = store.give[p.id] || []); return l; }
+  function giveHtml(p, g) {
+    var l = gifts(p), byF = {};
+    l.forEach(function (x) { byF[x.f] = (byF[x.f] || 0) + x.n; });
+    var past = Object.keys(byF).length ? '<p class="mgive">Bạn đã tặng tượng trưng: ' + Object.keys(byF).map(function (k) { return '<b>' + byF[k].toLocaleString('vi-VN') + ' CL</b> cho ' + esc(fundName(k)); }).join(' · ') + '</p>' : '';
+    if (giveCard) return past + '<div class="gcard"><img src="' + giveCard.url + '" alt="Thẻ hảo tâm: ' + esc(giveCard.alt) + '"><div class="row" style="justify-content:center;gap:8px;margin-top:10px"><button class="btn gold" type="button" id="gShare">Chia sẻ thẻ</button><button class="btn ghost" type="button" id="gSave" style="background:#f5f1e8">Tải ảnh</button><button class="linkbtn" type="button" id="gClose" style="color:#f5f1e8">Đóng</button></div><p class="small" style="margin:8px 0 0;opacity:.9">Bạn tự chọn đăng lên Facebook, Zalo hay Instagram. App không tự đăng gì.</p></div>';
+    if (!giveOpen) return past + '<button class="btn gold" type="button" id="gOpen"' + (g.cl >= 10 ? '' : ' disabled') + '>Tặng tượng trưng · tạo Thẻ hảo tâm</button>' + (g.cl < 10 ? '<p class="small" style="margin:6px 0 0">Có từ 10 CL là tặng được.</p>' : '') + (l.length ? ' <button class="linkbtn" type="button" id="gAgain" style="color:#f5c70f">Tạo lại thẻ lần tặng gần nhất</button>' : '');
+    var nm = p.alias || p.name || '';
+    return past + '<div class="gform"><label class="small" for="gF"><b>Tặng cho quỹ</b></label><select id="gF">' + funds().map(function (f) { return '<option value="' + esc(f.id) + '">' + esc(f.name) + '</option>'; }).join('') + '</select>' +
+      '<label class="small" for="gN"><b>Số Châu Lộc tặng</b> (bạn đang có ' + g.cl.toLocaleString('vi-VN') + ')</label><input id="gN" type="number" inputmode="numeric" min="10" max="' + g.cl + '" step="1" value="' + Math.min(g.cl, 100) + '">' +
+      '<label class="small" for="gW"><b>Tên hiện trên thẻ</b> (để trống thì ghi "Một người bạn")</label><input id="gW" maxlength="40" value="' + esc(nm) + '">' +
+      '<p class="small" style="margin:4px 0 0;opacity:.9">Thẻ chỉ có tên, số Châu Lộc và châu ngọc của bạn, không có thông tin sức khoẻ hay gene.</p>' +
+      '<div class="row" style="gap:8px;margin-top:8px"><button class="btn gold" type="button" id="gGo">Tặng và tạo thẻ</button><button class="linkbtn" type="button" id="gCancel" style="color:#f5f1e8">Huỷ</button></div><p class="small" id="gMsg" aria-live="polite"></p></div>';
+  }
+  function cardImage(o) {
+    // 1080×1350 (khổ dọc cho Facebook, Instagram), chỉ dùng 6 màu nhân hiệu NPH
+    return new Promise(function (res) {
+      var c = document.createElement('canvas'); c.width = 1080; c.height = 1350; var x = c.getContext('2d');
+      var serif = 'Georgia, "Times New Roman", serif', sans = '-apple-system, "Segoe UI", Roboto, Arial, sans-serif';
+      x.fillStyle = '#f5f1e8'; x.fillRect(0, 0, 1080, 1350);
+      x.fillStyle = '#8a459a'; x.fillRect(0, 0, 1080, 300);
+      x.fillStyle = '#ca41bc'; x.fillRect(0, 300, 1080, 10);
+      var wrap = function (t, max) { var w = String(t).split(' '), lines = [], cur = ''; w.forEach(function (s) { var tt = cur ? cur + ' ' + s : s; if (x.measureText(tt).width > max && cur) { lines.push(cur); cur = s; } else cur = tt; }); if (cur) lines.push(cur); return lines; };
+      var draw = function (logo) {
+        if (logo) { x.save(); x.beginPath(); x.arc(160, 150, 92, 0, Math.PI * 2); x.closePath(); x.fillStyle = '#f5c70f'; x.fill(); x.beginPath(); x.arc(160, 150, 86, 0, Math.PI * 2); x.clip(); x.drawImage(logo, 74, 64, 172, 172); x.restore(); }
+        x.textAlign = 'left'; x.fillStyle = '#f5c70f'; x.font = '700 76px ' + serif; x.fillText('THẺ HẢO TÂM', 290, 140);
+        x.fillStyle = '#f5f1e8'; x.font = '500 34px ' + sans; x.fillText('Thuận Gene Trường Thọ NPH', 292, 200);
+        x.textAlign = 'center'; x.fillStyle = '#476e70'; x.font = '600 44px ' + sans; x.fillText(o.who, 540, 420);
+        x.font = '400 36px ' + sans; x.fillText('đã tặng tượng trưng', 540, 480);
+        x.fillStyle = '#ca41bc'; x.font = '700 150px ' + serif; x.fillText(o.n.toLocaleString('vi-VN'), 540, 650);
+        x.fillStyle = '#8a459a'; x.font = '700 52px ' + sans; x.fillText('CHÂU LỘC', 540, 730);
+        x.fillStyle = '#476e70'; x.font = '400 36px ' + sans; x.fillText('cho', 540, 800);
+        x.fillStyle = '#8a459a'; x.font = '700 58px ' + serif; wrap(o.fund, 900).forEach(function (l, i) { x.fillText(l, 540, 876 + i * 66); });
+        // 4 châu ngọc
+        var gx = [210, 430, 650, 870];
+        GEMS.forEach(function (gm, i) {
+          var on = o.gems[gm[0]] > 0, cx = gx[i], cy = 1010, s = 1.5;
+          var P = function (pts, col, op) { x.beginPath(); pts.forEach(function (q, j) { var px = cx + (q[0] - 32) * s, py = cy + (q[1] - 26) * s; if (j) x.lineTo(px, py); else x.moveTo(px, py); }); x.closePath(); x.globalAlpha = op; x.fillStyle = col; x.fill(); x.globalAlpha = 1; if (on) { x.strokeStyle = '#8a459a'; x.lineWidth = 2; x.stroke(); } };
+          var c1 = on ? ['#f5c70f', '#f5c70f', '#ecc459', '#ecc459', '#ecc459', '#f5c70f'] : ['#8a459a', '#8a459a', '#8a459a', '#8a459a', '#8a459a', '#8a459a'], op = on ? [1, 1, 1, 1, .85, 1] : [.35, .25, .15, .2, .3, .12];
+          P([[14, 2], [50, 2], [40, 18], [24, 18]], c1[0], op[0]); P([[14, 2], [24, 18], [2, 18]], c1[4], op[4]); P([[50, 2], [62, 18], [40, 18]], c1[2], op[2]);
+          P([[2, 18], [24, 18], [32, 50]], c1[1], op[1]); P([[24, 18], [40, 18], [32, 50]], c1[3], op[3]); P([[40, 18], [62, 18], [32, 50]], c1[5], op[5]);
+          x.fillStyle = on ? '#8a459a' : 'rgba(138,69,154,.55)'; x.font = '600 30px ' + sans; x.fillText(gm[1], cx, cy + 80);
+        });
+        x.fillStyle = '#476e70'; x.font = 'italic 32px ' + serif; wrap('Từ những ngày sống thuận gene, giữ nhịp cho chính mình.', 900).forEach(function (l, i) { x.fillText(l, 540, 1166 + i * 42); });
+        x.fillStyle = '#476e70'; x.fillRect(0, 1250, 1080, 100);
+        x.fillStyle = '#f5f1e8'; x.font = '400 24px ' + sans; x.fillText('Châu Lộc là điểm trong game, như tiền chơi Monopoly, không đổi thành tiền thật.', 540, 1290);
+        x.fillStyle = '#ecc459'; x.font = '600 26px ' + sans; x.fillText(o.date + ' · vietwise.edu.vn', 540, 1328);
+        c.toBlob(function (b) { res(b); }, 'image/png');
+      };
+      var im = new Image(); im.onload = function () { draw(im); }; im.onerror = function () { draw(null); }; im.src = 'icon-512.png';
+    });
+  }
+  function makeCard(p, gift, again) {
+    var g = gems(p), who = gift.w || 'Một người bạn';
+    cardImage({ who: who, n: gift.n, fund: fundName(gift.f), gems: g.n, date: parseYmd(gift.d).toLocaleDateString('vi-VN') }).then(function (b) {
+      if (giveCard) URL.revokeObjectURL(giveCard.url);
+      giveCard = { url: URL.createObjectURL(b), blob: b, alt: who + ' tặng ' + gift.n + ' Châu Lộc cho ' + fundName(gift.f) };
+      again();
+    });
+  }
+  function bindGive(p, again) {
+    var o = $('#gOpen'); if (o) o.addEventListener('click', function () { giveOpen = true; again(); });
+    var ca = $('#gCancel'); if (ca) ca.addEventListener('click', function () { giveOpen = false; again(); });
+    var ag = $('#gAgain'); if (ag) ag.addEventListener('click', function () { var l = gifts(p); makeCard(p, l[l.length - 1], again); });
+    var go = $('#gGo'); if (go) go.addEventListener('click', function () {
+      var g = gems(p), n = Math.floor(Number($('#gN').value)), msg = $('#gMsg');
+      if (!(n >= 10)) { msg.textContent = 'Tặng từ 10 CL trở lên.'; return; }
+      if (n > g.cl) { msg.textContent = 'Bạn đang có ' + g.cl + ' CL.'; return; }
+      var gift = { d: ymd(), f: $('#gF').value, n: n, w: $('#gW').value.trim().slice(0, 40), at: new Date().toISOString() };
+      gifts(p).push(gift); save(); giveOpen = false; makeCard(p, gift, again);
+    });
+    var cl = $('#gClose'); if (cl) cl.addEventListener('click', function () { if (giveCard) URL.revokeObjectURL(giveCard.url); giveCard = null; again(); });
+    var sv = $('#gSave'); if (sv) sv.addEventListener('click', function () { var a = document.createElement('a'); a.href = giveCard.url; a.download = 'the-hao-tam-' + ymd() + '.png'; document.body.appendChild(a); a.click(); a.remove(); });
+    var sh = $('#gShare'); if (sh) sh.addEventListener('click', function () {
+      var f = null; try { f = new File([giveCard.blob], 'the-hao-tam.png', { type: 'image/png' }); } catch (e) {}
+      var text = giveCard.alt + ' — Thẻ hảo tâm từ app Thuận Gene Trường Thọ NPH. (Châu Lộc là điểm trong game, tặng mang ý nghĩa tượng trưng.)';
+      if (f && navigator.canShare && navigator.canShare({ files: [f] })) navigator.share({ files: [f], text: text }).catch(function () {});
+      else { $('#gSave').click(); flash('Máy chưa chia sẻ ảnh trực tiếp được. Ảnh đã tải về, bạn đăng ảnh đó lên mạng xã hội nhé.'); }
+    });
   }
   function gemSvg(on, cls) {
     // NPH brand colours only: opened = yellow #f5c70f / saffron #ecc459 / cream; not yet = cream facets, see-through
@@ -1020,7 +1108,7 @@ details.grp>summary::-webkit-details-marker{display:none}
       '<div class="mgems" role="tablist">' + GEMS.map(function (x) { var on = g.n[x[0]] > 0; return '<button type="button" role="tab" aria-selected="' + (x[0] === sel[0]) + '" data-gem="' + x[0] + '" class="' + (x[0] === sel[0] ? 'sel' : '') + '">' + gemSvg(on) + '<b>' + x[1] + '</b><span>' + (on ? 'đã mở ×' + g.n[x[0]] : 'chưa mở') + '</span></button>'; }).join('') + '</div>' +
       '<p class="mrule"><b>' + sel[1] + '</b>' + esc(sel[2]).replace(sel[1], '') + ' Không ai phát huy hiệu này, bạn tự mở bằng cách sống.</p>' +
       (sel[0] === 'anlac' ? '<button type="button" class="btn gold sm" id="breathe">Thở bình an ba hơi</button>' : '') +
-      '<div class="mcl"><i>CL</i><span>Châu Lộc</span><b>' + g.cl.toLocaleString('vi-VN') + '</b></div>' +
+      '<div class="mcl"><i>CL</i><span>Châu Lộc</span><b>' + g.cl.toLocaleString('vi-VN') + '</b></div>' + (g.given ? '<p class="small" style="margin:0 0 8px;opacity:.9">Đã nhận ' + g.earned.toLocaleString('vi-VN') + ' CL, đã tặng ' + g.given.toLocaleString('vi-VN') + ' CL</p>' : '') + giveHtml(p, g) +
       '<details class="mhow"><summary>Châu Lộc được tặng thế nào?</summary><table>' + CL_RULES.map(function (r) { return '<tr><td>' + r[0] + '</td><td>+' + r[1] + '</td><td>' + (g.parts[r[0]] || 0) + '</td></tr>'; }).join('') + '</table><p>Cột cuối là số CL bạn đã nhận từ mỗi việc. Việc game-học gia đình nằm ngoài giao thức, không tính vào tiến độ.</p></details>' +
       '<p class="mnote">Châu Lộc chỉ là điểm trong game, như tiền chơi trong cờ tỷ phú (Monopoly), không đổi được thành tiền thật. Bạn có thể tặng Châu Lộc một cách tượng trưng cho các quỹ từ thiện như Quỹ Thương Trẻ Thơ, Quỹ Robi Smile. Cả nhà muốn chơi thêm? <a href="' + PLAY_URL + '" target="_blank" rel="noopener">Vào Vườn Game-học Vietwise</a></p></section>';
   }
@@ -1029,7 +1117,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     $$('[data-gem]', m).forEach(function (b) { b.addEventListener('click', function () { gemSel = b.dataset.gem; again(); }); });
     var br = $('#breathe', m); if (br) br.addEventListener('click', function () { loadDeck().catch(function () {}).then(function () { oracleOpen(p, 'breath'); }); });
     var fs = $('#famSet', m); if (fs) fs.addEventListener('click', function () { view = 'me'; render(); var e = $('#famOn'); e && e.scrollIntoView({ block: 'center' }); });
-    bindToGems();
+    bindGive(p, again); bindToGems();
   }
   function bindToGems() { var t = $('#toGems'); if (t) t.addEventListener('click', function () { view = 'stats'; render(); var e = $('#mine'); e && e.scrollIntoView({ block: 'start' }); }); }
 
@@ -1217,7 +1305,7 @@ details.grp>summary::-webkit-details-marker{display:none}
       'Ngày giữ nhịp (từ 80%): ' + st.kept + '/' + st.days + ' · chuỗi hiện tại ' + st.cur + ' ngày · dài nhất ' + st.best + ' ngày\n' +
       (st.light ? 'Ngày nhẹ: ' + st.light + '\n' : '') +
       (function () { var os = oStats(p, st); return os.draws ? 'Lá bài thức tỉnh: đã gặp ' + os.seen + '/22 lá, rút ' + os.draws + ' ngày' + (os.taskN ? ', làm xong ' + os.taskDone + '/' + os.taskN + ' việc của lá bài' : '') + '\n' : ''; })() +
-      (function () { var g = gems(p); return 'Châu Lộc ' + g.cl + ' CL · châu ngọc đã mở: ' + (GEMS.filter(function (x) { return g.n[x[0]]; }).map(function (x) { return x[1] + ' ×' + g.n[x[0]]; }).join(', ') || 'chưa có') + '\n'; })() +
+      (function () { var g = gems(p); return 'Châu Lộc ' + g.cl + ' CL' + (g.given ? ' (đã tặng tượng trưng ' + g.given + ' CL)' : '') + ' · châu ngọc đã mở: ' + (GEMS.filter(function (x) { return g.n[x[0]]; }).map(function (x) { return x[1] + ' ×' + g.n[x[0]]; }).join(', ') || 'chưa có') + '\n'; })() +
       (st.waterGoalAvg ? 'Nước trung bình ' + st.waterAvg + ' / ' + st.waterGoalAvg + ' ml mỗi ngày\n' : '') +
       (st.feel.n ? 'Cảm nhận (trên 5, ' + st.feel.n + ' ngày): ' + FEEL.map(function (m) { return m[1].toLowerCase() + ' ' + avg(st.feel.all, m[0]) + (st.feel.kept[m[0]] && st.feel.other[m[0]] ? ' (ngày giữ nhịp ' + avg(st.feel.kept, m[0]) + ', ngày khác ' + avg(st.feel.other, m[0]) + ')' : ''); }).join('; ') + '\n' : '') +
       (st.feel.kg.length >= 2 ? 'Cân nặng ' + num(st.feel.kg[0]) + ' → ' + num(st.feel.kg[st.feel.kg.length - 1]) + ' kg\n' : '') +
@@ -1346,7 +1434,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   }
   function saveBackup(after, msgEl) {
     var name = 'sao-luu-truong-tho-' + ymd() + '.json';
-    var txt = JSON.stringify({ app: BACKUP_APP, v: 1, savedAt: new Date().toISOString(), data: { profiles: store.profiles, done: store.done, skip: store.skip, feel: store.feel, light: store.light, review: store.review, icsOff: store.icsOff, oracle: store.oracle, why: store.why, breath: store.breath, fam: store.fam, adapt: store.adapt, lic: store.lic, icsEdit: store.icsEdit, active: store.active } });
+    var txt = JSON.stringify({ app: BACKUP_APP, v: 1, savedAt: new Date().toISOString(), data: { profiles: store.profiles, done: store.done, skip: store.skip, feel: store.feel, light: store.light, review: store.review, icsOff: store.icsOff, oracle: store.oracle, why: store.why, breath: store.breath, fam: store.fam, adapt: store.adapt, lic: store.lic, icsEdit: store.icsEdit, give: store.give, active: store.active } });
     var ok = function () { store.lastBackup = new Date().toISOString(); save(); if (msgEl) msgEl.textContent = 'Đã tạo bản sao ' + name + '. Cất vào Tệp, Drive hoặc Zalo của chính bạn.'; if (after) after(); };
     var file = null; try { file = new File([txt], name, { type: 'application/json' }); } catch (e) {}
     if (file && navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: 'Sao lưu Trường Thọ' }).then(ok).catch(function () {}); return; }
@@ -1368,7 +1456,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     $$('button[data-sw]', m).forEach(function (b) { b.addEventListener('click', function () { store.active = b.dataset.sw; save(); view = 'today'; render(); }); });
     $('#cp').addEventListener('click', function (e) { var b = e.currentTarget; try { navigator.clipboard.writeText(EXPERT.email).then(function () { b.textContent = 'Đã sao chép'; }, function () { b.textContent = 'Bôi đen để sao chép'; }); } catch (x) { b.textContent = 'Bôi đen để sao chép'; } });
     $('#del').addEventListener('click', function () { $('#delYes').hidden = false; $('#del').textContent = 'Huỷ'; $('#del').onclick = function () { renderMe(p, m); }; });
-    $('#delYes').addEventListener('click', function () { delete store.profiles[p.id]; ['done', 'skip', 'feel', 'light', 'review', 'snooze', 'icsOff', 'oracle', 'why', 'breath', 'fam', 'adapt', 'lic', 'icsEdit'].forEach(function (k) { delete store[k][p.id]; }); photosClear(p.id); store.active = Object.keys(store.profiles)[0] || null; save(); view = 'today'; render(); });
+    $('#delYes').addEventListener('click', function () { delete store.profiles[p.id]; ['done', 'skip', 'feel', 'light', 'review', 'snooze', 'icsOff', 'oracle', 'why', 'breath', 'fam', 'adapt', 'lic', 'icsEdit', 'give'].forEach(function (k) { delete store[k][p.id]; }); photosClear(p.id); store.active = Object.keys(store.profiles)[0] || null; save(); view = 'today'; render(); });
   }
   var FOOT_LINKS = [
     { t: 'Liên hệ chuyên gia qua Zalo', u: 'https://zalo.me/0977206471', z: 1 },

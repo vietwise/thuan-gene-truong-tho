@@ -136,5 +136,16 @@
       "price": "",
       "note": "Cả năm thuận gene, theo nhịp bốn mùa."
     }
+  ],
+  "_huong_dan_quy": "Các quỹ khách được chọn khi tặng Châu Lộc tượng trưng và tạo Thẻ hảo tâm (tab Tiến độ, khung Quặng mỏ). Thêm quỹ mới: thêm một dòng {id, name}.",
+  "funds": [
+    {
+      "id": "thuong-tre-tho",
+      "name": "Quỹ Thương Trẻ Thơ"
+    },
+    {
+      "id": "robi-smile",
+      "name": "Quỹ Robi Smile"
+    }
   ]
 }
