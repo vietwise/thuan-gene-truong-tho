@@ -219,26 +219,26 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
 .review{border:2px solid var(--warn);background:var(--warn-soft)}
 .review .lbl{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--warn)}
 .rvitem{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line)}
-.clrow{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;margin-top:12px;padding:8px 12px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(160deg,#2F7A5E,#3E8E4A);color:#fff;cursor:pointer;font:inherit;text-align:left}
+.clrow{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;margin-top:12px;padding:8px 12px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(135deg,#3d1149,#6b2a7d);color:#fff;cursor:pointer;font:inherit;text-align:left}
 .clrow .gems{display:flex;gap:4px}.gem.gmini{width:26px;height:21px;display:block}
-.clrow .new .gem{filter:drop-shadow(0 0 6px #FFD45C);animation:gemPop 1.6s ease-in-out infinite}
+.clrow .new .gem{filter:drop-shadow(0 0 6px #f5c70f);animation:gemPop 1.6s ease-in-out infinite}
 @keyframes gemPop{50%{transform:scale(1.15)}}
 @media (prefers-reduced-motion:reduce){.clrow .new .gem{animation:none}}
-.clb{display:flex;align-items:center;gap:6px}.clb i,.mcl i{font-style:normal;font-weight:800;font-size:11px;background:#F26B21;color:#fff;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center}
-.clb b{font-size:20px;color:#FFD45C}.clb em{font-style:normal;font-size:12px;opacity:.9}
-.gemnew{margin:8px 0 0;color:var(--moss)}
-.mine{background:linear-gradient(160deg,#2F7A5E,#3E8E4A);color:#fff;border-radius:22px;padding:22px 16px;text-align:center;box-shadow:0 10px 26px rgba(47,122,94,.25)}
+.clb{display:flex;align-items:center;gap:6px}.clb i,.mcl i{font-style:normal;font-weight:800;font-size:11px;background:var(--magenta,#ca41bc);color:#fff;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center}
+.clb b{font-size:20px;color:#f5c70f}.clb em{font-style:normal;font-size:12px;opacity:.9}
+.gemnew{margin:8px 0 0;color:var(--purple)}
+.mine{background:linear-gradient(135deg,#3d1149,#6b2a7d);color:#fff;border-radius:22px;padding:22px 16px;text-align:center;box-shadow:0 10px 26px rgba(61,17,73,.28)}
 .mine h2{color:#fff;margin:0}.mine .msub{margin:4px 0 14px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
 .mgems{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .mgems button{background:transparent;border:1.5px solid transparent;border-radius:14px;color:#fff;padding:8px 2px;cursor:pointer;font:inherit;display:flex;flex-direction:column;align-items:center;gap:4px}
-.mgems button.sel{background:rgba(255,255,255,.12);border-color:rgba(255,212,92,.7)}
+.mgems button.sel{background:rgba(255,255,255,.12);border-color:rgba(245,199,15,.75)}
 .mgems .gem{width:100%;max-width:64px;height:auto}.mgems b{font-size:14px}.mgems span{font-size:11px;opacity:.85}
 .mrule{margin:14px 0 10px;padding-top:12px;border-top:1px solid rgba(255,255,255,.2);line-height:1.55}
-.mcl{display:flex;align-items:center;justify-content:center;gap:10px;margin:12px 0 4px}.mcl span{letter-spacing:.1em;text-transform:uppercase;font-weight:700;font-size:13px;opacity:.85}.mcl b{font-size:30px;color:#F9A34A}
+.mcl{display:flex;align-items:center;justify-content:center;gap:10px;margin:12px 0 4px}.mcl span{letter-spacing:.1em;text-transform:uppercase;font-weight:700;font-size:13px;opacity:.85}.mcl b{font-size:30px;color:#f5c70f}
 .mhow{text-align:left;background:rgba(0,0,0,.12);border-radius:12px;padding:8px 12px;margin:8px 0}.mhow summary{cursor:pointer;font-weight:700}
 .mhow table{width:100%;border-collapse:collapse;margin-top:6px;font-size:13.5px}.mhow td{padding:4px 2px;border-top:1px solid rgba(255,255,255,.15)}.mhow td+td{text-align:right;white-space:nowrap;padding-left:8px}.mhow p{font-size:12.5px;margin:8px 0 0;opacity:.9}
-.mnote{font-size:12.5px;margin:10px 0 0;opacity:.92}.mine a{color:#FFE08A}
-.fam{border-left:5px solid #3E8E4A}.fam.done{opacity:.8}.famrow{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;margin-top:6px}.famrow time{font-weight:800;color:#2F7A5E}
+.mnote{font-size:12.5px;margin:10px 0 0;opacity:.92}.mine a{color:#ecc459}
+.fam{border-left:5px solid var(--purple)}.fam.done{opacity:.8}.famrow{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;margin-top:6px}.famrow time{font-weight:800;color:var(--purple)}
 .gem.gbig{width:96px;height:auto;margin:6px auto}
 
 .lightrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -969,7 +969,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     return g;
   }
   function gemSvg(on, cls) {
-    var c = on ? ['#FFE08A', '#FFC93C', '#D99A12', '#F2B01E', '#FFD45C', '#C78A0E'] : ['#D3E0D3', '#B4CAB5', '#86A388', '#9DB89F', '#C3D5C4', '#7A967C'];
+    var c = on ? ['#FBE58A', '#F5C70F', '#C9A10A', '#ECC459', '#F8D94E', '#B8920C'] : ['#E7DAEC', '#C9B3D1', '#9D80A8', '#B49ABF', '#D8C6DF', '#8E719A'];
     return '<svg class="gem ' + (cls || '') + '" viewBox="0 0 64 52" aria-hidden="true"><polygon points="14,2 50,2 40,18 24,18" fill="' + c[0] + '"/><polygon points="14,2 24,18 2,18" fill="' + c[4] + '"/><polygon points="50,2 62,18 40,18" fill="' + c[2] + '"/><polygon points="2,18 24,18 32,50" fill="' + c[1] + '"/><polygon points="24,18 40,18 32,50" fill="' + c[3] + '"/><polygon points="40,18 62,18 32,50" fill="' + c[5] + '"/></svg>';
   }
   function gemRowHtml(p) {
