@@ -1010,7 +1010,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     name: 'HỘ KINH DOANH ANH MINH VIỆT (tên viết tắt: VIETWISE)', code: '079171002587, đăng ký ngày 14/09/2026, do UBND Phường An Khánh cấp',
     addr: '28 Đường số 2, Khu phố 8, Phường An Khánh, TP. Hồ Chí Minh', owner: 'Lê Nhất Phương Hồng', field: 'Giáo dục (mã 8559)',
     zalo: 'https://zalo.me/0981648258', zaloTxt: '098 164 8258', tel: 'tel:0981648258', telTxt: '0981 648 258', email: 'vietwise.vn@gmail.com', web: 'https://vietwise.edu.vn',
-    terms: 'https://vietwise.edu.vn/p/dieu-khoan-dich-vu', pay: 'https://vietwise.edu.vn/p/huong-dan-thanh-toan'
+    terms: 'https://vietwise.edu.vn/p/dieu-khoan-dich-vu', privacy: 'https://edubit.vn/chinh-sach-rieng-tu', pay: 'https://vietwise.edu.vn/p/huong-dan-thanh-toan'
   };
   function promoLeft() { var a = parseYmd(ymd()), b = parseYmd(PROMO_END); return Math.round((b - a) / 864e5); }
   function upgradeHtml() {
@@ -1027,7 +1027,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     return '<section class="card legal"><h2>Thông tin pháp nhân</h2><p class="small" style="margin:4px 0 0"><b>Vườn Game-học Vietwise</b> · <i>Gia đình vui Game-học – Châu ngọc hóa phúc lộc!</i></p><dl>' +
       row('Đơn vị vận hành', esc(LEGAL.name)) + row('Mã số hộ kinh doanh', esc(LEGAL.code)) + row('Trụ sở', esc(LEGAL.addr)) + row('Chủ hộ kinh doanh', esc(LEGAL.owner)) + row('Ngành nghề chính', esc(LEGAL.field)) +
       row('Liên hệ', '<a href="' + LEGAL.zalo + '" target="_blank" rel="noopener">Zalo ' + LEGAL.zaloTxt + '</a> · <a href="' + LEGAL.tel + '">Gọi ' + LEGAL.telTxt + '</a> · <a href="mailto:' + LEGAL.email + '">' + LEGAL.email + '</a> · <a href="' + LEGAL.web + '" target="_blank" rel="noopener">vietwise.edu.vn</a>') + '</dl>' +
-      '<p class="small" style="margin:10px 0 0"><a href="' + LEGAL.terms + '" target="_blank" rel="noopener">Điều khoản dịch vụ</a> · <a href="' + LEGAL.pay + '" target="_blank" rel="noopener">Hướng dẫn thanh toán</a></p>' +
+      '<p class="small" style="margin:10px 0 0"><a href="' + LEGAL.web + '" target="_blank" rel="noopener">Thông tin pháp nhân</a> · <a href="' + LEGAL.terms + '" target="_blank" rel="noopener">Điều khoản dịch vụ</a> · <a href="' + LEGAL.privacy + '" target="_blank" rel="noopener">Chính sách bảo mật</a> · <a href="' + LEGAL.pay + '" target="_blank" rel="noopener">Hướng dẫn thanh toán</a></p>' +
       '<p class="small muted" style="margin:8px 0 0"><b>Quyền riêng tư:</b> hồ sơ sức khoẻ, gene, ảnh và tiến độ chỉ lưu trên điện thoại của bạn. App không gửi dữ liệu đi đâu; bạn tự chọn gửi gì cho chuyên gia.</p>' +
       '<p class="small muted" style="margin:6px 0 0">Châu Lộc là điểm trong game, không có giá trị quy đổi. Giáo Dục Tác Tạo — Hiện thực nguồn nhân lực tỏa sáng thế kỷ 21.</p></section>';
   }
