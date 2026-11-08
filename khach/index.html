@@ -1022,7 +1022,7 @@ details.grp>summary::-webkit-details-marker{display:none}
       (sel[0] === 'anlac' ? '<button type="button" class="btn gold sm" id="breathe">Thở bình an ba hơi</button>' : '') +
       '<div class="mcl"><i>CL</i><span>Châu Lộc</span><b>' + g.cl.toLocaleString('vi-VN') + '</b></div>' +
       '<details class="mhow"><summary>Châu Lộc được tặng thế nào?</summary><table>' + CL_RULES.map(function (r) { return '<tr><td>' + r[0] + '</td><td>+' + r[1] + '</td><td>' + (g.parts[r[0]] || 0) + '</td></tr>'; }).join('') + '</table><p>Cột cuối là số CL bạn đã nhận từ mỗi việc. Việc game-học gia đình nằm ngoài giao thức, không tính vào tiến độ.</p></details>' +
-      '<p class="mnote">Châu Lộc chỉ là điểm trong app, không đổi được thành tiền hay quà. Cả nhà muốn chơi thêm? <a href="' + PLAY_URL + '" target="_blank" rel="noopener">Vào Vườn Game-học Vietwise</a></p></section>';
+      '<p class="mnote">Châu Lộc chỉ là điểm trong game, như tiền chơi trong cờ tỷ phú (Monopoly), không đổi được thành tiền thật. Bạn có thể tặng Châu Lộc một cách tượng trưng cho các quỹ từ thiện như Quỹ Thương Trẻ Thơ, Quỹ Robi Smile. Cả nhà muốn chơi thêm? <a href="' + PLAY_URL + '" target="_blank" rel="noopener">Vào Vườn Game-học Vietwise</a></p></section>';
   }
   function bindGems(p, again, m) {
     $$('details[data-why]', m).forEach(function (d) { d.addEventListener('toggle', function () { if (!d.open) return; var w = (store.why[p.id] = store.why[p.id] || {}), id = d.dataset.why; if (!w[id]) { w[id] = ymd(); save(); var b = $('#toGems'); if (b) b.outerHTML = gemRowHtml(p); bindToGems(); } }); });
