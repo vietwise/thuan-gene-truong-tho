@@ -1,6 +1,6 @@
 {
-  "_huong_dan": "Danh sách gợi ý của Chuyên gia Nhất Phương Hồng cho app khách. Sửa file này rồi đẩy lên GitHub là mọi khách thấy bản mới khi mở app có mạng. 'when' để trống thì gợi ý chỉ nằm trong danh mục ở tab Hồ sơ. Nút 'url' để trống thì mở Zalo của chuyên gia (không có Zalo thì mở email). Chữ trong ngoặc nhọn được thay bằng số liệu của khách: {kept} ngày giữ nhịp, {days} số ngày, {rate} % hoàn thành, {waterPct} % nước.",
-  "updated": "2026-11-07",
+  "_huong_dan": "Danh sách gợi ý của Chuyên gia Nhất Phương Hồng cho app khách. Sửa file này rồi đẩy lên GitHub là mọi khách thấy bản mới khi mở app có mạng. 'when' để trống thì gợi ý chỉ nằm trong danh mục ở tab Quản lý và chân trang. Nút 'url' để trống thì mở Zalo của chuyên gia (không có Zalo thì mở email). Chữ trong ngoặc nhọn được thay bằng số liệu của khách: {kept} ngày giữ nhịp, {days} số ngày, {rate} % hoàn thành, {waterPct} % nước, {draws} số lần rút lá bài, {seen} số lá đã gặp. Điều kiện 'minDraws' = số lần rút bài tối thiểu.",
+  "updated": "2026-11-09",
   "email": "hongple99@gmail.com",
   "cooldownDays": 14,
   "items": [
@@ -16,6 +16,17 @@
       },
       "catalog": true,
       "short": "Xem lại chỉ số, xét nghiệm lại, chỉnh giao thức theo giai đoạn."
+    },
+    {
+      "id": "vuon-game-hoc-oracle",
+      "title": "Vườn Game-học Vietwise cho cả nhà",
+      "why": "Bạn đã rút {draws} lá bài thức tỉnh và gặp {seen}/22 lá. Bộ bài này đến từ Vườn Game-học Vietwise, nơi trẻ em và người lớn học bằng trò chơi, 15 phút mỗi ngày.",
+      "cta": "Ghé Vườn Game-học",
+      "url": "https://iehrm.edu.vn/p/vuon-game-hoc-vietwise",
+      "when": {
+        "minDraws": 5
+      },
+      "catalog": false
     },
     {
       "id": "nuoc",
@@ -79,6 +90,14 @@
       "url": "",
       "catalog": true,
       "short": "Cho mẹ bầu và bố mẹ có con nhỏ."
+    },
+    {
+      "id": "oracle-web",
+      "title": "Oracle Vietwise: 22 lá thức tỉnh (bản web)",
+      "cta": "Rút bài trên web",
+      "url": "https://vietwise.edu.vn/p/oracle-vietwise",
+      "catalog": true,
+      "short": "Rút bài cùng người thân trên máy tính hoặc gửi link cho bạn bè."
     }
   ],
   "zalo": "https://zalo.me/0977206471"

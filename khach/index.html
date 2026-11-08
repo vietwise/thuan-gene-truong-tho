@@ -112,6 +112,22 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
 .steps{margin:0;padding-left:22px;display:grid;gap:6px;text-align:left}
 .note{font-size:14px;background:var(--purple-soft);border-radius:12px;padding:10px 12px}
 .status{min-height:1.3em;font-size:14px}
+.meas .thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.meas .th{position:relative;width:76px;height:110px;border-radius:10px;overflow:hidden;background:var(--line)}
+.meas .th img{width:100%;height:100%;object-fit:cover;display:block}
+.meas .th button{position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:16px;line-height:1;cursor:pointer}
+.meas .mgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;margin-top:12px}
+.meas .mgrid label{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+.meas .mgrid input{font:inherit;min-height:42px;border:1.5px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--sheet);color:var(--ink);width:100%}
+.mtab td.ph{color:var(--purple);font-weight:600}
+.sitefoot{margin-top:8px;border-top:3px solid var(--magenta);padding:16px 2px 8px;display:grid;gap:12px;font-size:13.5px;color:var(--muted)}
+.sitefoot .brand{display:flex;gap:12px;align-items:center;color:var(--ink)}
+.sitefoot .brand img{width:52px;height:52px;border-radius:12px;flex:none}
+.sitefoot .brand p{margin:0;font-size:14px}
+.sitefoot .ups{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.sitefoot .ups a{display:inline-flex;align-items:center;min-height:38px;padding:6px 12px;border-radius:99px;border:1.5px solid var(--purple);color:var(--purple);text-decoration:none;font-weight:600;font-size:13.5px;background:var(--sheet)}
+.sitefoot .ups a.z{background:var(--purple);color:#fff}
+.sitefoot p.disc{margin:0}
 .readme{font-size:13.5px;color:var(--muted);border-top:3px solid var(--magenta);padding-top:12px}
 .quote{margin:0;font-family:var(--display);font-style:italic;font-size:17px;border-left:4px solid var(--magenta);background:var(--saffron-soft);padding:12px 14px}
 .quote cite{display:block;font-style:normal;font-family:var(--body);font-size:13.5px;font-weight:700;color:var(--purple);margin-top:4px}
@@ -145,6 +161,60 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
 .offer .lbl{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
 .offer a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .cat li{margin:8px 0}
+.orc-inv{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:center;background:linear-gradient(135deg,#3A2347,#5B3A72);color:#F8EBD0;border:0}
+.orc-inv img,.orc-mini img{width:72px;height:auto;border-radius:10px;box-shadow:0 6px 16px rgba(0,0,0,.3);display:block}
+.orc-inv .lbl,.orc-mini .lbl{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#E0AE4E}
+.orc-inv h2{color:#F8EBD0;margin:2px 0 4px;font-family:Georgia,"Times New Roman",serif}
+.orc-inv p{margin:0 0 10px;opacity:.92;font-size:14.5px}
+.orc-inv .btn{background:#E0AE4E;color:#3A2347;border:0}
+.orc-mini{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:start;background:#FBF3DF;border:2px solid var(--og,#5B3A72);color:#3A2347}
+.orc-mini h3{margin:2px 0 4px;font-family:Georgia,serif;font-size:18px;color:var(--og,#5B3A72)}
+.orc-mini .oq{font-style:italic;margin:0 0 8px;font-size:14.5px}
+.orc-task{background:rgba(224,174,78,.22);border-radius:10px;padding:8px 10px;font-size:14px;margin:0 0 6px}
+.orc-mini .linkbtn{color:#5B3A72}
+.oart{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:var(--og,#5B3A72);color:#F8EBD0;text-align:center;font-family:Georgia,"Times New Roman",serif;background-image:radial-gradient(circle at 50% 42%,rgba(224,174,78,.35) 0 22%,transparent 23%),repeating-linear-gradient(45deg,rgba(248,235,208,.08) 0 6px,transparent 6px 12px)}
+.oart::after{content:"";position:absolute;inset:6px;border:1.5px solid rgba(224,174,78,.7);border-radius:inherit;pointer-events:none}
+.oart .on{font-size:13px;letter-spacing:.12em;opacity:.9}.oart .os{color:#E0AE4E;font-size:30px;line-height:1}.oart .ot{font-size:13px;font-weight:700;padding:0 6px}
+.oart.big{aspect-ratio:3/2;border-radius:0}.oart.big .on{font-size:18px}.oart.big .os{font-size:64px}.oart.big .ot{font-size:26px}
+.oart.sm{width:72px;aspect-ratio:2/3;border-radius:10px;box-shadow:0 6px 16px rgba(0,0,0,.3)}.oart.sm .os{font-size:24px}.oart.sm .ot{font-size:10.5px}.oart.sm::after{inset:4px}
+.oart.xs{width:100%;height:100%;border-radius:8px}.oart.xs .on{font-size:10px}.oart.xs .os{font-size:16px}.oart.xs .ot{display:none}.oart.xs::after{inset:3px}
+.oimg.big{display:block;width:100%;height:auto}.oimg.sm{width:72px;border-radius:10px}.oimg.xs{width:100%;height:100%;object-fit:cover}
+.pill.orc{background:#3A2347;color:#E0AE4E}
+#orc{position:fixed;inset:0;z-index:50;background:#F3E5C8;color:#3A2347;overflow:auto;-webkit-overflow-scrolling:touch}
+#orc .ow{max-width:520px;margin:0 auto;padding:max(16px,env(safe-area-inset-top)) 16px 40px;display:grid;gap:16px;justify-items:center;text-align:center;min-height:100%}
+#orc .otop{width:100%;display:flex;justify-content:space-between;align-items:center}
+#orc .otop b{font-family:Georgia,serif;font-size:16px}
+#orc .x{border:2px solid #3A2347;background:#FBF3DF;color:#3A2347;border-radius:99px;min-height:40px;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer}
+#orc h2{font-family:Georgia,"Times New Roman",serif;color:#3A2347;font-size:24px;margin:4px 0}
+#orc .breath{width:150px;height:150px;border-radius:50%;background:#E0AE4E;display:grid;place-items:center;font-weight:700;color:#3A2347;box-shadow:0 0 0 14px rgba(224,174,78,.28),0 0 0 32px rgba(224,174,78,.13);margin:30px auto;transition:transform 4s ease-in-out}
+#orc .breath.big{transform:scale(1.3)}
+#orc .ob{background:#5B3A72;color:#F8EBD0;border:0;border-radius:99px;min-height:48px;padding:12px 24px;font:inherit;font-weight:700;cursor:pointer}
+#orc .ob.gold{background:#E0AE4E;color:#3A2347}
+#orc .ol{background:none;border:0;color:#3A2347;text-decoration:underline;font:inherit;cursor:pointer;padding:8px}
+.ofan{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:6px 0}
+.ofan button{width:74px;height:110px;border-radius:10px;border:0;padding:0;cursor:pointer;background:#5B3A72 center/cover no-repeat;box-shadow:0 8px 20px rgba(58,35,71,.3);transition:transform .25s}
+.ofan button:hover,.ofan button:focus-visible{transform:translateY(-10px)}
+.ofan.shuffle button{animation:osh .6s ease 2}
+@keyframes osh{50%{transform:translateY(-14px) rotate(-6deg)}}
+.oface{width:100%;background:#FBF3DF;border-radius:20px;overflow:hidden;box-shadow:0 10px 30px rgba(58,35,71,.25);border:4px solid var(--og,#5B3A72);text-align:left;animation:oflip .7s ease}
+@keyframes oflip{from{transform:rotateY(90deg)}to{transform:none}}
+.oface img{display:block;width:100%;height:auto;background:#fff}
+.oface .ob2{padding:16px 18px 18px;display:grid;gap:10px}
+.oface .gp{display:inline-block;background:var(--og,#5B3A72);color:#F8EBD0;border-radius:99px;padding:3px 12px;font-size:12.5px;font-weight:600;justify-self:start}
+.oface h3{font-family:Georgia,serif;margin:0;font-size:22px;color:var(--og,#5B3A72)}
+.oface p{margin:0}
+.oface .oqb{border-left:5px solid var(--og,#5B3A72);background:rgba(224,174,78,.2);border-radius:0 12px 12px 0;padding:8px 12px}
+.oface .oqb b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--og,#5B3A72)}
+.oface .otask{border:2px dashed var(--og,#5B3A72);border-radius:14px;padding:10px 12px}
+.oface .otask b.t{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--og,#5B3A72);margin-bottom:2px}
+.ofoot{font-size:13.5px;opacity:.9;margin:0}
+.ofoot a{color:#5B3A72;font-weight:700}
+.ogarden{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:8px;margin-top:10px}
+.ogarden button{border:0;padding:0;border-radius:8px;overflow:hidden;cursor:pointer;background:#5B3A72 center/cover no-repeat;aspect-ratio:2/3}
+.ogarden button img{width:100%;height:100%;object-fit:cover;display:block}
+.ogarden button.lock{opacity:.35;cursor:default}
+.orefl textarea{width:100%;min-height:70px;border:1.5px solid var(--line);border-radius:12px;padding:10px;font:inherit;background:var(--sheet);color:var(--ink)}
+@media (prefers-reduced-motion:reduce){.oface,.ofan.shuffle button{animation:none}#orc .breath{transition:none}}
 .btn.sm{min-height:38px;padding:6px 12px;font-size:14px;border-radius:11px}
 .review{border:2px solid var(--warn);background:var(--warn-soft)}
 .review .lbl{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--warn)}
@@ -176,7 +246,7 @@ details.grp>summary::-webkit-details-marker{display:none}
 <body>
 <header class="top" id="top" hidden>
   <div class="brandrow"><img src="icon-192.png" alt="" width="44" height="44"><div><b id="hName">Trường Thọ</b><small id="hSub">Thuận Gene Trường Thọ · Chuyên gia Nhất Phương Hồng</small></div></div>
-  <nav class="tabs" aria-label="Mục"><button data-v="today" class="on">Hôm nay</button><button data-v="stats">Tiến độ</button><button data-v="docs">Tài liệu</button><button data-v="me">Hồ sơ</button></nav>
+  <nav class="tabs" aria-label="Mục"><button data-v="today" class="on">Hôm nay</button><button data-v="stats">Tiến độ</button><button data-v="docs">Tài liệu</button><button data-v="me">Quản lý</button></nav>
 </header>
 <main id="main"></main>
 <input type="file" id="file" accept=".json,application/json,text/plain" hidden>
@@ -232,7 +302,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   // ---------- storage (this phone only) ----------
   var store = { profiles: {}, done: {}, skip: {}, active: null, notify: null, shown: {}, snooze: {}, light: {}, feel: {}, review: {}, lastBackup: null };
   var memOnly = false;
-  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.profiles) store = s; } catch (e) { memOnly = true; } ['skip', 'shown', 'snooze', 'light', 'feel', 'review', 'icsOff', 'offerSeen'].forEach(function (k) { store[k] = store[k] || {}; }); }
+  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.profiles) store = s; } catch (e) { memOnly = true; } ['skip', 'shown', 'snooze', 'light', 'feel', 'review', 'icsOff', 'offerSeen', 'oracle'].forEach(function (k) { store[k] = store[k] || {}; }); }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) { memOnly = true; } }
 
   // ---------- import ----------
@@ -279,7 +349,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     var d = o.data || {}, ids = Object.keys(d.profiles || {});
     if (!ids.length) throw new Error('File sao lưu không có hồ sơ nào.');
     ids.forEach(function (id) { var a = store.profiles[id], b = d.profiles[id]; if (!a || String(b.exportedAt || '') >= String(a.exportedAt || '')) store.profiles[id] = b; });
-    ['done', 'skip', 'feel', 'light', 'review', 'icsOff'].forEach(function (k) { mergeInto(store[k], d[k]); });
+    ['done', 'skip', 'feel', 'light', 'review', 'icsOff', 'oracle'].forEach(function (k) { mergeInto(store[k], d[k]); });
     store.active = d.active && store.profiles[d.active] ? d.active : ids[0];
     save(); lastImport = 'restore'; return store.profiles[store.active];
   }
@@ -491,13 +561,14 @@ details.grp>summary::-webkit-details-marker{display:none}
   function render() {
     var p = cur(), m = $('#main');
     $('#top').hidden = !p;
-    if (!p) { m.innerHTML = welcome(); bindWelcome(); return; }
+    if (!p) { m.innerHTML = welcome() + siteFooter(); bindWelcome(); return; }
     $('#hName').textContent = p.name;
     $$('.tabs button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === view); });
     if (view === 'today') renderToday(p, m);
     else if (view === 'docs') renderDocs(p, m);
     else if (view === 'stats') renderStats(p, m);
     else renderMe(p, m);
+    m.insertAdjacentHTML('beforeend', siteFooter());
     if (!keepScroll) window.scrollTo(0, 0);
     keepScroll = false; rotateQuote();
   }
@@ -519,7 +590,7 @@ details.grp>summary::-webkit-details-marker{display:none}
       '<p style="margin:0;max-width:44ch">Thẻ nhắc theo giờ mỗi ngày và bản tóm tắt giao thức trường thọ của bạn. Dùng được cả khi không có mạng.</p>' +
       '<button class="btn gold" id="pick" type="button">Nhập hồ sơ từ chuyên gia</button><p class="status" id="status" aria-live="polite">' + esc(flashMsg) + '</p></section>' +
       '<section class="card"><h2>Bắt đầu thế nào?</h2><ol class="steps" style="margin-top:8px"><li>Chuyên gia gửi bạn <b>file hồ sơ</b> (đuôi .json) qua Zalo hoặc email.</li><li>Lưu file vào điện thoại: Zalo/Email → giữ vào file → <b>Lưu vào Tệp</b> (iPhone) hoặc <b>Tải xuống</b> (Android).</li><li>Bấm <b>Nhập hồ sơ từ chuyên gia</b> ở trên, chọn file đó.</li><li>Thêm app ra màn hình chính: Safari → Chia sẻ → <b>Thêm vào MH chính</b>; Chrome → ⋮ → <b>Thêm vào màn hình chính</b>.</li></ol>' +
-      '<p class="note" style="margin-top:12px">Hồ sơ chỉ lưu trên điện thoại này. App không gửi dữ liệu đi đâu. Đã có file sao lưu từ máy cũ? Bấm nút trên và chọn file đó.</p></section>' + readme();
+      '<p class="note" style="margin-top:12px">Hồ sơ chỉ lưu trên điện thoại này. App không gửi dữ liệu đi đâu. Đã có file sao lưu từ máy cũ? Bấm nút trên và chọn file đó.</p></section>' ;
   }
   function bindWelcome() { $('#pick').addEventListener('click', function () { $('#file').click(); }); }
   var SL = ['Sáng', 'Trưa', 'Chiều', 'Tối'], openG = {}, feelEdit = false;
@@ -528,10 +599,108 @@ details.grp>summary::-webkit-details-marker{display:none}
   function feelOf(p, k) { var f = (store.feel[p.id] = store.feel[p.id] || {}); return f[k] = f[k] || {}; }
   function lastKg(p) { var f = store.feel[p.id] || {}, ks = Object.keys(f).sort().reverse(); for (var i = 0; i < ks.length; i++) if (f[ks[i]].kg) return f[ks[i]].kg; return 0; }
   function num(v) { return String(v).replace('.', ','); }
+  // ---------- Oracle Vietwise: 22 lá thức tỉnh (Vườn Game-học) ----------
+  var ORACLE_URL = 'https://vietwise.edu.vn/p/oracle-vietwise', GARDEN_URL = 'https://iehrm.edu.vn/p/vuon-game-hoc-vietwise';
+  var DECK = null, deckP = null;
+  function loadDeck() { if (DECK) return Promise.resolve(DECK); if (!deckP) deckP = fetch('oracle.json').then(function (r) { return r.json(); }).then(function (d) { DECK = d; return d; }).catch(function (e) { deckP = null; throw e; }); return deckP; }
+  // each colour group of the deck points to one kind of today's protocol task
+  var OGROUP_TASK = {
+    cam: { types: ['luyen tap', 'theo doi'], line: 'Vững bước đường đời: hôm nay, việc này là bước chân vững của bạn.' },
+    xanh: { types: ['thuc pham'], line: 'Trao đi và yêu thương: chuẩn bị bữa này thật lành, và nếu được, chia một phần cho người thân.' },
+    ngoc: { types: ['thao duoc', 'bo sung', 'theo doi'], line: 'Trở về bên trong: làm việc này thật chậm và lắng nghe cơ thể mình.' },
+    tim: { types: ['giac ngu', 'uong nuoc'], line: 'Tĩnh tại và huyền diệu: dành trọn vài phút yên tĩnh cho việc này.' }
+  };
+  function oMap(p) { var o = (store.oracle[p.id] = store.oracle[p.id] || {}); return o; }
+  function oToday(p, k) { return oMap(p)[k || ymd()] || null; }
+  function oCard(id) { return DECK && DECK.cards.filter(function (c) { return c.id === id; })[0]; }
+  function oSeen(p) { var o = oMap(p), seen = {}; Object.keys(o).forEach(function (k) { if (o[k] && o[k].c) seen[o[k].c] = (seen[o[k].c] || 0) + 1; }); return seen; }
+  function oPickTask(p, group) {
+    var day = ymd(), hm = nowHM(), rs = plan(p, new Date()).filter(function (r) { return !handled(p, day, r.id); });
+    var types = (OGROUP_TASK[group] || {}).types || [];
+    var match = rs.filter(function (r) { return types.indexOf(plain(r.type)) >= 0; });
+    var pool = match.length ? match : rs;
+    return pool.filter(function (r) { return !r.time || r.time >= hm; })[0] || pool[0] || null;
+  }
+  function oDraw(p) {
+    var seen = oSeen(p), all = DECK.cards, unseen = all.filter(function (c) { return !seen[c.id]; });
+    var from = unseen.length ? unseen : all, c = from[Math.floor(Math.random() * from.length)];
+    var t = oPickTask(p, c.group);
+    oMap(p)[ymd()] = { c: c.id, t: t ? t.id : '', at: Date.now(), n: '' }; save();
+    return c;
+  }
+  var ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX', 'XXI', 'XXII'];
+  function oArt(c, size) {
+    var g = oGroup(c), name = String(c.title).replace(/\s*\(.*\)\s*$/, '');
+    if (c.image) return '<img class="oimg ' + size + '" alt="' + esc(c.imageAlt || name) + '" src="' + c.image + '">';
+    return '<div class="oart ' + size + '" style="--og:' + g.color + '" role="img" aria-label="Lá bài ' + esc(name) + '"><span class="on">' + (ROMAN[c.id] || c.id) + '</span><span class="os">✦</span><span class="ot">' + esc(name) + '</span></div>';
+  }
+  function oGroup(c) { return (DECK && DECK.meta.groups[c.group]) || { name: '', color: '#5B3A72', meaning: '' }; }
+  function oTaskOf(p, k) { var o = oToday(p, k); if (!o || !o.t) return null; return p.reminders.filter(function (r) { return r.id === o.t; })[0] || null; }
+  function oracleTodayHtml(p, day) {
+    var o = oToday(p, day);
+    if (!o) return '<section class="card orc-inv"><img alt="" src="" data-oback><div><span class="lbl">Lá bài hôm nay</span><h2>Hôm nay, lá bài nào sẽ tìm đến bạn?</h2><p>Thở ba hơi, rút một lá trong 22 lá thức tỉnh. Lá bài sẽ chọn cho bạn một việc thuận gene để làm thật trọn vẹn hôm nay.</p><button class="btn" type="button" id="oDraw">Rút lá bài ✦</button></div></section>';
+    var c = oCard(o.c); if (!c) return '<section class="card orc-mini" data-opend><p class="small muted" style="margin:0">Đang mở lá bài hôm nay…</p></section>';
+    var g = oGroup(c), t = oTaskOf(p, day), dm = doneMap(p, day);
+    return '<section class="card orc-mini" style="--og:' + g.color + '">' + oArt(c, 'sm') + '<div><span class="lbl" style="color:' + g.color + '">Lá bài hôm nay · ' + esc(g.name) + '</span><h3>' + esc(c.title) + '</h3><p class="oq">' + esc(c.question) + '</p>' +
+      (t ? '<p class="orc-task"><b>✦ Việc của lá bài:</b> ' + esc(t.time) + ' · ' + esc(t.title) + (dm[t.id] ? ' <b style="color:var(--moss)">· đã xong ✓</b>' : '') + '</p>' : '') +
+      '<button class="linkbtn" type="button" id="oOpen">Xem lại lá bài</button></div></section>';
+  }
+  function oracleReflectHtml(p, k, label) {
+    var o = oToday(p, k), c = o && oCard(o.c); if (!c) return '';
+    return '<section class="card orefl"><span class="lbl" style="color:' + oGroup(c).color + '">Lá bài ' + label + ' · ' + esc(c.title) + '</span><p style="margin:4px 0 8px"><i>' + esc(c.question) + '</i></p><label class="small muted" for="oNote">Điều bạn ngẫm được (chỉ lưu trên máy này, không bắt buộc)</label><textarea id="oNote" data-k="' + k + '">' + esc(o.n || '') + '</textarea></section>';
+  }
+  function oFaceHtml(p, c, k, fresh) {
+    var g = oGroup(c), o = oToday(p, k) || {}, t = oTaskOf(p, k), map = OGROUP_TASK[c.group] || {};
+    return '<div class="oface" style="--og:' + g.color + '">' + oArt(c, 'big') + '<div class="ob2"><span class="gp">' + esc(g.name) + ' · ' + esc(g.meaning) + '</span><h3>' + esc(c.title) + '</h3><p>' + esc(c.story) + '</p>' +
+      '<div class="oqb"><b>Câu hỏi chiêm nghiệm</b>' + esc(c.question) + '</div>' +
+      (t ? '<div class="otask"><b class="t">✦ Việc thuận gene của lá bài hôm nay</b><b>' + esc(t.time) + ' · ' + esc(t.title) + '</b><br><span class="small">' + esc(t.detail || '') + '</span><p class="small" style="margin-top:6px">' + esc(map.line || '') + '</p></div>' : '') +
+      (o.n ? '<div class="oqb"><b>Điều bạn đã ngẫm</b>' + esc(o.n) + '</div>' : '') +
+      '</div></div>' +
+      '<p class="ofoot">Bộ bài <b>22 lá thức tỉnh</b> của Vườn Game-học Vietwise. <a href="' + ORACLE_URL + '" target="_blank" rel="noopener">Rút bài trên web</a> · <a href="' + GARDEN_URL + '" target="_blank" rel="noopener">Ghé Vườn Game-học</a></p>' +
+      '<button class="ob" type="button" data-oclose>' + (fresh ? 'Nhận lá bài, vào ngày mới' : 'Đóng') + '</button>';
+  }
+  var oTimer = null;
+  function oracleOpen(p, mode, cardId) {
+    var box = document.createElement('div'); box.id = 'orc'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', 'Lá bài hôm nay');
+    document.body.appendChild(box); document.body.style.overflow = 'hidden';
+    var close = function () { clearTimeout(oTimer); box.remove(); document.body.style.overflow = ''; keepScroll = true; render(); };
+    box.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    var shell = function (inner) { box.innerHTML = '<div class="ow"><div class="otop"><b>✦ 22 lá thức tỉnh</b><button class="x" type="button" data-oclose>Đóng</button></div>' + inner + '</div>'; $$('[data-oclose]', box).forEach(function (b) { b.addEventListener('click', close); }); var f = box.querySelector('button.ob, button.x'); f && f.focus(); };
+    var showFace = function (c, k, fresh) { shell(oFaceHtml(p, c, k, fresh)); };
+    if (mode === 'view') { showFace(oCard(cardId), cardId === (oToday(p) || {}).c ? ymd() : '', false); return; }
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var breathe = function () {
+      var n = 0;
+      shell('<h2>Thở và lắng xuống</h2><p style="margin:0">' + esc((DECK.meta.ritualLine) || 'Thở vào chậm… giữ nhẹ… thở ra thật dài. Ba lần thôi.') + '</p><div class="breath" id="oB">Thở vào</div><p class="small" id="oBn">Hơi thở 1 / 3</p><button class="ol" type="button" id="oSkip">Bỏ qua, rút bài luôn</button>');
+      $('#oSkip', box).addEventListener('click', pick);
+      var step = function () {
+        var b = $('#oB', box); if (!b) return;
+        if (n >= 6) { pick(); return; }
+        var inhale = n % 2 === 0; b.classList.toggle('big', inhale); b.textContent = inhale ? 'Thở vào' : 'Thở ra';
+        $('#oBn', box).textContent = 'Hơi thở ' + (Math.floor(n / 2) + 1) + ' / 3'; n++;
+        oTimer = setTimeout(step, reduce ? 1500 : 4000);
+      };
+      step();
+    };
+    var pick = function () {
+      clearTimeout(oTimer);
+      var backs = ''; for (var i = 0; i < 7; i++) backs += '<button type="button" aria-label="Lá bài úp số ' + (i + 1) + '" style="background-image:url(' + DECK.back + ')"></button>';
+      shell('<h2>' + esc(DECK.meta.pickLine || 'Hôm nay, lá bài nào sẽ tìm đến bạn?') + '</h2><p style="margin:0">' + esc(DECK.meta.intentLine || '') + '</p><div class="ofan shuffle" id="oFan">' + backs + '</div><p class="small muted">Chạm vào lá bài mà trực giác của bạn chọn.</p>');
+      $$('#oFan button', box).forEach(function (b) { b.addEventListener('click', function () { var c = oDraw(p); showFace(c, ymd(), true); }); });
+    };
+    breathe();
+  }
+  function bindOracle(p, again) {
+    var b = $('#oDraw'); if (b) b.addEventListener('click', function () { b.disabled = true; b.textContent = 'Đang xào bài…'; loadDeck().then(function () { oracleOpen(p, 'draw'); }).catch(function () { b.disabled = false; b.textContent = 'Rút lá bài ✦'; flash('Chưa tải được bộ bài. Mở app khi có mạng một lần để lưu bộ bài.'); }); });
+    var o = $('#oOpen'); if (o) o.addEventListener('click', function () { var t = oToday(p); if (t) oracleOpen(p, 'view', t.c); });
+    var n = $('#oNote'); if (n) n.addEventListener('change', function () { var x = oToday(p, n.dataset.k); if (x) { x.n = n.value.trim().slice(0, 1000); save(); } });
+    $$('img[data-oback]').forEach(function (im) { loadDeck().then(function (d) { im.src = d.back; }).catch(function () { im.remove(); }); });
+    if ($('[data-opend]') || (oToday(p) && !DECK)) loadDeck().then(function () { again(); }).catch(function () {});
+  }
   function cardHtml(p, r, day, dm, sm, isNow) {
     var t = plain(r.type).replace(/ /g, ''), su = snoozeUntil(p, day, r.id), snz = su > Date.now() && !dm[r.id];
     return '<li class="rcard t-' + t + (dm[r.id] ? ' done' : '') + (sm[r.id] ? ' skipped' : '') + (isNow ? ' now' : '') + '"><time>' + esc(r.time) + '</time><div><div class="rtitle">' + esc(r.title) + (r.star ? ' <span class="pill" title="Chờ xét nghiệm hoặc bác sĩ đồng ý">*</span>' : '') + '</div><div class="rdetail">' + esc(r.detail) + '</div>' +
-      '<div class="rmeta"><span class="pill">' + esc(r.type) + (r.ml ? ' · ' + r.ml + ' ml' : '') + '</span>' + (isCore(p, r) && !isWater(r) ? '<span class="pill core">Cốt lõi</span>' : '') + (snz ? '<span class="pill snz">Hoãn đến ' + hhmm(su) + '</span>' : '') + (sm[r.id] ? '<span>Đã bỏ qua</span>' : '') + '</div>' +
+      '<div class="rmeta"><span class="pill">' + esc(r.type) + (r.ml ? ' · ' + r.ml + ' ml' : '') + '</span>' + (isCore(p, r) && !isWater(r) ? '<span class="pill core">Cốt lõi</span>' : '') + ((oToday(p, day) || {}).t === r.id ? '<span class="pill orc">✦ Lá bài hôm nay</span>' : '') + (snz ? '<span class="pill snz">Hoãn đến ' + hhmm(su) + '</span>' : '') + (sm[r.id] ? '<span>Đã bỏ qua</span>' : '') + '</div>' +
       (r.genes ? '<details class="why"><summary>Vì sao việc này?</summary><p>Căn cứ: ' + esc(r.genes) + '. Đọc thêm ở tab Tài liệu.</p></details>' : '') +
       '</div><label class="chk"><input type="checkbox" data-rid="' + esc(r.id) + '"' + (dm[r.id] ? ' checked' : '') + '><span>Xong</span></label></li>';
   }
@@ -543,6 +712,97 @@ details.grp>summary::-webkit-details-marker{display:none}
       FEEL.map(function (x) { return '<div class="frow"><b class="small">' + x[1] + '</b><div class="scale" role="group" aria-label="' + x[1] + '">' + [1, 2, 3, 4, 5].map(function (v) { var on = Number(f[x[0]]) === v; return '<button type="button" data-f="' + x[0] + '" data-v="' + v + '" class="' + (on ? 'on' : '') + '" aria-pressed="' + on + '">' + v + '</button>'; }).join('') + '</div><div class="scale-l"><span>Rất kém</span><span>Rất tốt</span></div></div>'; }).join('') +
       '<div class="frow"><label class="small" for="kg"><b>Cân nặng (kg)</b> <span class="muted">· tuần một lần là đủ, không bắt buộc</span></label><input id="kg" inputmode="decimal" autocomplete="off" placeholder="' + (kg ? num(kg) : 'ví dụ 58,5') + '" value="' + (f.kg ? num(f.kg) : '') + '"></div>' +
       (filled ? '<div class="row" style="margin-top:10px"><button class="btn sm" type="button" id="feelDone">Lưu</button></div>' : '') + '</section>';
+  }
+  // ---------- daily screenshots of the scale / wearable app (kept on this phone, IndexedDB) ----------
+  var MEAS = [['fat', '% mỡ', '%'], ['sleepH', 'Giấc ngủ (giờ)', 'giờ'], ['steps', 'Bước chân', 'bước'], ['rhr', 'Nhịp tim nghỉ', 'nhịp/phút']];
+  var IDB = null, thumbUrls = [];
+  function idb() {
+    if (IDB) return IDB;
+    IDB = new Promise(function (res, rej) {
+      if (!window.indexedDB) { rej(new Error('no idb')); return; }
+      var r = indexedDB.open('ttk-photos', 1);
+      r.onupgradeneeded = function () { var os = r.result.createObjectStore('p', { keyPath: 'k' }); os.createIndex('pid', 'pid'); };
+      r.onsuccess = function () { res(r.result); }; r.onerror = function () { IDB = null; rej(r.error); };
+    });
+    return IDB;
+  }
+  function idbDo(mode, fn) { return idb().then(function (db) { return new Promise(function (res, rej) { var tx = db.transaction('p', mode), st = tx.objectStore('p'), out = fn(st); tx.oncomplete = function () { res(out && out.result !== undefined ? out.result : out); }; tx.onerror = function () { rej(tx.error); }; }); }); }
+  function photosOf(pid) { return idbDo('readonly', function (st) { return st.index('pid').getAll(pid); }).then(function (l) { return (l || []).sort(function (a, b) { return a.at - b.at; }); }); }
+  function photoPut(o) { return idbDo('readwrite', function (st) { st.put(o); }); }
+  function photoDel(k) { return idbDo('readwrite', function (st) { st.delete(k); }); }
+  function photosClear(pid) { return photosOf(pid).then(function (l) { return idbDo('readwrite', function (st) { l.forEach(function (x) { st.delete(x.k); }); }); }).catch(function () {}); }
+  function shrink(file) {
+    return new Promise(function (res) {
+      var img = new Image(), u = URL.createObjectURL(file);
+      img.onload = function () {
+        var M = 1600, w = img.naturalWidth, h = img.naturalHeight, k = Math.min(1, M / Math.max(w, h));
+        var c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(u);
+        c.toBlob(function (b) { res(b || file); }, 'image/jpeg', 0.82);
+      };
+      img.onerror = function () { URL.revokeObjectURL(u); res(file); };
+      img.src = u;
+    });
+  }
+  function measOf(p, k) { var f = feelOf(p, k); f.m = f.m || {}; return f.m; }
+  function measCard(p, day) {
+    var m = measOf(p, day);
+    return '<section class="card meas"><h2>Số đo hôm nay</h2><p class="small muted" style="margin:4px 0 10px">Chụp màn hình app cân điện tử hoặc đồng hồ, vòng đeo (giấc ngủ, nhịp tim, bước chân, HRV…). Ảnh lưu trên điện thoại này để bạn gửi chuyên gia khi tư vấn. App không tự đọc số trong ảnh, muốn xem xu hướng thì gõ vài số chính bên dưới.</p>' +
+      '<label class="btn gold" style="display:inline-flex;align-items:center;cursor:pointer">Thêm ảnh chụp màn hình<input id="mFile" type="file" accept="image/*" multiple hidden></label>' +
+      '<div class="thumbs" id="mThumbs" aria-live="polite"></div>' +
+      '<div class="mgrid">' + MEAS.map(function (x) { return '<label>' + x[1] + '<input inputmode="decimal" data-m="' + x[0] + '" value="' + (m[x[0]] != null ? num(m[x[0]]) : '') + '" placeholder="' + x[2] + '"></label>'; }).join('') + '</div>' +
+      '<p class="small muted" style="margin:8px 0 0">Cân nặng ghi ở khung "Hôm nay bạn thấy thế nào?".</p></section>';
+  }
+  function fillThumbs(p, day) {
+    var box = $('#mThumbs'); if (!box) return;
+    thumbUrls.forEach(function (u) { URL.revokeObjectURL(u); }); thumbUrls = [];
+    photosOf(p.id).then(function (l) {
+      var t = l.filter(function (x) { return x.day === day; });
+      box.innerHTML = t.map(function (x) { var u = URL.createObjectURL(x.blob); thumbUrls.push(u); return '<div class="th"><img alt="Ảnh số đo ' + esc(x.day) + '" src="' + u + '"><button type="button" aria-label="Xoá ảnh" data-pdel="' + esc(x.k) + '">×</button></div>'; }).join('');
+      $$('[data-pdel]', box).forEach(function (b) { b.addEventListener('click', function () { if (b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = '?'; b.setAttribute('aria-label', 'Bấm lần nữa để xoá'); return; } photoDel(b.dataset.pdel).then(function () { fillThumbs(p, day); }); }); });
+    }).catch(function () { box.innerHTML = '<p class="small muted">Trình duyệt này không lưu được ảnh.</p>'; });
+  }
+  function bindMeas(p, day) {
+    var inp = $('#mFile'); if (!inp) return;
+    inp.addEventListener('change', function () {
+      var files = Array.prototype.slice.call(inp.files || []); if (!files.length) return;
+      var box = $('#mThumbs'); if (box) box.insertAdjacentHTML('beforeend', '<p class="small muted" id="mBusy">Đang lưu ảnh…</p>');
+      try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
+      files.reduce(function (pr, f, i) { return pr.then(function () { return shrink(f).then(function (b) { return photoPut({ k: p.id + '|' + day + '|' + Date.now() + '-' + i, pid: p.id, day: day, at: Date.now(), blob: b }); }); }); }, Promise.resolve())
+        .then(function () { inp.value = ''; fillThumbs(p, day); flash('Đã lưu ' + files.length + ' ảnh số đo.'); })
+        .catch(function () { var b2 = $('#mBusy'); if (b2) b2.textContent = 'Chưa lưu được ảnh (bộ nhớ trình duyệt bị chặn hoặc đầy).'; });
+    });
+    $$('input[data-m]').forEach(function (i) { i.addEventListener('change', function () { var v = parseFloat(String(i.value).replace(',', '.')); var m = measOf(p, day); if (isFinite(v) && v >= 0) m[i.dataset.m] = Math.round(v * 10) / 10; else delete m[i.dataset.m]; save(); }); });
+    fillThumbs(p, day);
+  }
+  function measStatsHtml(p, st) {
+    var f = store.feel[p.id] || {}, rows = st.perDay.filter(function (x) { var v = f[x.k]; return v && (v.kg || (v.m && Object.keys(v.m).length)); }).slice(-14);
+    var first = {}, last = {};
+    st.perDay.forEach(function (x) { var v = f[x.k]; if (!v) return; var all = Object.assign({ kg: v.kg }, v.m || {}); Object.keys(all).forEach(function (k) { if (all[k] == null) return; if (first[k] == null) first[k] = all[k]; last[k] = all[k]; }); });
+    var cols = [['kg', 'Cân (kg)']].concat(MEAS.map(function (x) { return [x[0], x[1].replace(' (giờ)', '')]; }));
+    var trend = cols.filter(function (c) { return first[c[0]] != null && last[c[0]] != null; }).map(function (c) { return c[1] + ': ' + num(first[c[0]]) + ' → ' + num(last[c[0]]); }).join(' · ');
+    return '<section class="card"><h2>Số đo và ảnh chụp</h2>' + (trend ? '<p class="small" style="margin:6px 0 0"><b>Đầu kỳ → gần nhất:</b> ' + esc(trend) + '</p>' : '<p class="small muted" style="margin:6px 0 0">Chưa có số đo nào được gõ. Ảnh chụp màn hình vẫn được lưu để gửi chuyên gia.</p>') +
+      (rows.length ? '<div style="overflow-x:auto"><table class="ftab mtab"><thead><tr><th>Ngày</th>' + cols.map(function (c) { return '<th>' + c[1] + '</th>'; }).join('') + '<th>Ảnh</th></tr></thead><tbody>' +
+        rows.map(function (x) { var v = f[x.k] || {}, mm = v.m || {}; return '<tr><td>' + x.d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }) + '</td>' + cols.map(function (c) { var val = c[0] === 'kg' ? v.kg : mm[c[0]]; return '<td>' + (val != null ? num(val) : '—') + '</td>'; }).join('') + '<td class="ph" data-phk="' + x.k + '">·</td></tr>'; }).join('') + '</tbody></table></div>' : '') +
+      '<p class="small" style="margin:10px 0 6px" id="phCount">Đang đếm ảnh…</p><div class="row"><button class="btn" type="button" id="phSend">Gửi ảnh số đo cho chuyên gia</button></div><p class="small muted" style="margin:6px 0 0">App chọn tối đa 7 ảnh trải đều trong kỳ (đúng số ảnh app chuyên gia đọc được). Bạn tự chọn gửi qua Zalo hoặc email. Ảnh không nằm trong file sao lưu.</p><p class="status" id="phMsg" aria-live="polite"></p></section>';
+  }
+  function spread(l, n) { if (l.length <= n) return l; var out = []; for (var i = 0; i < n; i++) out.push(l[Math.round(i * (l.length - 1) / (n - 1))]); return out; }
+  function bindMeasStats(p, st) {
+    var from = st.from;
+    photosOf(p.id).then(function (l) {
+      var inP = l.filter(function (x) { return x.day >= from; }), byDay = {};
+      inP.forEach(function (x) { byDay[x.day] = (byDay[x.day] || 0) + 1; });
+      $$('[data-phk]').forEach(function (td) { td.textContent = byDay[td.dataset.phk] || '—'; });
+      var c = $('#phCount'); if (c) c.textContent = inP.length ? 'Có ' + inP.length + ' ảnh trong ' + Object.keys(byDay).length + ' ngày của kỳ này.' : 'Chưa có ảnh nào trong kỳ này. Thêm ảnh ở tab Hôm nay.';
+      var b = $('#phSend'); if (!b) return; if (!inP.length) { b.disabled = true; return; }
+      b.addEventListener('click', function () {
+        var pick = spread(inP, 7), files = pick.map(function (x, i) { return new File([x.blob], 'so-do-' + x.day + '-' + (i + 1) + '.jpg', { type: 'image/jpeg' }); });
+        var msg = $('#phMsg');
+        if (navigator.canShare && navigator.canShare({ files: files })) { navigator.share({ files: files, title: 'Ảnh số đo — ' + p.name, text: 'Ảnh số đo của ' + p.name + ' (' + pick.length + ' ảnh)' }).catch(function () {}); return; }
+        files.forEach(function (f, i) { setTimeout(function () { var a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = f.name; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 4000); }, i * 400); });
+        if (msg) msg.textContent = 'Đã tải ' + files.length + ' ảnh về máy. Gửi các ảnh này cho chuyên gia qua Zalo hoặc email.';
+      });
+    }).catch(function () { var c = $('#phCount'); if (c) c.textContent = 'Trình duyệt này không lưu được ảnh.'; });
   }
   function backupDue(p) {
     var age = function (iso) { return iso ? (Date.now() - new Date(iso).getTime()) / 864e5 : 1e9; };
@@ -576,12 +836,13 @@ details.grp>summary::-webkit-details-marker{display:none}
       (hasP2 ? '<div class="seg" role="group" aria-label="Giai đoạn">' + p.phases.map(function (ph) { return '<button type="button" data-ph="' + ph.id + '" class="' + (String(p.phase) === String(ph.id) ? 'on' : '') + '">' + esc(ph.name) + '</button>'; }).join('') + '</div>' : '') +
       '<div class="lightrow"><button type="button" class="chip' + (light ? ' on' : '') + '" id="lightBtn" aria-pressed="' + light + '">' + (light ? 'Đang là ngày nhẹ' : 'Hôm nay là ngày nhẹ?') + '</button><span class="small muted">' +
         (light ? 'Chỉ giữ ' + rs.length + ' việc cốt lõi. Ngày nhẹ không làm đứt chuỗi.' : 'Ốm, đi xa, bận: chỉ giữ việc cốt lõi' + (p.coreFlag ? ' chuyên gia đã đánh dấu' : ' (thuốc, nước, giấc ngủ)') + '.') + '</span></div></section>' +
-      (rv ? reviewCard(rv) : '') +
+      oracleTodayHtml(p, day) +
+      (rv ? reviewCard(rv) + oracleReflectHtml(p, rv.k, rv.label) : (nowHM() >= REVIEW_AT ? oracleReflectHtml(p, day, 'hôm nay') : '')) +
       (rv && rv.label === 'hôm nay' ? '' : '<section class="card next due" id="dueBanner" hidden aria-live="polite"></section>') + notifyCard() +
       (backupDue(p) ? '<p class="note" style="margin:0">Đổi điện thoại hay xoá trình duyệt là mất tiến độ. <button class="linkbtn" id="nudgeBk" type="button">Lưu bản sao ngay</button></p>' : '') +
       (nx ? '<section class="card next"><span class="lbl">Việc tiếp theo · ' + esc(nx.time) + '</span><p class="big">' + esc(nx.title) + '</p><p style="margin:0">' + esc(nx.detail) + '</p><div class="row" style="margin-top:10px"><button class="btn" type="button" data-done="' + esc(nx.id) + '">Đã làm xong</button></div></section>'
           : '<section class="card next"><span class="lbl">Hôm nay</span><p class="big">' + (rs.length && done === rs.length ? 'Đã xong tất cả. Cảm ơn bạn đã chăm cơ thể mình.' : 'Không còn việc nào sau giờ này.') + '</p></section>') +
-      feelCard(p, day) + groups +
+      feelCard(p, day) + measCard(p, day) + groups +
       (rest.length ? '<details class="sec"><summary>' + rest.length + ' việc khác tạm nghỉ hôm nay</summary><ul class="small" style="padding-left:18px">' + rest.map(function (r) { return '<li>' + esc(r.time) + ' · ' + esc(r.title) + '</li>'; }).join('') + '</ul></details>' : '') +
       offerCard(p) +
       '<section class="card"><div class="row" style="justify-content:space-between"><h2>7 ngày qua</h2><button class="linkbtn" type="button" id="toStats">Tiến độ cả giai đoạn →</button></div><div class="week" style="margin-top:10px">' + weekHtml + '</div></section>' +
@@ -606,7 +867,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     $('#feelDone') && $('#feelDone').addEventListener('click', function () { var i = $('#kg'); if (i) i.dispatchEvent(new Event('change')); feelEdit = false; again(); });
     $('#feelEdit') && $('#feelEdit').addEventListener('click', function () { feelEdit = true; again(); });
     $('#nudgeBk') && $('#nudgeBk').addEventListener('click', function () { saveBackup(function () { again(); }); });
-    bindIcs(p, again); bindOffers(p, again);
+    bindIcs(p, again); bindOffers(p, again); bindOracle(p, again); bindMeas(p, day);
   }
   function notifyCard() {
     var st = store.notify;
@@ -705,11 +966,24 @@ details.grp>summary::-webkit-details-marker{display:none}
       'Hoàn thành ' + st.rate + '% (' + st.done + '/' + st.sched + ' việc), bỏ qua ' + st.skip + ', chưa đánh dấu ' + st.missed + '\n' +
       'Ngày giữ nhịp (từ 80%): ' + st.kept + '/' + st.days + ' · chuỗi hiện tại ' + st.cur + ' ngày · dài nhất ' + st.best + ' ngày\n' +
       (st.light ? 'Ngày nhẹ: ' + st.light + '\n' : '') +
+      (function () { var os = oStats(p, st); return os.draws ? 'Lá bài thức tỉnh: đã gặp ' + os.seen + '/22 lá, rút ' + os.draws + ' ngày' + (os.taskN ? ', làm xong ' + os.taskDone + '/' + os.taskN + ' việc của lá bài' : '') + '\n' : ''; })() +
       (st.waterGoalAvg ? 'Nước trung bình ' + st.waterAvg + ' / ' + st.waterGoalAvg + ' ml mỗi ngày\n' : '') +
       (st.feel.n ? 'Cảm nhận (trên 5, ' + st.feel.n + ' ngày): ' + FEEL.map(function (m) { return m[1].toLowerCase() + ' ' + avg(st.feel.all, m[0]) + (st.feel.kept[m[0]] && st.feel.other[m[0]] ? ' (ngày giữ nhịp ' + avg(st.feel.kept, m[0]) + ', ngày khác ' + avg(st.feel.other, m[0]) + ')' : ''); }).join('; ') + '\n' : '') +
       (st.feel.kg.length >= 2 ? 'Cân nặng ' + num(st.feel.kg[0]) + ' → ' + num(st.feel.kg[st.feel.kg.length - 1]) + ' kg\n' : '') +
       'Theo loại: ' + Object.keys(st.byType).map(function (k) { return k + ' ' + pctTxt(st.byType[k]) + '%'; }).join(', ') + '\n' +
       (weak.length ? 'Cần chú ý: ' + weak.join(', ') + '\n' : '') + '(Gửi từ app Thuận Gene Trường Thọ)';
+  }
+  function oStats(p, st) {
+    var o = oMap(p), draws = 0, taskN = 0, taskDone = 0;
+    st.perDay.forEach(function (x) { var e = o[x.k]; if (!e || !e.c) return; draws++; if (e.t) { taskN++; if (((store.done[p.id] || {})[x.k] || {})[e.t]) taskDone++; } });
+    return { draws: draws, taskN: taskN, taskDone: taskDone, seen: Object.keys(oSeen(p)).length };
+  }
+  function oGardenHtml(p, st) {
+    var os = oStats(p, st), seen = oSeen(p);
+    var cells = DECK ? DECK.cards.map(function (c) { return seen[c.id] ? '<button type="button" data-ocard="' + c.id + '" aria-label="' + esc(c.title) + '">' + oArt(c, 'xs') + '</button>' : '<button type="button" class="lock" tabindex="-1" aria-label="Chưa gặp" style="background-image:url(' + DECK.back + ')"></button>'; }).join('') : '';
+    return '<section class="card"><h2>Vườn thẻ của bạn</h2><p class="small" style="margin:6px 0 0">Đã gặp <b>' + os.seen + ' / 22</b> lá thức tỉnh. Trong giai đoạn này bạn rút ' + os.draws + ' lá' + (os.taskN ? ', làm xong <b>' + os.taskDone + ' / ' + os.taskN + '</b> việc của lá bài' : '') + '.</p>' +
+      (cells ? '<div class="ogarden">' + cells + '</div>' : '<p class="small muted" data-ogwait>Đang tải vườn thẻ…</p>') +
+      (os.seen >= 22 ? '<p class="small" style="margin:10px 0 0">Bạn đã gặp đủ 22 lá. Vườn Game-học Vietwise còn nhiều khu vườn khác cho cả nhà. <a href="' + GARDEN_URL + '" target="_blank" rel="noopener">Ghé xem</a></p>' : '') + '</section>';
   }
   function renderStats(p, m) {
     var st = stats(p), v = verdict(st), f = function (k) { return parseYmd(k).toLocaleDateString('vi-VN'); };
@@ -727,12 +1001,15 @@ details.grp>summary::-webkit-details-marker{display:none}
         (st.waterGoalAvg ? '<div class="kpi water"><b>' + st.waterAvg.toLocaleString('vi-VN') + ' ml</b><span>Nước trung bình mỗi ngày / ' + st.waterGoalAvg.toLocaleString('vi-VN') + ' ml</span></div>' : '<div class="kpi"><b>' + st.skip + '</b><span>Việc đã bỏ qua</span></div>') +
       '</section>' +
       '<section class="card"><h2>Lịch giữ nhịp</h2><p class="small muted" style="margin:4px 0 10px">Mỗi ô là một ngày' + (st.days > 84 ? ' (12 tuần gần nhất)' : '') + '. Ô viền vàng là hôm nay.</p>' + heatHtml(st) + '</section>' +
-      quoteHtml(q) + feelHtml(st.feel) +
+      quoteHtml(q) + feelHtml(st.feel) + measStatsHtml(p, st) + oGardenHtml(p, st) +
       '<section class="card"><h2>Theo loại việc</h2><p class="small muted" style="margin:4px 0 0">Loại nào thấp là chỗ cần nhờ chuyên gia chỉnh cho vừa sức.</p>' + rowsHtml(st.byType) + '</section>' +
       '<section class="card"><h2>Theo khung giờ</h2>' + rowsHtml(st.bySlot) + '</section>' +
       '<section class="card"><h2>Mang tiến độ đi tư vấn</h2><p class="small" style="margin:6px 0 10px">Gửi bảng tóm tắt này cho chuyên gia trước buổi tư vấn tiếp theo. Bạn tự chọn gửi qua Zalo, email hay tin nhắn. App không tự gửi.</p><div class="row"><button class="btn" id="shareSt" type="button">Chia sẻ tiến độ</button><button class="btn ghost" id="resetSt" type="button">Đo lại từ hôm nay</button></div><p class="status" id="stMsg" aria-live="polite"></p></section>' +
       (hist.length ? '<section class="card"><h2>Các kỳ trước</h2><ul class="hist small" style="padding-left:18px;margin:8px 0 0">' + hist.map(function (h) { return '<li>' + esc(h.phase) + ', ' + f(h.from) + ' – ' + f(h.to) + ': <b>' + h.rate + '%</b> trong ' + h.days + ' ngày, chuỗi dài nhất ' + h.best + ' ngày</li>'; }).join('') + '</ul></section>' : '') +
       '<p class="small muted" style="margin:0">Chỉ tính các việc đã đến giờ. Mỗi lần nhập hồ sơ mới từ chuyên gia, app lưu kỳ cũ vào "Các kỳ trước" và bắt đầu đo kỳ mới. Đổi giai đoạn thì đo riêng giai đoạn đó.</p>';
+    bindMeasStats(p, st);
+    $$('[data-ocard]', m).forEach(function (b) { b.addEventListener('click', function () { oracleOpen(p, 'view', Number(b.dataset.ocard)); }); });
+    if ($('[data-ogwait]', m)) loadDeck().then(function () { if (view === 'stats') { keepScroll = true; render(); } }).catch(function () {});
     $('#shareSt').addEventListener('click', function () {
       var t = shareText(p, st), msg = $('#stMsg');
       if (navigator.share) { navigator.share({ title: 'Tiến độ giao thức trường thọ', text: t }).catch(function () {}); return; }
@@ -759,11 +1036,12 @@ details.grp>summary::-webkit-details-marker{display:none}
     var st = stats(p), recent = st.perDay.slice(-7), f = store.feel[p.id] || {}, low = 0, rated = 0;
     recent.forEach(function (x) { var v = f[x.k]; if (v && (v.energy || v.sleep)) { rated++; if (Math.min(v.energy || 5, v.sleep || 5) <= 2) low++; } });
     var avgE = 0, nE = 0; recent.forEach(function (x) { var v = f[x.k]; if (v && v.energy) { avgE += Math.min(v.energy, v.sleep || 5); nE++; } });
-    return { days: st.days, rate: st.rate, kept: st.kept, waterPct: st.waterGoal ? Math.round(st.water * 100 / st.waterGoal) : 100, feelDays: rated, feelAvg: nE ? avgE / nE : 5, name: p.name };
+    return { draws: Object.keys(oMap(p)).length, seen: Object.keys(oSeen(p)).length, days: st.days, rate: st.rate, kept: st.kept, waterPct: st.waterGoal ? Math.round(st.water * 100 / st.waterGoal) : 100, feelDays: rated, feelAvg: nE ? avgE / nE : 5, name: p.name };
   }
   function offerOk(o, c) {
     var w = o.when; if (!w) return false;
     if (w.minDays && c.days < w.minDays) return false;
+    if (w.minDraws && c.draws < w.minDraws) return false;
     if (w.minRate && c.rate < w.minRate) return false;
     if (w.minKept && c.kept < w.minKept) return false;
     if (w.maxWaterPct && c.waterPct > w.maxWaterPct) return false;
@@ -816,7 +1094,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   }
   function saveBackup(after, msgEl) {
     var name = 'sao-luu-truong-tho-' + ymd() + '.json';
-    var txt = JSON.stringify({ app: BACKUP_APP, v: 1, savedAt: new Date().toISOString(), data: { profiles: store.profiles, done: store.done, skip: store.skip, feel: store.feel, light: store.light, review: store.review, icsOff: store.icsOff, active: store.active } });
+    var txt = JSON.stringify({ app: BACKUP_APP, v: 1, savedAt: new Date().toISOString(), data: { profiles: store.profiles, done: store.done, skip: store.skip, feel: store.feel, light: store.light, review: store.review, icsOff: store.icsOff, oracle: store.oracle, active: store.active } });
     var ok = function () { store.lastBackup = new Date().toISOString(); save(); if (msgEl) msgEl.textContent = 'Đã tạo bản sao ' + name + '. Cất vào Tệp, Drive hoặc Zalo của chính bạn.'; if (after) after(); };
     var file = null; try { file = new File([txt], name, { type: 'application/json' }); } catch (e) {}
     if (file && navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: 'Sao lưu Trường Thọ' }).then(ok).catch(function () {}); return; }
@@ -832,13 +1110,29 @@ details.grp>summary::-webkit-details-marker{display:none}
       '<section class="card"><h2>Sao lưu và chuyển máy</h2><p class="small" style="margin:6px 0 10px">Hồ sơ và tiến độ chỉ nằm trên điện thoại này. Lưu một bản sao vào Tệp, Drive hoặc Zalo của chính bạn. Sang máy mới: mở app, bấm <b>Nhập hồ sơ từ chuyên gia</b>, chọn file sao lưu.</p><div class="row"><button class="btn gold" id="bk" type="button">Lưu bản sao</button></div><p class="small muted" style="margin:8px 0 0" id="bkMsg">' + (store.lastBackup ? 'Lần sao lưu gần nhất: ' + new Date(store.lastBackup).toLocaleDateString('vi-VN') + '.' : 'Chưa sao lưu lần nào.') + '</p></section>' +
       catalogHtml(p) +
       '<section class="card"><h2>Liên hệ chuyên gia</h2><p class="small" style="margin:6px 0 10px">' + EXPERT.name + '</p><div class="row" style="margin-bottom:10px"><a class="btn" href="' + EXPERT.zalo + '" target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center">Nhắn Zalo cho chuyên gia</a></div><div class="row"><code style="font-size:16px;font-weight:700;color:var(--purple);user-select:all">' + EXPERT.email + '</code><button class="btn ghost" id="cp" type="button">Sao chép email</button></div></section>' +
-      '<section class="card"><h2>Xoá hồ sơ khỏi máy</h2><p class="small" style="margin:6px 0 10px">Xoá hồ sơ và các dấu đã làm xong trên điện thoại này.</p><div class="row"><button class="btn ghost" id="del" type="button">Xoá hồ sơ này</button><button class="btn" id="delYes" type="button" hidden>Xoá vĩnh viễn</button></div></section>' + readme();
+      '<section class="card"><h2>Xoá hồ sơ khỏi máy</h2><p class="small" style="margin:6px 0 10px">Xoá hồ sơ và các dấu đã làm xong trên điện thoại này.</p><div class="row"><button class="btn ghost" id="del" type="button">Xoá hồ sơ này</button><button class="btn" id="delYes" type="button" hidden>Xoá vĩnh viễn</button></div></section>' ;
     $('#pick').addEventListener('click', function () { $('#file').click(); });
     $('#bk').addEventListener('click', function () { saveBackup(null, $('#bkMsg')); });
     $$('button[data-sw]', m).forEach(function (b) { b.addEventListener('click', function () { store.active = b.dataset.sw; save(); view = 'today'; render(); }); });
     $('#cp').addEventListener('click', function (e) { var b = e.currentTarget; try { navigator.clipboard.writeText(EXPERT.email).then(function () { b.textContent = 'Đã sao chép'; }, function () { b.textContent = 'Bôi đen để sao chép'; }); } catch (x) { b.textContent = 'Bôi đen để sao chép'; } });
     $('#del').addEventListener('click', function () { $('#delYes').hidden = false; $('#del').textContent = 'Huỷ'; $('#del').onclick = function () { renderMe(p, m); }; });
-    $('#delYes').addEventListener('click', function () { delete store.profiles[p.id]; ['done', 'skip', 'feel', 'light', 'review', 'snooze', 'icsOff'].forEach(function (k) { delete store[k][p.id]; }); store.active = Object.keys(store.profiles)[0] || null; save(); view = 'today'; render(); });
+    $('#delYes').addEventListener('click', function () { delete store.profiles[p.id]; ['done', 'skip', 'feel', 'light', 'review', 'snooze', 'icsOff', 'oracle'].forEach(function (k) { delete store[k][p.id]; }); photosClear(p.id); store.active = Object.keys(store.profiles)[0] || null; save(); view = 'today'; render(); });
+  }
+  var FOOT_LINKS = [
+    { t: 'Liên hệ chuyên gia qua Zalo', u: 'https://zalo.me/0977206471', z: 1 },
+    { t: 'Email chuyên gia', u: 'mailto:hongple99@gmail.com?subject=' + encodeURIComponent('Hỏi chuyên gia — App Thuận Gene Trường Thọ'), z: 1 },
+    { t: 'Vườn Game-học Vietwise', u: 'https://iehrm.edu.vn/p/vuon-game-hoc-vietwise' },
+    { t: 'Oracle 22 lá thức tỉnh', u: 'https://vietwise.edu.vn/p/oracle-vietwise' },
+    { t: 'Ebook 9 Ngộ Nhận Tiền Mãn Kinh', u: 'https://iehrm.edu.vn/p/ebook-9-ngo-nhan-ve-tien-man-kinh' }
+  ];
+  function siteFooter() {
+    // upsell links come from the expert's shared list (goi-y.json): every catalog item; items without their own page go to Zalo
+    var cat = offers().filter(function (o) { return o.catalog; });
+    var links = cat.length ? [FOOT_LINKS[0], FOOT_LINKS[1]].concat(cat.filter(function (o) { return o.url; }).map(function (o) { return { t: o.title, u: o.url }; }), cat.filter(function (o) { return !o.url; }).map(function (o) { return { t: o.title, u: (store.offerCache && store.offerCache.zalo) || EXPERT.zalo }; })) : FOOT_LINKS.slice();
+    return '<footer class="sitefoot"><div class="brand"><img src="icon-192.png" alt="Logo Thuận Gene Trường Thọ NPH" width="52" height="52"><p>Trợ lý Ai này được thực hiện bởi <b>Chuyên gia Thuận Gene Trường Thọ Nhất Phương Hồng</b>.</p></div>' +
+      '<p style="margin:0;color:var(--ink);font-weight:700">Liên hệ chuyên gia và sản phẩm, dịch vụ</p><ul class="ups" aria-label="Liên hệ chuyên gia, sản phẩm và dịch vụ">' + links.map(function (l) { return '<li><a' + (l.z ? ' class="z"' : '') + ' href="' + esc(l.u) + '" target="_blank" rel="noopener">' + esc(l.t) + '</a></li>'; }).join('') + '</ul>' +
+      '<p class="disc"><b>Lưu ý.</b> Giao thức trường thọ giúp sống thuận đồng hồ và xu hướng sinh học, không phải lời khuyên chữa bệnh. Thông tin trong app hỗ trợ lối sống song song với điều trị, không thay thế chẩn đoán hay chỉ định của bác sĩ. Gene là xu hướng; xét nghiệm và triệu chứng quyết định can thiệp. Không tự ngưng hay đổi thuốc khi chưa hỏi bác sĩ. Có dấu hiệu bất thường, hãy liên hệ bác sĩ hoặc cơ sở y tế gần nhất. Hồ sơ chỉ lưu trên điện thoại của bạn, app không gửi dữ liệu đi đâu.</p>' +
+      (memOnly ? '<p class="disc"><b>Lưu ý:</b> trình duyệt đang chặn lưu dữ liệu, hồ sơ sẽ mất khi đóng app. Hãy mở bằng Safari hoặc Chrome thường (không ẩn danh).</p>' : '') + '</footer>';
   }
   function readme() {
     return '<footer class="readme"><b>Đọc trước khi dùng.</b> Giao thức trường thọ giúp hướng về đồng hồ và xu hướng sinh học, không phải là lời khuyên chữa bệnh. Tài liệu hỗ trợ lối sống song song với điều trị, không thay thế kết luận y khoa của bác sĩ. Gene là xu hướng; xét nghiệm và triệu chứng quyết định can thiệp. Dữ liệu sức khoẻ và gene là dữ liệu nhạy cảm: sẽ do chính chủ chọn tải lên ứng dụng, hoặc nếu người khác tải giúp phải có sự đồng ý.' + (memOnly ? '<br><b>Lưu ý:</b> trình duyệt đang chặn lưu dữ liệu, hồ sơ sẽ mất khi đóng app. Hãy mở bằng Safari hoặc Chrome thường (không ẩn danh).' : '') + '</footer>';
@@ -846,9 +1140,9 @@ details.grp>summary::-webkit-details-marker{display:none}
   $$('.tabs button').forEach(function (b) { b.addEventListener('click', function () { view = b.dataset.v; flashMsg = ''; render(); }); });
 
   // refresh "next up" each minute and when the app comes back to the screen
-  setInterval(function () { var typing = document.activeElement && document.activeElement.id === 'kg'; if (view === 'today' && cur() && !document.hidden && !typing) { keepScroll = true; render(); } tick(); }, 30000);
+  setInterval(function () { var typing = document.activeElement && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName) && document.activeElement.type !== 'checkbox'; if (view === 'today' && cur() && !document.hidden && !typing) { keepScroll = true; render(); } tick(); }, 30000);
   if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', function (e) { var d = e.data || {}; if (d.type === 'tt-act') { act(d.pid, d.day, d.rid, d.act); render(); } });
-  document.addEventListener('visibilitychange', function () { if (!document.hidden && (view === 'today' || view === 'stats') && cur() && !(document.activeElement && document.activeElement.id === 'kg')) { keepScroll = true; render(); } });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && (view === 'today' || view === 'stats') && cur() && !(document.activeElement && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName) && document.activeElement.type !== 'checkbox')) { keepScroll = true; render(); } });
 
   load();
   (function fromUrl2() { try { var u = new URL(location.href), a = u.searchParams.get('act'); if (a) { act(u.searchParams.get('pid'), u.searchParams.get('day'), u.searchParams.get('rid'), a); history.replaceState(null, '', location.pathname); } } catch (e) {} })();
