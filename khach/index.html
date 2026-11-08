@@ -361,7 +361,8 @@ details.grp>summary::-webkit-details-marker{display:none}
       title: core.title || 'Giao thức trường thọ', goal: core.goal || '',
       phases: (core.phases || []).map(function (p) { return { id: p.id, name: p.name || ('Giai đoạn ' + p.id), when: p.when || '' }; }),
       phase: Number(c.phase || 1), reminders: rs, coreFlag: rs.some(function (r) { return r.core; }), summary: pick(SUMMARY), detail: pick(DETAILED),
-      emergency: core.emergency || [], exportedAt: o.exportedAt || '', importedAt: new Date().toISOString()
+      emergency: core.emergency || [], exportedAt: o.exportedAt || '', importedAt: new Date().toISOString(),
+      gated: !!(o.gated || (c.license && c.license.code))   // only files from Chuyên gia Nhất Phương Hồng's own app use paid plans; other consultants' clients keep the full app
     };
   }
   var BACKUP_APP = 'truong-tho-khach-sao-luu';
@@ -388,6 +389,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     var p = fromFile(o);
     var old = store.profiles[p.id], today = ymd();
     if (old && old.phase) p.phase = old.phase;
+    if (old && old.gated) p.gated = true;
     p.since = (old && old.since) || {}; p.history = (old && old.history) || [];
     if (old && old.exportedAt !== p.exportedAt) {
       var st = stats(old); if (st.sched) p.history.unshift({ from: st.from, to: today, phase: phaseName(old), rate: st.rate, days: st.days, best: st.best });
@@ -1077,6 +1079,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     }));
   }
   function tier(p) {
+    if (!p.gated) return { k: 'open' };
     var t = ymd(), l = LICOK[p.id];
     if (l && l.u >= t) return { k: 'paid', u: l.u, g: l.g };
     if (t <= PROMO_END) return { k: 'promo', u: PROMO_END };
@@ -1329,7 +1332,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   function renderMe(p, m) {
     var others = Object.keys(store.profiles).filter(function (id) { return id !== p.id; });
     m.innerHTML = '<section class="card"><h1>' + esc(p.name) + '</h1><p class="small muted" style="margin:4px 0 0">' + esc(p.title) + '</p>' + (p.goal ? '<p style="margin:10px 0 0"><b>Mục tiêu:</b> ' + esc(p.goal) + '</p>' : '') +
-      '<p class="small muted" style="margin:10px 0 0">Chuyên gia gửi ngày ' + (p.exportedAt ? new Date(p.exportedAt).toLocaleDateString('vi-VN') : '—') + ' · nhập vào máy ngày ' + new Date(p.importedAt).toLocaleDateString('vi-VN') + '</p></section>' + upgradeHtml(p) +
+      '<p class="small muted" style="margin:10px 0 0">Chuyên gia gửi ngày ' + (p.exportedAt ? new Date(p.exportedAt).toLocaleDateString('vi-VN') : '—') + ' · nhập vào máy ngày ' + new Date(p.importedAt).toLocaleDateString('vi-VN') + '</p></section>' + (p.gated ? upgradeHtml(p) : '') +
       '<section class="card"><h2>Cập nhật hồ sơ</h2><p class="small" style="margin:6px 0 10px">Sau mỗi lần tư vấn, chuyên gia gửi file mới. Nhập file mới sẽ thay bản cũ, giữ nguyên các việc bạn đã đánh dấu xong và cảm nhận đã ghi.</p><button class="btn" id="pick" type="button">Nhập hồ sơ từ chuyên gia</button><p class="status" id="status" aria-live="polite">' + esc(flashMsg) + '</p></section>' +
       (others.length ? '<section class="card"><h2>Hồ sơ khác trên máy</h2><div class="row" style="margin-top:8px">' + others.map(function (id) { return '<button class="btn ghost" type="button" data-sw="' + esc(id) + '">' + esc(store.profiles[id].name) + '</button>'; }).join('') + '</div></section>' : '') +
       '<section class="card"><h2>Sao lưu và chuyển máy</h2><p class="small" style="margin:6px 0 10px">Hồ sơ và tiến độ chỉ nằm trên điện thoại này. Lưu một bản sao vào Tệp, Drive hoặc Zalo của chính bạn. Sang máy mới: mở app, bấm <b>Nhập hồ sơ từ chuyên gia</b>, chọn file sao lưu.</p><div class="row"><button class="btn gold" id="bk" type="button">Lưu bản sao</button></div><p class="small muted" style="margin:8px 0 0" id="bkMsg">' + (store.lastBackup ? 'Lần sao lưu gần nhất: ' + new Date(store.lastBackup).toLocaleDateString('vi-VN') + '.' : 'Chưa sao lưu lần nào.') + '</p></section>' + famSettingsHtml(p) +
