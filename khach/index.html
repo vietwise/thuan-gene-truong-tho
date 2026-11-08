@@ -178,7 +178,7 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
 .oart.big{aspect-ratio:3/2;border-radius:0}.oart.big .on{font-size:18px}.oart.big .os{font-size:64px}.oart.big .ot{font-size:26px}
 .oart.sm{width:72px;aspect-ratio:2/3;border-radius:10px;box-shadow:0 6px 16px rgba(0,0,0,.3)}.oart.sm .os{font-size:24px}.oart.sm .ot{font-size:10.5px}.oart.sm::after{inset:4px}
 .oart.xs{width:100%;height:100%;border-radius:8px}.oart.xs .on{font-size:10px}.oart.xs .os{font-size:16px}.oart.xs .ot{display:none}.oart.xs::after{inset:3px}
-.oimg.big{display:block;width:100%;height:auto}.oimg.sm{width:72px;border-radius:10px}.oimg.xs{width:100%;height:100%;object-fit:cover}
+.oimg.big{display:block;width:auto;max-width:100%;max-height:62vh;height:auto;margin:0 auto}.oimg.sm{width:72px;border-radius:10px}.oimg.xs{width:100%;height:100%;object-fit:cover}
 .pill.orc{background:#3A2347;color:#E0AE4E}
 #orc{position:fixed;inset:0;z-index:50;background:#F3E5C8;color:#3A2347;overflow:auto;-webkit-overflow-scrolling:touch}
 #orc .ow{max-width:520px;margin:0 auto;padding:max(16px,env(safe-area-inset-top)) 16px 40px;display:grid;gap:16px;justify-items:center;text-align:center;min-height:100%}
@@ -219,6 +219,28 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
 .review{border:2px solid var(--warn);background:var(--warn-soft)}
 .review .lbl{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--warn)}
 .rvitem{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line)}
+.clrow{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;margin-top:12px;padding:8px 12px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(160deg,#2F7A5E,#3E8E4A);color:#fff;cursor:pointer;font:inherit;text-align:left}
+.clrow .gems{display:flex;gap:4px}.gem.gmini{width:26px;height:21px;display:block}
+.clrow .new .gem{filter:drop-shadow(0 0 6px #FFD45C);animation:gemPop 1.6s ease-in-out infinite}
+@keyframes gemPop{50%{transform:scale(1.15)}}
+@media (prefers-reduced-motion:reduce){.clrow .new .gem{animation:none}}
+.clb{display:flex;align-items:center;gap:6px}.clb i,.mcl i{font-style:normal;font-weight:800;font-size:11px;background:#F26B21;color:#fff;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center}
+.clb b{font-size:20px;color:#FFD45C}.clb em{font-style:normal;font-size:12px;opacity:.9}
+.gemnew{margin:8px 0 0;color:var(--moss)}
+.mine{background:linear-gradient(160deg,#2F7A5E,#3E8E4A);color:#fff;border-radius:22px;padding:22px 16px;text-align:center;box-shadow:0 10px 26px rgba(47,122,94,.25)}
+.mine h2{color:#fff;margin:0}.mine .msub{margin:4px 0 14px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.mgems{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.mgems button{background:transparent;border:1.5px solid transparent;border-radius:14px;color:#fff;padding:8px 2px;cursor:pointer;font:inherit;display:flex;flex-direction:column;align-items:center;gap:4px}
+.mgems button.sel{background:rgba(255,255,255,.12);border-color:rgba(255,212,92,.7)}
+.mgems .gem{width:100%;max-width:64px;height:auto}.mgems b{font-size:14px}.mgems span{font-size:11px;opacity:.85}
+.mrule{margin:14px 0 10px;padding-top:12px;border-top:1px solid rgba(255,255,255,.2);line-height:1.55}
+.mcl{display:flex;align-items:center;justify-content:center;gap:10px;margin:12px 0 4px}.mcl span{letter-spacing:.1em;text-transform:uppercase;font-weight:700;font-size:13px;opacity:.85}.mcl b{font-size:30px;color:#F9A34A}
+.mhow{text-align:left;background:rgba(0,0,0,.12);border-radius:12px;padding:8px 12px;margin:8px 0}.mhow summary{cursor:pointer;font-weight:700}
+.mhow table{width:100%;border-collapse:collapse;margin-top:6px;font-size:13.5px}.mhow td{padding:4px 2px;border-top:1px solid rgba(255,255,255,.15)}.mhow td+td{text-align:right;white-space:nowrap;padding-left:8px}.mhow p{font-size:12.5px;margin:8px 0 0;opacity:.9}
+.mnote{font-size:12.5px;margin:10px 0 0;opacity:.92}.mine a{color:#FFE08A}
+.fam{border-left:5px solid #3E8E4A}.fam.done{opacity:.8}.famrow{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;margin-top:6px}.famrow time{font-weight:800;color:#2F7A5E}
+.gem.gbig{width:96px;height:auto;margin:6px auto}
+
 .lightrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .chip{border:1.5px dashed var(--moss);background:var(--sheet);color:var(--moss);border-radius:999px;padding:7px 12px;font-size:13.5px;font-weight:700;cursor:pointer}
 .chip.on{background:var(--moss);color:#fff;border-style:solid}
@@ -302,7 +324,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   // ---------- storage (this phone only) ----------
   var store = { profiles: {}, done: {}, skip: {}, active: null, notify: null, shown: {}, snooze: {}, light: {}, feel: {}, review: {}, lastBackup: null };
   var memOnly = false;
-  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.profiles) store = s; } catch (e) { memOnly = true; } ['skip', 'shown', 'snooze', 'light', 'feel', 'review', 'icsOff', 'offerSeen', 'oracle'].forEach(function (k) { store[k] = store[k] || {}; }); }
+  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.profiles) store = s; } catch (e) { memOnly = true; } ['skip', 'shown', 'snooze', 'light', 'feel', 'review', 'icsOff', 'offerSeen', 'oracle', 'why', 'breath', 'fam', 'adapt'].forEach(function (k) { store[k] = store[k] || {}; }); }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) { memOnly = true; } }
 
   // ---------- import ----------
@@ -349,7 +371,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     var d = o.data || {}, ids = Object.keys(d.profiles || {});
     if (!ids.length) throw new Error('File sao lưu không có hồ sơ nào.');
     ids.forEach(function (id) { var a = store.profiles[id], b = d.profiles[id]; if (!a || String(b.exportedAt || '') >= String(a.exportedAt || '')) store.profiles[id] = b; });
-    ['done', 'skip', 'feel', 'light', 'review', 'icsOff', 'oracle'].forEach(function (k) { mergeInto(store[k], d[k]); });
+    ['done', 'skip', 'feel', 'light', 'review', 'icsOff', 'oracle', 'why', 'breath', 'fam', 'adapt'].forEach(function (k) { mergeInto(store[k], d[k]); });
     store.active = d.active && store.profiles[d.active] ? d.active : ids[0];
     save(); lastImport = 'restore'; return store.profiles[store.active];
   }
@@ -400,7 +422,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   function act(pid, day, rid, how) {
     var p = store.profiles[pid]; if (!p) return;
     var sz = (store.snooze[p.id] = store.snooze[p.id] || {}); sz[day] = sz[day] || {};
-    if (how === 'done') { doneMap(p, day)[rid] = 1; delete skipMap(p, day)[rid]; delete sz[day][rid]; }
+    if (how === 'done') { if (sz[day][rid]) { var ad = (store.adapt[p.id] = store.adapt[p.id] || {}); ad[day] = 1; } doneMap(p, day)[rid] = 1; delete skipMap(p, day)[rid]; delete sz[day][rid]; }
     else if (how === 'skip') { skipMap(p, day)[rid] = 1; delete doneMap(p, day)[rid]; delete sz[day][rid]; }
     else if (how === 'snooze') { sz[day][rid] = Date.now() + SNOOZE_MIN * 60000; (store.shown[day] = store.shown[day] || {})[rid] = 0; }
     save(); closeNote(rid);
@@ -425,8 +447,8 @@ details.grp>summary::-webkit-details-marker{display:none}
   }
   function tick() {
     var p = cur(); if (!p) return;
-    var due = dueNow(p), day = ymd(), now = Date.now(), hm = nowHM();
-    var banner = $('#dueBanner'); if (banner) renderDue(p, banner, due);
+    var due = dueNow(p).concat(famDue(p)), day = ymd(), now = Date.now(), hm = nowHM();
+    var banner = $('#dueBanner'); if (banner) renderDue(p, banner, dueNow(p));
     if (store.notify !== 'on' || !canNotify() || Notification.permission !== 'granted') return;
     store.shown[day] = store.shown[day] || {};
     var three = (Notification.maxActions || 0) >= 3;
@@ -480,7 +502,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   function fold(line) { var out = '', s = line; while (s.length > 70) { out += s.slice(0, 70) + '\r\n '; s = s.slice(70); } return out + s; }
   function icsAll(p) {
     var hasP2 = p.phases.length > 1;
-    return p.reminders.filter(function (r) { return /^\d{1,2}:\d{2}$/.test(r.time) && (r.phase === 'both' || !hasP2 || r.phase === String(p.phase)); }).sort(function (x, y) { return mins(x.time) - mins(y.time); });
+    var l = p.reminders.filter(function (r) { return /^\d{1,2}:\d{2}$/.test(r.time) && (r.phase === 'both' || !hasP2 || r.phase === String(p.phase)); }), f = famR(p); if (f) l = l.concat([f]); return l.sort(function (x, y) { return mins(x.time) - mins(y.time); });
   }
   function icsOff(p) { var o = (store.icsOff = store.icsOff || {}); return o[p.id] = o[p.id] || {}; }
   function icsPicked(p) { var off = icsOff(p); return icsAll(p).filter(function (r) { return !off[r.id]; }); }
@@ -631,7 +653,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   var ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX', 'XXI', 'XXII'];
   function oArt(c, size) {
     var g = oGroup(c), name = String(c.title).replace(/\s*\(.*\)\s*$/, '');
-    if (c.image) return '<img class="oimg ' + size + '" alt="' + esc(c.imageAlt || name) + '" src="' + c.image + '">';
+    if (c.image) return '<img class="oimg ' + size + '"' + (size === 'xs' ? ' loading="lazy"' : '') + ' alt="' + esc(c.imageAlt || name) + '" src="' + c.image + '">';
     return '<div class="oart ' + size + '" style="--og:' + g.color + '" role="img" aria-label="Lá bài ' + esc(name) + '"><span class="on">' + (ROMAN[c.id] || c.id) + '</span><span class="os">✦</span><span class="ot">' + esc(name) + '</span></div>';
   }
   function oGroup(c) { return (DECK && DECK.meta.groups[c.group]) || { name: '', color: '#5B3A72', meaning: '' }; }
@@ -661,21 +683,22 @@ details.grp>summary::-webkit-details-marker{display:none}
   }
   var oTimer = null;
   function oracleOpen(p, mode, cardId) {
-    var box = document.createElement('div'); box.id = 'orc'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', 'Lá bài hôm nay');
+    var box = document.createElement('div'); box.id = 'orc'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', mode === 'breath' ? 'Thở bình an' : 'Lá bài hôm nay');
     document.body.appendChild(box); document.body.style.overflow = 'hidden';
     var close = function () { clearTimeout(oTimer); box.remove(); document.body.style.overflow = ''; keepScroll = true; render(); };
     box.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
     var shell = function (inner) { box.innerHTML = '<div class="ow"><div class="otop"><b>✦ 22 lá thức tỉnh</b><button class="x" type="button" data-oclose>Đóng</button></div>' + inner + '</div>'; $$('[data-oclose]', box).forEach(function (b) { b.addEventListener('click', close); }); var f = box.querySelector('button.ob, button.x'); f && f.focus(); };
     var showFace = function (c, k, fresh) { shell(oFaceHtml(p, c, k, fresh)); };
+    var calm = function () { markBreath(p); shell('<h2>An lạc</h2>' + gemSvg(true, 'gbig') + '<p style="margin:0">Ba hơi thở bình an đã xong. Mang sự lắng dịu này vào việc tiếp theo của bạn.</p><button class="ob" type="button" data-oclose>Xong</button>'); };
     if (mode === 'view') { showFace(oCard(cardId), cardId === (oToday(p) || {}).c ? ymd() : '', false); return; }
     var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
     var breathe = function () {
       var n = 0;
-      shell('<h2>Thở và lắng xuống</h2><p style="margin:0">' + esc((DECK.meta.ritualLine) || 'Thở vào chậm… giữ nhẹ… thở ra thật dài. Ba lần thôi.') + '</p><div class="breath" id="oB">Thở vào</div><p class="small" id="oBn">Hơi thở 1 / 3</p><button class="ol" type="button" id="oSkip">Bỏ qua, rút bài luôn</button>');
-      $('#oSkip', box).addEventListener('click', pick);
+      shell('<h2>' + (mode === 'breath' ? 'Thở bình an' : 'Thở và lắng xuống') + '</h2><p style="margin:0">' + esc((DECK && DECK.meta.ritualLine) || 'Thở vào chậm… giữ nhẹ… thở ra thật dài. Ba lần thôi.') + '</p><div class="breath" id="oB">Thở vào</div><p class="small" id="oBn">Hơi thở 1 / 3</p><button class="ol" type="button" id="oSkip">' + (mode === 'breath' ? 'Dừng lại' : 'Bỏ qua, rút bài luôn') + '</button>');
+      $('#oSkip', box).addEventListener('click', mode === 'breath' ? close : pick);
       var step = function () {
         var b = $('#oB', box); if (!b) return;
-        if (n >= 6) { pick(); return; }
+        if (n >= 6) { if (mode === 'breath') calm(); else { markBreath(p); pick(); } return; }
         var inhale = n % 2 === 0; b.classList.toggle('big', inhale); b.textContent = inhale ? 'Thở vào' : 'Thở ra';
         $('#oBn', box).textContent = 'Hơi thở ' + (Math.floor(n / 2) + 1) + ' / 3'; n++;
         oTimer = setTimeout(step, reduce ? 1500 : 4000);
@@ -701,7 +724,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     var t = plain(r.type).replace(/ /g, ''), su = snoozeUntil(p, day, r.id), snz = su > Date.now() && !dm[r.id];
     return '<li class="rcard t-' + t + (dm[r.id] ? ' done' : '') + (sm[r.id] ? ' skipped' : '') + (isNow ? ' now' : '') + '"><time>' + esc(r.time) + '</time><div><div class="rtitle">' + esc(r.title) + (r.star ? ' <span class="pill" title="Chờ xét nghiệm hoặc bác sĩ đồng ý">*</span>' : '') + '</div><div class="rdetail">' + esc(r.detail) + '</div>' +
       '<div class="rmeta"><span class="pill">' + esc(r.type) + (r.ml ? ' · ' + r.ml + ' ml' : '') + '</span>' + (isCore(p, r) && !isWater(r) ? '<span class="pill core">Cốt lõi</span>' : '') + ((oToday(p, day) || {}).t === r.id ? '<span class="pill orc">✦ Lá bài hôm nay</span>' : '') + (snz ? '<span class="pill snz">Hoãn đến ' + hhmm(su) + '</span>' : '') + (sm[r.id] ? '<span>Đã bỏ qua</span>' : '') + '</div>' +
-      (r.genes ? '<details class="why"><summary>Vì sao việc này?</summary><p>Căn cứ: ' + esc(r.genes) + '. Đọc thêm ở tab Tài liệu.</p></details>' : '') +
+      (r.genes ? '<details class="why" data-why="' + esc(r.id) + '"><summary>Vì sao việc này?</summary><p>Căn cứ: ' + esc(r.genes) + '. Đọc thêm ở tab Tài liệu.</p></details>' : '') +
       '</div><label class="chk"><input type="checkbox" data-rid="' + esc(r.id) + '"' + (dm[r.id] ? ' checked' : '') + '><span>Xong</span></label></li>';
   }
   function feelCard(p, day) {
@@ -835,14 +858,14 @@ details.grp>summary::-webkit-details-marker{display:none}
       (wT ? '<p class="small" style="margin:4px 0 0"><b>Nước hôm nay:</b> ' + wD.toLocaleString('vi-VN') + ' / ' + wT.toLocaleString('vi-VN') + ' ml</p><div class="bar wbar"><span style="width:' + Math.round(wD * 100 / wT) + '%"></span></div>' : '') +
       (hasP2 ? '<div class="seg" role="group" aria-label="Giai đoạn">' + p.phases.map(function (ph) { return '<button type="button" data-ph="' + ph.id + '" class="' + (String(p.phase) === String(ph.id) ? 'on' : '') + '">' + esc(ph.name) + '</button>'; }).join('') + '</div>' : '') +
       '<div class="lightrow"><button type="button" class="chip' + (light ? ' on' : '') + '" id="lightBtn" aria-pressed="' + light + '">' + (light ? 'Đang là ngày nhẹ' : 'Hôm nay là ngày nhẹ?') + '</button><span class="small muted">' +
-        (light ? 'Chỉ giữ ' + rs.length + ' việc cốt lõi. Ngày nhẹ không làm đứt chuỗi.' : 'Ốm, đi xa, bận: chỉ giữ việc cốt lõi' + (p.coreFlag ? ' chuyên gia đã đánh dấu' : ' (thuốc, nước, giấc ngủ)') + '.') + '</span></div></section>' +
+        (light ? 'Chỉ giữ ' + rs.length + ' việc cốt lõi. Ngày nhẹ không làm đứt chuỗi.' : 'Ốm, đi xa, bận: chỉ giữ việc cốt lõi' + (p.coreFlag ? ' chuyên gia đã đánh dấu' : ' (thuốc, nước, giấc ngủ)') + '.') + '</span></div>' + gemRowHtml(p) + '</section>' +
       oracleTodayHtml(p, day) +
       (rv ? reviewCard(rv) + oracleReflectHtml(p, rv.k, rv.label) : (nowHM() >= REVIEW_AT ? oracleReflectHtml(p, day, 'hôm nay') : '')) +
       (rv && rv.label === 'hôm nay' ? '' : '<section class="card next due" id="dueBanner" hidden aria-live="polite"></section>') + notifyCard() +
       (backupDue(p) ? '<p class="note" style="margin:0">Đổi điện thoại hay xoá trình duyệt là mất tiến độ. <button class="linkbtn" id="nudgeBk" type="button">Lưu bản sao ngay</button></p>' : '') +
       (nx ? '<section class="card next"><span class="lbl">Việc tiếp theo · ' + esc(nx.time) + '</span><p class="big">' + esc(nx.title) + '</p><p style="margin:0">' + esc(nx.detail) + '</p><div class="row" style="margin-top:10px"><button class="btn" type="button" data-done="' + esc(nx.id) + '">Đã làm xong</button></div></section>'
           : '<section class="card next"><span class="lbl">Hôm nay</span><p class="big">' + (rs.length && done === rs.length ? 'Đã xong tất cả. Cảm ơn bạn đã chăm cơ thể mình.' : 'Không còn việc nào sau giờ này.') + '</p></section>') +
-      feelCard(p, day) + measCard(p, day) + groups +
+      feelCard(p, day) + measCard(p, day) + groups + famCard(p, day) +
       (rest.length ? '<details class="sec"><summary>' + rest.length + ' việc khác tạm nghỉ hôm nay</summary><ul class="small" style="padding-left:18px">' + rest.map(function (r) { return '<li>' + esc(r.time) + ' · ' + esc(r.title) + '</li>'; }).join('') + '</ul></details>' : '') +
       offerCard(p) +
       '<section class="card"><div class="row" style="justify-content:space-between"><h2>7 ngày qua</h2><button class="linkbtn" type="button" id="toStats">Tiến độ cả giai đoạn →</button></div><div class="week" style="margin-top:10px">' + weekHtml + '</div></section>' +
@@ -867,7 +890,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     $('#feelDone') && $('#feelDone').addEventListener('click', function () { var i = $('#kg'); if (i) i.dispatchEvent(new Event('change')); feelEdit = false; again(); });
     $('#feelEdit') && $('#feelEdit').addEventListener('click', function () { feelEdit = true; again(); });
     $('#nudgeBk') && $('#nudgeBk').addEventListener('click', function () { saveBackup(function () { again(); }); });
-    bindIcs(p, again); bindOffers(p, again); bindOracle(p, again); bindMeas(p, day);
+    bindIcs(p, again); bindOffers(p, again); bindOracle(p, again); bindMeas(p, day); bindGems(p, again, m);
   }
   function notifyCard() {
     var st = store.notify;
@@ -877,6 +900,103 @@ details.grp>summary::-webkit-details-marker{display:none}
     if (st === 'unsupported') return '<p class="small muted" style="margin:0">Trình duyệt này chưa hỗ trợ thông báo. Trên iPhone, hãy thêm app ra màn hình chính rồi mở từ biểu tượng, hoặc dùng lịch nhắc ở dưới.</p>';
     return '<p class="small muted" style="margin:0">Thông báo đang tắt. <button class="linkbtn" id="nOn" type="button">Bật thông báo</button></p>';
   }
+  // ---------- Vườn Game-học: Châu Lộc (điểm trong app) và 4 châu ngọc Hiếu kỳ, Thích nghi, Bền chí, An lạc ----------
+  var PLAY_URL = 'https://vietwise.edu.vn/courses';
+  var GEMS = [
+    ['hieuky', 'Hiếu kỳ', 'Hiếu kỳ mở khi bạn bấm “Vì sao việc này?” ở ít nhất 3 việc khác nhau.'],
+    ['thichnghi', 'Thích nghi', 'Thích nghi mở khi bạn lỡ nhịp một lần, quay lại, và làm được: hoãn một việc rồi làm xong, hoặc hôm trước hụt mà hôm sau giữ được nhịp.'],
+    ['benchi', 'Bền chí', 'Bền chí mở khi bạn làm hết phần việc của mình trong một ngày.'],
+    ['anlac', 'An lạc', 'An lạc mở khi trong cùng một ngày bạn thở bình an ba hơi, dừng đúng lúc (làm xong việc giấc ngủ, hoặc tổng kết ngày), và kể lại trải nghiệm bằng cách chấm cảm nhận hôm nay.']
+  ];
+  var CL_RULES = [['Mỗi việc trong giao thức làm xong', 1], ['Ngày giữ nhịp (làm được từ 80%)', 5], ['Việc của lá bài hôm nay làm xong', 2], ['Chấm cảm nhận trong ngày', 1], ['Giờ game-học cùng gia đình', 3], ['Mỗi lần mở một châu ngọc', 2]];
+  var gemSel = 'hieuky';
+  function famOf(p) { var f = (store.fam[p.id] = store.fam[p.id] || {}); if (f.on === undefined) f.on = 1; if (!f.time) f.time = '19:30'; return f; }
+  function famR(p) {
+    var f = famOf(p); if (!f.on) return null;
+    return { id: '__game', time: f.time, title: 'Giờ chơi game-học cùng gia đình', detail: '15–20 phút cả nhà cùng chơi một trò ở Vườn Game-học Vietwise, rồi kể cho nhau nghe điều vui nhất hôm nay.', type: 'Gia đình', days: [1, 2, 3, 4, 5, 6, 7], phase: 'both', fam: true };
+  }
+  function famDue(p) { var r = famR(p), day = ymd(); return r && r.time <= nowHM() && !handled(p, day, r.id) && !snoozed(p, day, r.id) ? [r] : []; }
+  function famCard(p, day) {
+    var r = famR(p); if (!r) return '';
+    var dm = doneMap(p, day), ok = !!dm[r.id];
+    return '<section class="card fam' + (ok ? ' done' : '') + '"><span class="lbl">Gợi ý thêm từ chuyên gia · ngoài giao thức</span>' +
+      '<div class="famrow"><time>' + esc(r.time) + '</time><div><p class="big" style="margin:2px 0 4px">' + esc(r.title) + '</p><p style="margin:0">' + esc(r.detail) + '</p>' +
+      '<p class="small" style="margin:6px 0 0">Chơi cùng con cháu, bạn đời hay ông bà đều được. Làm xong được <b>+3 CL</b>.</p></div>' +
+      '<label class="chk"><input type="checkbox" data-rid="__game"' + (ok ? ' checked' : '') + '><span>Xong</span></label></div>' +
+      '<div class="row" style="margin-top:10px;gap:8px;align-items:center"><a class="btn" href="' + PLAY_URL + '" target="_blank" rel="noopener">Vào Vườn Game-học</a><button class="linkbtn" type="button" id="famSet">Đổi giờ hoặc tắt gợi ý này</button></div></section>';
+  }
+  function famSettingsHtml(p) {
+    var f = famOf(p);
+    return '<section class="card"><h2>Giờ game-học cùng gia đình</h2><p class="small" style="margin:6px 0 10px">Một gợi ý nhắc mỗi ngày, nằm ngoài giao thức nên không tính vào tiến độ. Chơi 15–20 phút cùng cả nhà ở Vườn Game-học Vietwise, được +3 Châu Lộc.</p>' +
+      '<div class="row" style="gap:10px;align-items:center"><label class="pick" style="margin:0"><input type="checkbox" id="famOn"' + (f.on ? ' checked' : '') + '><span>Nhắc tôi mỗi ngày</span></label>' +
+      '<label class="small" for="famTime"><b>lúc</b></label><input type="time" id="famTime" value="' + esc(f.time) + '" style="width:auto"' + (f.on ? '' : ' disabled') + '></div>' +
+      '<p class="small muted" style="margin:8px 0 0">Muốn điện thoại đổ chuông cả khi đóng app: vào tab Hôm nay, phần Nhắc bằng Lịch, chọn thêm việc này.</p></section>';
+  }
+  function bindFamSettings(p, again) {
+    var on = $('#famOn'), t = $('#famTime');
+    on && on.addEventListener('change', function () { famOf(p).on = on.checked ? 1 : 0; save(); again(); });
+    t && t.addEventListener('change', function () { if (/^\d{2}:\d{2}$/.test(t.value)) { famOf(p).time = t.value; save(); flash('Đã đổi giờ game-học gia đình sang ' + t.value + '.'); } });
+  }
+  function markBreath(p) { var b = (store.breath[p.id] = store.breath[p.id] || {}); b[ymd()] = 1; save(); }
+  // everything is derived from what the person marked, so a backup restores the same points and gems
+  function gems(p) {
+    var start = ymd(new Date(p.importedAt || Date.now())), todayK = ymd(), hm = nowHM();
+    var ks = Object.keys((store.done[p.id] || {})).concat(Object.keys(store.feel[p.id] || {})).sort(); if (ks[0] && ks[0] < start) start = ks[0];
+    var d = parseYmd(start), guard = 0, prevMiss = false;
+    var g = { cl: 0, todayCl: 0, n: { hieuky: 0, thichnghi: 0, benchi: 0, anlac: 0 }, today: {}, parts: {} };
+    var add = function (k, why, v) { g.cl += v; if (k === todayK) g.todayCl += v; g.parts[why] = (g.parts[why] || 0) + v; };
+    var why = store.why[p.id] || {}, wk = Object.keys(why).sort(function (a, b) { return String(why[a]).localeCompare(String(why[b])); });
+    while (ymd(d) <= todayK && guard++ < 800) {
+      var k = ymd(d), isT = k === todayK, list = plan(p, d), dm = (store.done[p.id] || {})[k] || {}, f = (store.feel[p.id] || {})[k] || {};
+      var n = list.filter(function (r) { return dm[r.id]; }).length, kept = list.length && n / list.length >= KEEP, full = list.length && n === list.length;
+      add(k, CL_RULES[0][0], n);
+      if (kept) add(k, CL_RULES[1][0], 5);
+      var o = (store.oracle[p.id] || {})[k]; if (o && o.t && dm[o.t]) add(k, CL_RULES[2][0], 2);
+      var felt = FEEL.every(function (x) { return f[x[0]]; }); if (felt) add(k, CL_RULES[3][0], 1);
+      if (dm.__game) add(k, CL_RULES[4][0], 3);
+      var got = [];
+      if (full) got.push('benchi');
+      if (((store.adapt[p.id] || {})[k]) || (prevMiss && kept)) got.push('thichnghi');
+      var sleep = list.filter(function (r) { return plain(r.type) === 'giac ngu'; });
+      var stop = sleep.length ? sleep.some(function (r) { return dm[r.id]; }) : reviewed(p, k);
+      if (((store.breath[p.id] || {})[k]) && felt && stop) got.push('anlac');
+      var whyN = wk.filter(function (r) { return String(why[r]) <= k; }).length, prevN = wk.filter(function (r) { return String(why[r]) < k; }).length;
+      for (var j = Math.floor(prevN / 3); j < Math.floor(whyN / 3); j++) got.push('hieuky');
+      got.forEach(function (x) { g.n[x]++; add(k, CL_RULES[5][0], 2); if (isT) g.today[x] = 1; });
+      if (list.length && !isLight(p, k) && !isT) prevMiss = !kept;
+      d.setDate(d.getDate() + 1);
+    }
+    return g;
+  }
+  function gemSvg(on, cls) {
+    var c = on ? ['#FFE08A', '#FFC93C', '#D99A12', '#F2B01E', '#FFD45C', '#C78A0E'] : ['#D3E0D3', '#B4CAB5', '#86A388', '#9DB89F', '#C3D5C4', '#7A967C'];
+    return '<svg class="gem ' + (cls || '') + '" viewBox="0 0 64 52" aria-hidden="true"><polygon points="14,2 50,2 40,18 24,18" fill="' + c[0] + '"/><polygon points="14,2 24,18 2,18" fill="' + c[4] + '"/><polygon points="50,2 62,18 40,18" fill="' + c[2] + '"/><polygon points="2,18 24,18 32,50" fill="' + c[1] + '"/><polygon points="24,18 40,18 32,50" fill="' + c[3] + '"/><polygon points="40,18 62,18 32,50" fill="' + c[5] + '"/></svg>';
+  }
+  function gemRowHtml(p) {
+    var g = gems(p), newG = GEMS.filter(function (x) { return g.today[x[0]]; }).map(function (x) { return x[1]; });
+    return '<button type="button" class="clrow" id="toGems" aria-label="Xem Châu Lộc và châu ngọc"><span class="gems">' + GEMS.map(function (x) { return '<span class="' + (g.today[x[0]] ? 'new' : '') + '" title="' + x[1] + '">' + gemSvg(g.n[x[0]] > 0, 'gmini') + '</span>'; }).join('') + '</span>' +
+      '<span class="clb"><i>CL</i><b>' + g.cl.toLocaleString('vi-VN') + '</b>' + (g.todayCl ? '<em>+' + g.todayCl + ' hôm nay</em>' : '') + '</span></button>' +
+      (newG.length ? '<p class="small gemnew">Hôm nay bạn mở châu ngọc <b>' + newG.join(', ') + '</b>. Không ai phát huy hiệu này, bạn tự mở bằng cách sống.</p>' : '');
+  }
+  function mineHtml(p) {
+    var g = gems(p), sel = GEMS.filter(function (x) { return x[0] === gemSel; })[0] || GEMS[0];
+    return '<section class="mine" id="mine"><h2>Quặng mỏ Châu ngọc của bạn</h2><p class="msub">Chạm để khám phá 4 phẩm chất của thế kỷ 21</p>' +
+      '<div class="mgems" role="tablist">' + GEMS.map(function (x) { var on = g.n[x[0]] > 0; return '<button type="button" role="tab" aria-selected="' + (x[0] === sel[0]) + '" data-gem="' + x[0] + '" class="' + (x[0] === sel[0] ? 'sel' : '') + '">' + gemSvg(on) + '<b>' + x[1] + '</b><span>' + (on ? 'đã mở ×' + g.n[x[0]] : 'chưa mở') + '</span></button>'; }).join('') + '</div>' +
+      '<p class="mrule"><b>' + sel[1] + '</b>' + esc(sel[2]).replace(sel[1], '') + ' Không ai phát huy hiệu này, bạn tự mở bằng cách sống.</p>' +
+      (sel[0] === 'anlac' ? '<button type="button" class="btn gold sm" id="breathe">Thở bình an ba hơi</button>' : '') +
+      '<div class="mcl"><i>CL</i><span>Châu Lộc</span><b>' + g.cl.toLocaleString('vi-VN') + '</b></div>' +
+      '<details class="mhow"><summary>Châu Lộc được tặng thế nào?</summary><table>' + CL_RULES.map(function (r) { return '<tr><td>' + r[0] + '</td><td>+' + r[1] + '</td><td>' + (g.parts[r[0]] || 0) + '</td></tr>'; }).join('') + '</table><p>Cột cuối là số CL bạn đã nhận từ mỗi việc. Việc game-học gia đình nằm ngoài giao thức, không tính vào tiến độ.</p></details>' +
+      '<p class="mnote">Châu Lộc chỉ là điểm trong app, không đổi được thành tiền hay quà. Cả nhà muốn chơi thêm? <a href="' + PLAY_URL + '" target="_blank" rel="noopener">Vào Vườn Game-học Vietwise</a></p></section>';
+  }
+  function bindGems(p, again, m) {
+    $$('details[data-why]', m).forEach(function (d) { d.addEventListener('toggle', function () { if (!d.open) return; var w = (store.why[p.id] = store.why[p.id] || {}), id = d.dataset.why; if (!w[id]) { w[id] = ymd(); save(); var b = $('#toGems'); if (b) b.outerHTML = gemRowHtml(p); bindToGems(); } }); });
+    $$('[data-gem]', m).forEach(function (b) { b.addEventListener('click', function () { gemSel = b.dataset.gem; again(); }); });
+    var br = $('#breathe', m); if (br) br.addEventListener('click', function () { loadDeck().catch(function () {}).then(function () { oracleOpen(p, 'breath'); }); });
+    var fs = $('#famSet', m); if (fs) fs.addEventListener('click', function () { view = 'me'; render(); var e = $('#famOn'); e && e.scrollIntoView({ block: 'center' }); });
+    bindToGems();
+  }
+  function bindToGems() { var t = $('#toGems'); if (t) t.addEventListener('click', function () { view = 'stats'; render(); var e = $('#mine'); e && e.scrollIntoView({ block: 'start' }); }); }
+
   // ---------- progress for the phase being measured ----------
   var KEEP = 0.8;
   function phaseName(p) { var ph = (p.phases || []).filter(function (x) { return String(x.id) === String(p.phase); })[0]; return ph ? ph.name : 'Giai đoạn ' + (p.phase || 1); }
@@ -967,6 +1087,7 @@ details.grp>summary::-webkit-details-marker{display:none}
       'Ngày giữ nhịp (từ 80%): ' + st.kept + '/' + st.days + ' · chuỗi hiện tại ' + st.cur + ' ngày · dài nhất ' + st.best + ' ngày\n' +
       (st.light ? 'Ngày nhẹ: ' + st.light + '\n' : '') +
       (function () { var os = oStats(p, st); return os.draws ? 'Lá bài thức tỉnh: đã gặp ' + os.seen + '/22 lá, rút ' + os.draws + ' ngày' + (os.taskN ? ', làm xong ' + os.taskDone + '/' + os.taskN + ' việc của lá bài' : '') + '\n' : ''; })() +
+      (function () { var g = gems(p); return 'Châu Lộc ' + g.cl + ' CL · châu ngọc đã mở: ' + (GEMS.filter(function (x) { return g.n[x[0]]; }).map(function (x) { return x[1] + ' ×' + g.n[x[0]]; }).join(', ') || 'chưa có') + '\n'; })() +
       (st.waterGoalAvg ? 'Nước trung bình ' + st.waterAvg + ' / ' + st.waterGoalAvg + ' ml mỗi ngày\n' : '') +
       (st.feel.n ? 'Cảm nhận (trên 5, ' + st.feel.n + ' ngày): ' + FEEL.map(function (m) { return m[1].toLowerCase() + ' ' + avg(st.feel.all, m[0]) + (st.feel.kept[m[0]] && st.feel.other[m[0]] ? ' (ngày giữ nhịp ' + avg(st.feel.kept, m[0]) + ', ngày khác ' + avg(st.feel.other, m[0]) + ')' : ''); }).join('; ') + '\n' : '') +
       (st.feel.kg.length >= 2 ? 'Cân nặng ' + num(st.feel.kg[0]) + ' → ' + num(st.feel.kg[st.feel.kg.length - 1]) + ' kg\n' : '') +
@@ -999,7 +1120,7 @@ details.grp>summary::-webkit-details-marker{display:none}
         '<div class="kpi"><b>' + st.best + ' ngày</b><span>Chuỗi dài nhất giai đoạn này</span></div>' +
         '<div class="kpi"><b>' + st.kept + '/' + st.days + '</b><span>Ngày làm được từ 80%' + (st.light ? ' · ' + st.light + ' ngày nhẹ' : '') + '</span></div>' +
         (st.waterGoalAvg ? '<div class="kpi water"><b>' + st.waterAvg.toLocaleString('vi-VN') + ' ml</b><span>Nước trung bình mỗi ngày / ' + st.waterGoalAvg.toLocaleString('vi-VN') + ' ml</span></div>' : '<div class="kpi"><b>' + st.skip + '</b><span>Việc đã bỏ qua</span></div>') +
-      '</section>' +
+      '</section>' + mineHtml(p) +
       '<section class="card"><h2>Lịch giữ nhịp</h2><p class="small muted" style="margin:4px 0 10px">Mỗi ô là một ngày' + (st.days > 84 ? ' (12 tuần gần nhất)' : '') + '. Ô viền vàng là hôm nay.</p>' + heatHtml(st) + '</section>' +
       quoteHtml(q) + feelHtml(st.feel) + measStatsHtml(p, st) + oGardenHtml(p, st) +
       '<section class="card"><h2>Theo loại việc</h2><p class="small muted" style="margin:4px 0 0">Loại nào thấp là chỗ cần nhờ chuyên gia chỉnh cho vừa sức.</p>' + rowsHtml(st.byType) + '</section>' +
@@ -1007,7 +1128,7 @@ details.grp>summary::-webkit-details-marker{display:none}
       '<section class="card"><h2>Mang tiến độ đi tư vấn</h2><p class="small" style="margin:6px 0 10px">Gửi bảng tóm tắt này cho chuyên gia trước buổi tư vấn tiếp theo. Bạn tự chọn gửi qua Zalo, email hay tin nhắn. App không tự gửi.</p><div class="row"><button class="btn" id="shareSt" type="button">Chia sẻ tiến độ</button><button class="btn ghost" id="resetSt" type="button">Đo lại từ hôm nay</button></div><p class="status" id="stMsg" aria-live="polite"></p></section>' +
       (hist.length ? '<section class="card"><h2>Các kỳ trước</h2><ul class="hist small" style="padding-left:18px;margin:8px 0 0">' + hist.map(function (h) { return '<li>' + esc(h.phase) + ', ' + f(h.from) + ' – ' + f(h.to) + ': <b>' + h.rate + '%</b> trong ' + h.days + ' ngày, chuỗi dài nhất ' + h.best + ' ngày</li>'; }).join('') + '</ul></section>' : '') +
       '<p class="small muted" style="margin:0">Chỉ tính các việc đã đến giờ. Mỗi lần nhập hồ sơ mới từ chuyên gia, app lưu kỳ cũ vào "Các kỳ trước" và bắt đầu đo kỳ mới. Đổi giai đoạn thì đo riêng giai đoạn đó.</p>';
-    bindMeasStats(p, st);
+    bindMeasStats(p, st); bindGems(p, function () { keepScroll = true; render(); }, m);
     $$('[data-ocard]', m).forEach(function (b) { b.addEventListener('click', function () { oracleOpen(p, 'view', Number(b.dataset.ocard)); }); });
     if ($('[data-ogwait]', m)) loadDeck().then(function () { if (view === 'stats') { keepScroll = true; render(); } }).catch(function () {});
     $('#shareSt').addEventListener('click', function () {
@@ -1036,7 +1157,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     var st = stats(p), recent = st.perDay.slice(-7), f = store.feel[p.id] || {}, low = 0, rated = 0;
     recent.forEach(function (x) { var v = f[x.k]; if (v && (v.energy || v.sleep)) { rated++; if (Math.min(v.energy || 5, v.sleep || 5) <= 2) low++; } });
     var avgE = 0, nE = 0; recent.forEach(function (x) { var v = f[x.k]; if (v && v.energy) { avgE += Math.min(v.energy, v.sleep || 5); nE++; } });
-    return { draws: Object.keys(oMap(p)).length, seen: Object.keys(oSeen(p)).length, days: st.days, rate: st.rate, kept: st.kept, waterPct: st.waterGoal ? Math.round(st.water * 100 / st.waterGoal) : 100, feelDays: rated, feelAvg: nE ? avgE / nE : 5, name: p.name };
+    return { draws: Object.keys(oMap(p)).length, cl: gems(p).cl, seen: Object.keys(oSeen(p)).length, days: st.days, rate: st.rate, kept: st.kept, waterPct: st.waterGoal ? Math.round(st.water * 100 / st.waterGoal) : 100, feelDays: rated, feelAvg: nE ? avgE / nE : 5, name: p.name };
   }
   function offerOk(o, c) {
     var w = o.when; if (!w) return false;
@@ -1094,7 +1215,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   }
   function saveBackup(after, msgEl) {
     var name = 'sao-luu-truong-tho-' + ymd() + '.json';
-    var txt = JSON.stringify({ app: BACKUP_APP, v: 1, savedAt: new Date().toISOString(), data: { profiles: store.profiles, done: store.done, skip: store.skip, feel: store.feel, light: store.light, review: store.review, icsOff: store.icsOff, oracle: store.oracle, active: store.active } });
+    var txt = JSON.stringify({ app: BACKUP_APP, v: 1, savedAt: new Date().toISOString(), data: { profiles: store.profiles, done: store.done, skip: store.skip, feel: store.feel, light: store.light, review: store.review, icsOff: store.icsOff, oracle: store.oracle, why: store.why, breath: store.breath, fam: store.fam, adapt: store.adapt, active: store.active } });
     var ok = function () { store.lastBackup = new Date().toISOString(); save(); if (msgEl) msgEl.textContent = 'Đã tạo bản sao ' + name + '. Cất vào Tệp, Drive hoặc Zalo của chính bạn.'; if (after) after(); };
     var file = null; try { file = new File([txt], name, { type: 'application/json' }); } catch (e) {}
     if (file && navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: 'Sao lưu Trường Thọ' }).then(ok).catch(function () {}); return; }
@@ -1107,16 +1228,16 @@ details.grp>summary::-webkit-details-marker{display:none}
       '<p class="small muted" style="margin:10px 0 0">Chuyên gia gửi ngày ' + (p.exportedAt ? new Date(p.exportedAt).toLocaleDateString('vi-VN') : '—') + ' · nhập vào máy ngày ' + new Date(p.importedAt).toLocaleDateString('vi-VN') + '</p></section>' +
       '<section class="card"><h2>Cập nhật hồ sơ</h2><p class="small" style="margin:6px 0 10px">Sau mỗi lần tư vấn, chuyên gia gửi file mới. Nhập file mới sẽ thay bản cũ, giữ nguyên các việc bạn đã đánh dấu xong và cảm nhận đã ghi.</p><button class="btn" id="pick" type="button">Nhập hồ sơ từ chuyên gia</button><p class="status" id="status" aria-live="polite">' + esc(flashMsg) + '</p></section>' +
       (others.length ? '<section class="card"><h2>Hồ sơ khác trên máy</h2><div class="row" style="margin-top:8px">' + others.map(function (id) { return '<button class="btn ghost" type="button" data-sw="' + esc(id) + '">' + esc(store.profiles[id].name) + '</button>'; }).join('') + '</div></section>' : '') +
-      '<section class="card"><h2>Sao lưu và chuyển máy</h2><p class="small" style="margin:6px 0 10px">Hồ sơ và tiến độ chỉ nằm trên điện thoại này. Lưu một bản sao vào Tệp, Drive hoặc Zalo của chính bạn. Sang máy mới: mở app, bấm <b>Nhập hồ sơ từ chuyên gia</b>, chọn file sao lưu.</p><div class="row"><button class="btn gold" id="bk" type="button">Lưu bản sao</button></div><p class="small muted" style="margin:8px 0 0" id="bkMsg">' + (store.lastBackup ? 'Lần sao lưu gần nhất: ' + new Date(store.lastBackup).toLocaleDateString('vi-VN') + '.' : 'Chưa sao lưu lần nào.') + '</p></section>' +
+      '<section class="card"><h2>Sao lưu và chuyển máy</h2><p class="small" style="margin:6px 0 10px">Hồ sơ và tiến độ chỉ nằm trên điện thoại này. Lưu một bản sao vào Tệp, Drive hoặc Zalo của chính bạn. Sang máy mới: mở app, bấm <b>Nhập hồ sơ từ chuyên gia</b>, chọn file sao lưu.</p><div class="row"><button class="btn gold" id="bk" type="button">Lưu bản sao</button></div><p class="small muted" style="margin:8px 0 0" id="bkMsg">' + (store.lastBackup ? 'Lần sao lưu gần nhất: ' + new Date(store.lastBackup).toLocaleDateString('vi-VN') + '.' : 'Chưa sao lưu lần nào.') + '</p></section>' + famSettingsHtml(p) +
       catalogHtml(p) +
       '<section class="card"><h2>Liên hệ chuyên gia</h2><p class="small" style="margin:6px 0 10px">' + EXPERT.name + '</p><div class="row" style="margin-bottom:10px"><a class="btn" href="' + EXPERT.zalo + '" target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center">Nhắn Zalo cho chuyên gia</a></div><div class="row"><code style="font-size:16px;font-weight:700;color:var(--purple);user-select:all">' + EXPERT.email + '</code><button class="btn ghost" id="cp" type="button">Sao chép email</button></div></section>' +
       '<section class="card"><h2>Xoá hồ sơ khỏi máy</h2><p class="small" style="margin:6px 0 10px">Xoá hồ sơ và các dấu đã làm xong trên điện thoại này.</p><div class="row"><button class="btn ghost" id="del" type="button">Xoá hồ sơ này</button><button class="btn" id="delYes" type="button" hidden>Xoá vĩnh viễn</button></div></section>' ;
     $('#pick').addEventListener('click', function () { $('#file').click(); });
-    $('#bk').addEventListener('click', function () { saveBackup(null, $('#bkMsg')); });
+    $('#bk').addEventListener('click', function () { saveBackup(null, $('#bkMsg')); }); bindFamSettings(p, function () { keepScroll = true; render(); });
     $$('button[data-sw]', m).forEach(function (b) { b.addEventListener('click', function () { store.active = b.dataset.sw; save(); view = 'today'; render(); }); });
     $('#cp').addEventListener('click', function (e) { var b = e.currentTarget; try { navigator.clipboard.writeText(EXPERT.email).then(function () { b.textContent = 'Đã sao chép'; }, function () { b.textContent = 'Bôi đen để sao chép'; }); } catch (x) { b.textContent = 'Bôi đen để sao chép'; } });
     $('#del').addEventListener('click', function () { $('#delYes').hidden = false; $('#del').textContent = 'Huỷ'; $('#del').onclick = function () { renderMe(p, m); }; });
-    $('#delYes').addEventListener('click', function () { delete store.profiles[p.id]; ['done', 'skip', 'feel', 'light', 'review', 'snooze', 'icsOff', 'oracle'].forEach(function (k) { delete store[k][p.id]; }); photosClear(p.id); store.active = Object.keys(store.profiles)[0] || null; save(); view = 'today'; render(); });
+    $('#delYes').addEventListener('click', function () { delete store.profiles[p.id]; ['done', 'skip', 'feel', 'light', 'review', 'snooze', 'icsOff', 'oracle', 'why', 'breath', 'fam', 'adapt'].forEach(function (k) { delete store[k][p.id]; }); photosClear(p.id); store.active = Object.keys(store.profiles)[0] || null; save(); view = 'today'; render(); });
   }
   var FOOT_LINKS = [
     { t: 'Liên hệ chuyên gia qua Zalo', u: 'https://zalo.me/0977206471', z: 1 },

@@ -1,6 +1,6 @@
 {
-  "_huong_dan": "Danh sách gợi ý của Chuyên gia Nhất Phương Hồng cho app khách. Sửa file này rồi đẩy lên GitHub là mọi khách thấy bản mới khi mở app có mạng. 'when' để trống thì gợi ý chỉ nằm trong danh mục ở tab Quản lý và chân trang. Nút 'url' để trống thì mở Zalo của chuyên gia (không có Zalo thì mở email). Chữ trong ngoặc nhọn được thay bằng số liệu của khách: {kept} ngày giữ nhịp, {days} số ngày, {rate} % hoàn thành, {waterPct} % nước, {draws} số lần rút lá bài, {seen} số lá đã gặp. Điều kiện 'minDraws' = số lần rút bài tối thiểu.",
-  "updated": "2026-11-09",
+  "_huong_dan": "Danh sách gợi ý của Chuyên gia Nhất Phương Hồng cho app khách. Sửa file này rồi đẩy lên GitHub là mọi khách thấy bản mới khi mở app có mạng. 'when' để trống thì gợi ý chỉ nằm trong danh mục ở tab Quản lý và chân trang. Nút 'url' để trống thì mở Zalo của chuyên gia (không có Zalo thì mở email). Chữ trong ngoặc nhọn được thay bằng số liệu của khách: {kept} ngày giữ nhịp, {days} số ngày, {rate} % hoàn thành, {waterPct} % nước, {draws} số lần rút lá bài, {seen} số lá đã gặp, {cl} số Châu Lộc. Điều kiện 'minDraws' = số lần rút bài tối thiểu.",
+  "updated": "2026-11-08",
   "email": "hongple99@gmail.com",
   "cooldownDays": 14,
   "items": [
@@ -27,6 +27,18 @@
         "minDraws": 5
       },
       "catalog": false
+    },
+    {
+      "id": "game-hoc-gia-dinh",
+      "title": "Mỗi ngày 15 phút game-học cùng cả nhà",
+      "why": "Bạn đã có {cl} Châu Lộc từ việc giữ nhịp giao thức. Vườn Game-học Vietwise có các trò cho trẻ em, người lớn và cả gia đình, giúp cả nhà cùng mở châu ngọc Hiếu kỳ, Thích nghi, Bền chí, An lạc.",
+      "cta": "Vào Vườn Game-học",
+      "url": "https://vietwise.edu.vn/courses",
+      "when": {
+        "minDays": 5
+      },
+      "catalog": true,
+      "short": "Game-học cho trẻ em, người lớn và cả gia đình, 15 phút mỗi ngày."
     },
     {
       "id": "nuoc",
