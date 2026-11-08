@@ -153,6 +153,7 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
 .trow .bar{grid-column:1 / -1;height:8px}
 .trow b{text-align:right;font-variant-numeric:tabular-nums}
 .hist li{margin:4px 0}
+.pickrow{display:flex;gap:8px;align-items:flex-start;border-top:1px solid var(--line)}.pickrow .pick{flex:1;border-top:0}.pickrow .linkbtn{padding:10px 2px;white-space:nowrap}.icsform{display:grid;gap:4px;padding:10px 12px;margin:0 0 8px;background:var(--purple-soft);border-radius:12px}.icsform input,.icsform textarea{width:100%;font:inherit;font-size:16px}
 .pick{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line);cursor:pointer}
 .pick input{width:22px;height:22px;margin-top:2px;accent-color:var(--purple);flex:none}
 .btn[disabled]{opacity:.45;cursor:not-allowed}
@@ -329,7 +330,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   // ---------- storage (this phone only) ----------
   var store = { profiles: {}, done: {}, skip: {}, active: null, notify: null, shown: {}, snooze: {}, light: {}, feel: {}, review: {}, lastBackup: null };
   var memOnly = false;
-  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.profiles) store = s; } catch (e) { memOnly = true; } ['skip', 'shown', 'snooze', 'light', 'feel', 'review', 'icsOff', 'offerSeen', 'oracle', 'why', 'breath', 'fam', 'adapt', 'lic'].forEach(function (k) { store[k] = store[k] || {}; }); }
+  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.profiles) store = s; } catch (e) { memOnly = true; } ['skip', 'shown', 'snooze', 'light', 'feel', 'review', 'icsOff', 'offerSeen', 'oracle', 'why', 'breath', 'fam', 'adapt', 'lic', 'icsEdit'].forEach(function (k) { store[k] = store[k] || {}; }); }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) { memOnly = true; } }
 
   // ---------- import ----------
@@ -377,7 +378,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     var d = o.data || {}, ids = Object.keys(d.profiles || {});
     if (!ids.length) throw new Error('File sao lưu không có hồ sơ nào.');
     ids.forEach(function (id) { var a = store.profiles[id], b = d.profiles[id]; if (!a || String(b.exportedAt || '') >= String(a.exportedAt || '')) store.profiles[id] = b; });
-    ['done', 'skip', 'feel', 'light', 'review', 'icsOff', 'oracle', 'why', 'breath', 'fam', 'adapt', 'lic'].forEach(function (k) { mergeInto(store[k], d[k]); });
+    ['done', 'skip', 'feel', 'light', 'review', 'icsOff', 'oracle', 'why', 'breath', 'fam', 'adapt', 'lic', 'icsEdit'].forEach(function (k) { mergeInto(store[k], d[k]); });
     store.active = d.active && store.profiles[d.active] ? d.active : ids[0];
     save(); lastImport = 'restore'; return store.profiles[store.active];
   }
@@ -514,24 +515,36 @@ details.grp>summary::-webkit-details-marker{display:none}
     var l = p.reminders.filter(function (r) { return /^\d{1,2}:\d{2}$/.test(r.time) && (r.phase === 'both' || !hasP2 || r.phase === String(p.phase)); }), f = famR(p); if (f) l = l.concat([f]); return l.sort(function (x, y) { return mins(x.time) - mins(y.time); });
   }
   function icsOff(p) { var o = (store.icsOff = store.icsOff || {}); return o[p.id] = o[p.id] || {}; }
-  function icsPicked(p) { var off = icsOff(p); return icsAll(p).filter(function (r) { return !off[r.id]; }); }
+  // the person may reword or retime a calendar entry; this changes only the phone's Calendar, never the protocol in the app
+  function icsEd(p) { var o = (store.icsEdit = store.icsEdit || {}); return o[p.id] = o[p.id] || {}; }
+  function icsView(p, r) { var e = icsEd(p)[r.id]; return e ? Object.assign({}, r, { time: e.time || r.time, title: e.title || r.title, detail: e.detail !== undefined ? e.detail : r.detail, edited: true }) : r; }
+  var icsEditing = null;
+  function icsPicked(p) { var off = icsOff(p); return icsAll(p).filter(function (r) { return !off[r.id]; }).map(function (r) { return icsView(p, r); }); }
   function daysTxt(r) { return r.days.length >= 7 ? 'mỗi ngày' : r.days.map(function (x) { return DAYS[x]; }).join(', '); }
   var icsOpen = false;
   function icsCard(p) {
-    var all = icsAll(p), off = icsOff(p), n = all.length - all.filter(function (r) { return off[r.id]; }).length;
+    var all = icsAll(p).map(function (r) { return icsView(p, r); }).sort(function (x, y) { return mins(x.time) - mins(y.time); }), off = icsOff(p), n = all.length - all.filter(function (r) { return off[r.id]; }).length;
     var medOff = all.some(function (r) { return off[r.id] && plain(r.type) === 'thuoc'; });
     var head = '<section class="card"><h2>Nhắc bằng Lịch của điện thoại</h2><p class="small" style="margin:6px 0 10px">Điện thoại sẽ đổ chuông đúng giờ cho từng việc, kể cả khi không mở app và không có mạng. Lịch nhắc chạy 12 tuần, theo giai đoạn đang chọn.</p>';
     if (!icsOpen) return head + '<button class="btn gold" id="icsPick" type="button">Chọn việc để thêm vào lịch</button><p class="small muted" style="margin:8px 0 0">Bạn được bỏ bớt những việc không cần chuông trước khi thêm.</p></section>';
     var groups = SL.map(function (name, i) {
       var items = all.filter(function (r) { return slotIx(r.time) === i; }); if (!items.length) return '';
       return '<p class="small" style="margin:12px 0 4px"><b>' + name + '</b></p>' + items.map(function (r) {
-        return '<label class="pick"><input type="checkbox" data-ics="' + esc(r.id) + '"' + (off[r.id] ? '' : ' checked') + '><span><b>' + esc(r.time) + '</b> ' + esc(r.title) + (r.ml ? ' (' + r.ml + ' ml)' : '') + '<br><span class="small muted">' + esc(r.type) + ' · ' + daysTxt(r) + '</span></span></label>';
+        var row = '<div class="pickrow"><label class="pick"><input type="checkbox" data-ics="' + esc(r.id) + '"' + (off[r.id] ? '' : ' checked') + '><span><b>' + esc(r.time) + '</b> ' + esc(r.title) + (r.ml ? ' (' + r.ml + ' ml)' : '') + (r.edited ? ' <span class="pill">đã sửa</span>' : '') + '<br><span class="small muted">' + esc(r.type) + ' · ' + daysTxt(r) + '</span></span></label><button class="linkbtn" type="button" data-icsed="' + esc(r.id) + '" aria-expanded="' + (icsEditing === r.id) + '">' + (icsEditing === r.id ? 'Đóng' : 'Sửa') + '</button></div>';
+        if (icsEditing !== r.id) return row;
+        var orig = icsAll(p).filter(function (x) { return x.id === r.id; })[0] || r;
+        return row + '<div class="icsform"><label class="small" for="ieT"><b>Giờ chuông</b></label><input type="time" id="ieT" value="' + esc(r.time) + '">' +
+          '<label class="small" for="ieN"><b>Tên việc trong Lịch</b></label><input id="ieN" maxlength="120" value="' + esc(r.title) + '">' +
+          '<label class="small" for="ieD"><b>Ghi chú trong Lịch</b></label><textarea id="ieD" rows="3" maxlength="600">' + esc(r.detail || '') + '</textarea>' +
+          (plain(r.type) === 'thuoc' ? '<p class="note" style="margin:6px 0 0">Đây là <b>thuốc</b>: giờ uống theo đơn bác sĩ. Chỉ đổi giờ chuông khi bác sĩ đã đồng ý.</p>' : '') +
+          '<p class="small muted" style="margin:6px 0 0">Chỉ đổi nội dung trong Lịch của điện thoại. Trong app, thẻ nhắc vẫn giữ như chuyên gia gửi' + (r.edited ? ' (gốc: ' + esc(orig.time) + ' · ' + esc(orig.title) + ')' : '') + '.</p>' +
+          '<div class="row" style="margin-top:8px;gap:8px"><button class="btn sm" type="button" id="ieSave" data-r="' + esc(r.id) + '">Lưu</button>' + (r.edited ? '<button class="btn ghost sm" type="button" id="ieReset" data-r="' + esc(r.id) + '">Trả về như gốc</button>' : '') + '</div></div>';
       }).join('');
     }).join('');
     return head + '<div class="row" style="gap:8px"><button class="btn ghost sm" type="button" id="icsAllOn">Chọn tất cả</button><button class="btn ghost sm" type="button" id="icsAllOff">Bỏ chọn hết</button></div>' + groups +
       (medOff ? '<p class="note" style="margin-top:10px">Bạn vừa bỏ chuông cho <b>thuốc</b>. Bỏ chuông không có nghĩa là ngưng thuốc: vẫn uống đúng đơn bác sĩ, và vẫn đánh dấu trong app.</p>' : '') +
       '<div class="row" style="margin-top:12px;gap:8px"><button class="btn gold" id="ics" type="button"' + (n ? '' : ' disabled') + '>Thêm ' + n + ' việc vào lịch</button><button class="btn ghost" id="icsClose" type="button">Đóng</button></div>' +
-      '<p class="small muted" style="margin:8px 0 0">Việc bỏ khỏi lịch vẫn còn trong app và vẫn tính tiến độ. iPhone: chạm file vừa tải → <b>Thêm tất cả</b>. Android: mở file bằng Google Calendar. Muốn đổi lựa chọn sau này: xoá lịch "Trường Thọ" cũ trong ứng dụng Lịch rồi thêm lại.</p></section>';
+      '<p class="small muted" style="margin:8px 0 0">Việc bỏ khỏi lịch vẫn còn trong app và vẫn tính tiến độ. iPhone: chạm file vừa tải → <b>Thêm tất cả</b>. Android: mở file bằng Google Calendar. Bấm <b>Sửa</b> để đổi giờ chuông, tên hay ghi chú của từng việc trong Lịch. Muốn đổi lựa chọn sau này: xoá lịch "Trường Thọ" cũ trong ứng dụng Lịch rồi thêm lại, để không bị nhắc trùng.</p></section>';
   }
   function bindIcs(p, again) {
     $('#icsPick') && $('#icsPick').addEventListener('click', function () { icsOpen = true; again(); });
@@ -539,6 +552,17 @@ details.grp>summary::-webkit-details-marker{display:none}
     $$('input[data-ics]').forEach(function (c) { c.addEventListener('change', function () { var o = icsOff(p); if (c.checked) delete o[c.dataset.ics]; else o[c.dataset.ics] = 1; save(); again(); }); });
     $('#icsAllOn') && $('#icsAllOn').addEventListener('click', function () { store.icsOff[p.id] = {}; save(); again(); });
     $('#icsAllOff') && $('#icsAllOff').addEventListener('click', function () { var o = icsOff(p); icsAll(p).forEach(function (r) { o[r.id] = 1; }); save(); again(); });
+    $$('[data-icsed]').forEach(function (b) { b.addEventListener('click', function () { icsEditing = icsEditing === b.dataset.icsed ? null : b.dataset.icsed; again(); }); });
+    $('#ieSave') && $('#ieSave').addEventListener('click', function (e) {
+      var id = e.currentTarget.dataset.r, orig = icsAll(p).filter(function (x) { return x.id === id; })[0]; if (!orig) return;
+      var t = $('#ieT').value, n = $('#ieN').value.trim(), d = $('#ieD').value.trim(), ed = {};
+      if (/^\d{2}:\d{2}$/.test(t) && t !== orig.time) ed.time = t;
+      if (n && n !== orig.title) ed.title = n;
+      if (d !== String(orig.detail || '').trim()) ed.detail = d;
+      if (Object.keys(ed).length) icsEd(p)[id] = ed; else delete icsEd(p)[id];
+      icsEditing = null; save(); again(); flash('Đã lưu nội dung cho Lịch. Bấm Thêm vào lịch để tải lịch mới.');
+    });
+    $('#ieReset') && $('#ieReset').addEventListener('click', function (e) { delete icsEd(p)[e.currentTarget.dataset.r]; icsEditing = null; save(); again(); });
     $('#ics') && $('#ics').addEventListener('click', function () { downloadIcs(p); icsOpen = false; again(); flash('Đã tạo lịch nhắc ' + icsPicked(p).length + ' việc. Mở file vừa tải để thêm vào Lịch.'); });
   }
   function buildIcs(p) {
@@ -1322,7 +1346,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   }
   function saveBackup(after, msgEl) {
     var name = 'sao-luu-truong-tho-' + ymd() + '.json';
-    var txt = JSON.stringify({ app: BACKUP_APP, v: 1, savedAt: new Date().toISOString(), data: { profiles: store.profiles, done: store.done, skip: store.skip, feel: store.feel, light: store.light, review: store.review, icsOff: store.icsOff, oracle: store.oracle, why: store.why, breath: store.breath, fam: store.fam, adapt: store.adapt, lic: store.lic, active: store.active } });
+    var txt = JSON.stringify({ app: BACKUP_APP, v: 1, savedAt: new Date().toISOString(), data: { profiles: store.profiles, done: store.done, skip: store.skip, feel: store.feel, light: store.light, review: store.review, icsOff: store.icsOff, oracle: store.oracle, why: store.why, breath: store.breath, fam: store.fam, adapt: store.adapt, lic: store.lic, icsEdit: store.icsEdit, active: store.active } });
     var ok = function () { store.lastBackup = new Date().toISOString(); save(); if (msgEl) msgEl.textContent = 'Đã tạo bản sao ' + name + '. Cất vào Tệp, Drive hoặc Zalo của chính bạn.'; if (after) after(); };
     var file = null; try { file = new File([txt], name, { type: 'application/json' }); } catch (e) {}
     if (file && navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: 'Sao lưu Trường Thọ' }).then(ok).catch(function () {}); return; }
@@ -1344,7 +1368,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     $$('button[data-sw]', m).forEach(function (b) { b.addEventListener('click', function () { store.active = b.dataset.sw; save(); view = 'today'; render(); }); });
     $('#cp').addEventListener('click', function (e) { var b = e.currentTarget; try { navigator.clipboard.writeText(EXPERT.email).then(function () { b.textContent = 'Đã sao chép'; }, function () { b.textContent = 'Bôi đen để sao chép'; }); } catch (x) { b.textContent = 'Bôi đen để sao chép'; } });
     $('#del').addEventListener('click', function () { $('#delYes').hidden = false; $('#del').textContent = 'Huỷ'; $('#del').onclick = function () { renderMe(p, m); }; });
-    $('#delYes').addEventListener('click', function () { delete store.profiles[p.id]; ['done', 'skip', 'feel', 'light', 'review', 'snooze', 'icsOff', 'oracle', 'why', 'breath', 'fam', 'adapt', 'lic'].forEach(function (k) { delete store[k][p.id]; }); photosClear(p.id); store.active = Object.keys(store.profiles)[0] || null; save(); view = 'today'; render(); });
+    $('#delYes').addEventListener('click', function () { delete store.profiles[p.id]; ['done', 'skip', 'feel', 'light', 'review', 'snooze', 'icsOff', 'oracle', 'why', 'breath', 'fam', 'adapt', 'lic', 'icsEdit'].forEach(function (k) { delete store[k][p.id]; }); photosClear(p.id); store.active = Object.keys(store.profiles)[0] || null; save(); view = 'today'; render(); });
   }
   var FOOT_LINKS = [
     { t: 'Liên hệ chuyên gia qua Zalo', u: 'https://zalo.me/0977206471', z: 1 },
