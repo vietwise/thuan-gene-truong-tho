@@ -1109,13 +1109,14 @@ details.grp>summary::-webkit-details-marker{display:none}
     var g = gems(p), sel = GEMS.filter(function (x) { return x[0] === gemSel; })[0] || null;
     return '<section class="mine" id="mine"><h2>Quặng mỏ Châu ngọc của bạn</h2><p class="msub">Chạm để khám phá 4 phẩm chất của thế kỷ 21</p>' +
       '<div class="mgems">' + GEMS.map(function (x) { var on = g.n[x[0]] > 0, is = sel && x[0] === sel[0]; return '<button type="button" aria-expanded="' + !!is + '" data-gem="' + x[0] + '" class="' + (is ? 'sel' : '') + '">' + gemSvg(on) + '<b>' + x[1] + '</b><span>' + (on ? 'đã mở ×' + g.n[x[0]] : 'chưa mở') + '</span></button>'; }).join('') + '</div>' +
-      (sel ? '<p class="mrule"><b>' + sel[1] + '</b>' + esc(sel[2]).replace(sel[1], '') + ' Không ai phát huy hiệu này, bạn tự mở bằng cách sống.</p>' + (sel[0] === 'anlac' ? '<button type="button" class="btn gold sm" id="breathe">Thở bình an ba hơi</button>' : '') : '') +
+      (sel ? '<p class="mrule"><b>' + sel[1] + '</b>' + esc(sel[2]).replace(sel[1], '') + ' Không ai phát huy hiệu này, bạn tự mở bằng cách sống.</p>' + (sel[0] === 'anlac' ? '<button type="button" class="btn gold sm" id="breathe">Thở bình an ba hơi</button>' : '') + '<div style="margin:6px 0 4px"><button class="linkbtn" type="button" id="gemFold" style="color:#f5f1e8">Thu gọn</button></div>' : '') +
       '<div class="mcl"><i>CL</i><span>Châu Lộc</span><b>' + g.cl.toLocaleString('vi-VN') + '</b></div>' + giveHtml(p, g) +
       '<details class="mhow"><summary>Châu Lộc được tặng thế nào?</summary><table>' + CL_RULES.map(function (r) { return '<tr><td>' + r[0] + '</td><td>+' + r[1] + '</td><td>' + (g.parts[r[0]] || 0) + '</td></tr>'; }).join('') + '</table><p>Cột cuối là số CL bạn đã nhận từ mỗi việc. Việc game-học gia đình nằm ngoài giao thức, không tính vào tiến độ.</p><p>Châu Lộc chỉ là điểm trong game, như tiền chơi trong cờ tỷ phú (Monopoly), không đổi được thành tiền thật. Bạn có thể trao tinh thần Châu Lộc cho các quỹ từ thiện như Quỹ Thương Trẻ Thơ, Quỹ Robi Smile. Cả nhà muốn chơi thêm? <a href="' + PLAY_URL + '" target="_blank" rel="noopener">Vào Vườn Game-học Vietwise</a></p></details></section>';
   }
   function bindGems(p, again, m) {
     $$('details[data-why]', m).forEach(function (d) { d.addEventListener('toggle', function () { if (!d.open) return; var w = (store.why[p.id] = store.why[p.id] || {}), id = d.dataset.why; if (!w[id]) { w[id] = ymd(); save(); var b = $('#toGems'); if (b) b.outerHTML = gemRowHtml(p); bindToGems(); } }); });
     $$('[data-gem]', m).forEach(function (b) { b.addEventListener('click', function () { gemSel = gemSel === b.dataset.gem ? null : b.dataset.gem; again(); }); });
+    var gf = $('#gemFold', m); if (gf) gf.addEventListener('click', function () { gemSel = null; again(); });
     var br = $('#breathe', m); if (br) br.addEventListener('click', function () { loadDeck().catch(function () {}).then(function () { oracleOpen(p, 'breath'); }); });
     var fs = $('#famSet', m); if (fs) fs.addEventListener('click', function () { view = 'me'; render(); var e = $('#famOn'); e && e.scrollIntoView({ block: 'center' }); });
     bindGive(p, again); bindToGems();
