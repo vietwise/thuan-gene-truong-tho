@@ -241,6 +241,8 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
 .fam{border-left:5px solid var(--purple)}.fam.done{opacity:.8}.famrow{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;margin-top:6px}.famrow time{font-weight:800;color:var(--purple)}
 .gem.gbig{width:96px;height:auto;margin:6px auto}
 
+.upg{border:2px solid var(--yellow)}.upgbadge{display:inline-block;background:var(--yellow);color:var(--ink);font-weight:800;font-size:13px;border-radius:99px;padding:4px 12px;margin:6px 0 0}
+.legal dl{margin:10px 0 0;display:grid;gap:8px}.legal dt{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--purple)}.legal dd{margin:0}.legal a{color:var(--purple);font-weight:600}
 .lightrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .chip{border:1.5px dashed var(--moss);background:var(--sheet);color:var(--moss);border-radius:999px;padding:7px 12px;font-size:13.5px;font-weight:700;cursor:pointer}
 .chip.on{background:var(--moss);color:#fff;border-style:solid}
@@ -609,7 +611,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     var demo = Object.keys(store.profiles).length;
     return '<section class="hero card"><img src="icon-512.png" alt="Logo Thuận Gene Trường Thọ NPH" width="120" height="120">' +
       '<h1>Thuận Gene Trường Thọ</h1><p class="muted small" style="margin:0">App tạo bởi Chuyên gia Nhất Phương Hồng và Trợ lý Ai</p>' +
-      '<p style="margin:0;max-width:44ch">Thẻ nhắc theo giờ mỗi ngày và bản tóm tắt giao thức trường thọ của bạn. Dùng được cả khi không có mạng.</p>' +
+      '<p style="margin:0;max-width:44ch">Thẻ nhắc theo giờ mỗi ngày và bản tóm tắt giao thức trường thọ của bạn. Dùng được cả khi không có mạng.</p>' + (promoLeft() >= 0 ? '<p class="upgbadge" style="margin:0">Ưu đãi Sinh thần Founder · cài và dùng miễn phí đến hết 30/11/2026</p>' : '') +
       '<button class="btn gold" id="pick" type="button">Nhập hồ sơ từ chuyên gia</button><p class="status" id="status" aria-live="polite">' + esc(flashMsg) + '</p></section>' +
       '<section class="card"><h2>Bắt đầu thế nào?</h2><ol class="steps" style="margin-top:8px"><li>Chuyên gia gửi bạn <b>file hồ sơ</b> (đuôi .json) qua Zalo hoặc email.</li><li>Lưu file vào điện thoại: Zalo/Email → giữ vào file → <b>Lưu vào Tệp</b> (iPhone) hoặc <b>Tải xuống</b> (Android).</li><li>Bấm <b>Nhập hồ sơ từ chuyên gia</b> ở trên, chọn file đó.</li><li>Thêm app ra màn hình chính: Safari → Chia sẻ → <b>Thêm vào MH chính</b>; Chrome → ⋮ → <b>Thêm vào màn hình chính</b>.</li></ol>' +
       '<p class="note" style="margin-top:12px">Hồ sơ chỉ lưu trên điện thoại này. App không gửi dữ liệu đi đâu. Đã có file sao lưu từ máy cũ? Bấm nút trên và chọn file đó.</p></section>' ;
@@ -1000,6 +1002,35 @@ details.grp>summary::-webkit-details-marker{display:none}
   }
   function bindToGems() { var t = $('#toGems'); if (t) t.addEventListener('click', function () { view = 'stats'; render(); var e = $('#mine'); e && e.scrollIntoView({ block: 'start' }); }); }
 
+
+  // ---------- gói sử dụng và pháp nhân ----------
+  // Bản đầu tiên: Ưu đãi Sinh thần Founder, cài và dùng miễn phí đến hết 30/11/2026. Chưa khoá tính năng nào; việc mở dùng theo gói phí sẽ làm ở bản sau.
+  var PROMO_END = '2026-11-30';
+  var LEGAL = {
+    name: 'HỘ KINH DOANH ANH MINH VIỆT (tên viết tắt: VIETWISE)', code: '079171002587, đăng ký ngày 14/09/2026, do UBND Phường An Khánh cấp',
+    addr: '28 Đường số 2, Khu phố 8, Phường An Khánh, TP. Hồ Chí Minh', owner: 'Lê Nhất Phương Hồng', field: 'Giáo dục (mã 8559)',
+    zalo: 'https://zalo.me/0981648258', zaloTxt: '098 164 8258', tel: 'tel:0981648258', telTxt: '0981 648 258', email: 'vietwise.vn@gmail.com', web: 'https://vietwise.edu.vn',
+    terms: 'https://vietwise.edu.vn/p/dieu-khoan-dich-vu', pay: 'https://vietwise.edu.vn/p/huong-dan-thanh-toan'
+  };
+  function promoLeft() { var a = parseYmd(ymd()), b = parseYmd(PROMO_END); return Math.round((b - a) / 864e5); }
+  function upgradeHtml() {
+    var left = promoLeft(), on = left >= 0;
+    return '<section class="card upg"><h2>Nâng cấp</h2>' +
+      (on ? '<p class="upgbadge">Ưu đãi Sinh thần Founder</p><p class="big" style="margin:4px 0">Bạn đang dùng miễn phí đến hết 30/11/2026</p>' +
+            '<p style="margin:0">Phiên bản đầu tiên của app được cài và dùng miễn phí, nhân dịp sinh thần của Founder Nhất Phương Hồng. ' + (left === 0 ? 'Hôm nay là ngày cuối của ưu đãi.' : 'Còn <b>' + left + ' ngày</b> ưu đãi.') + '</p>'
+          : '<p class="big" style="margin:4px 0">Ưu đãi Sinh thần Founder đã kết thúc ngày 30/11/2026</p><p style="margin:0">Nhắn chuyên gia để biết gói sử dụng tiếp theo cho bạn.</p>') +
+      '<p class="small" style="margin:10px 0 0">Sắp tới app sẽ có các gói sử dụng có phí, chuyên gia mở quyền dùng theo gói bạn chọn. Thông tin gói và mức phí sẽ được báo trước khi áp dụng. Hồ sơ, tiến độ, Châu Lộc và châu ngọc trên máy bạn vẫn được giữ nguyên.</p>' +
+      '<div class="row" style="margin-top:12px;gap:8px"><a class="btn gold" href="' + EXPERT.zalo + '" target="_blank" rel="noopener">Nhắn Zalo hỏi gói nâng cấp</a><a class="btn ghost" href="' + LEGAL.pay + '" target="_blank" rel="noopener">Hướng dẫn thanh toán</a></div></section>';
+  }
+  function legalHtml() {
+    var row = function (k, v) { return '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>'; };
+    return '<section class="card legal"><h2>Thông tin pháp nhân</h2><p class="small" style="margin:4px 0 0"><b>Vườn Game-học Vietwise</b> · <i>Gia đình vui Game-học – Châu ngọc hóa phúc lộc!</i></p><dl>' +
+      row('Đơn vị vận hành', esc(LEGAL.name)) + row('Mã số hộ kinh doanh', esc(LEGAL.code)) + row('Trụ sở', esc(LEGAL.addr)) + row('Chủ hộ kinh doanh', esc(LEGAL.owner)) + row('Ngành nghề chính', esc(LEGAL.field)) +
+      row('Liên hệ', '<a href="' + LEGAL.zalo + '" target="_blank" rel="noopener">Zalo ' + LEGAL.zaloTxt + '</a> · <a href="' + LEGAL.tel + '">Gọi ' + LEGAL.telTxt + '</a> · <a href="mailto:' + LEGAL.email + '">' + LEGAL.email + '</a> · <a href="' + LEGAL.web + '" target="_blank" rel="noopener">vietwise.edu.vn</a>') + '</dl>' +
+      '<p class="small" style="margin:10px 0 0"><a href="' + LEGAL.terms + '" target="_blank" rel="noopener">Điều khoản dịch vụ</a> · <a href="' + LEGAL.pay + '" target="_blank" rel="noopener">Hướng dẫn thanh toán</a></p>' +
+      '<p class="small muted" style="margin:8px 0 0"><b>Quyền riêng tư:</b> hồ sơ sức khoẻ, gene, ảnh và tiến độ chỉ lưu trên điện thoại của bạn. App không gửi dữ liệu đi đâu; bạn tự chọn gửi gì cho chuyên gia.</p>' +
+      '<p class="small muted" style="margin:6px 0 0">Châu Lộc là điểm trong game, không có giá trị quy đổi. Giáo Dục Tác Tạo — Hiện thực nguồn nhân lực tỏa sáng thế kỷ 21.</p></section>';
+  }
   // ---------- progress for the phase being measured ----------
   var KEEP = 0.8;
   function phaseName(p) { var ph = (p.phases || []).filter(function (x) { return String(x.id) === String(p.phase); })[0]; return ph ? ph.name : 'Giai đoạn ' + (p.phase || 1); }
@@ -1228,13 +1259,13 @@ details.grp>summary::-webkit-details-marker{display:none}
   function renderMe(p, m) {
     var others = Object.keys(store.profiles).filter(function (id) { return id !== p.id; });
     m.innerHTML = '<section class="card"><h1>' + esc(p.name) + '</h1><p class="small muted" style="margin:4px 0 0">' + esc(p.title) + '</p>' + (p.goal ? '<p style="margin:10px 0 0"><b>Mục tiêu:</b> ' + esc(p.goal) + '</p>' : '') +
-      '<p class="small muted" style="margin:10px 0 0">Chuyên gia gửi ngày ' + (p.exportedAt ? new Date(p.exportedAt).toLocaleDateString('vi-VN') : '—') + ' · nhập vào máy ngày ' + new Date(p.importedAt).toLocaleDateString('vi-VN') + '</p></section>' +
+      '<p class="small muted" style="margin:10px 0 0">Chuyên gia gửi ngày ' + (p.exportedAt ? new Date(p.exportedAt).toLocaleDateString('vi-VN') : '—') + ' · nhập vào máy ngày ' + new Date(p.importedAt).toLocaleDateString('vi-VN') + '</p></section>' + upgradeHtml() +
       '<section class="card"><h2>Cập nhật hồ sơ</h2><p class="small" style="margin:6px 0 10px">Sau mỗi lần tư vấn, chuyên gia gửi file mới. Nhập file mới sẽ thay bản cũ, giữ nguyên các việc bạn đã đánh dấu xong và cảm nhận đã ghi.</p><button class="btn" id="pick" type="button">Nhập hồ sơ từ chuyên gia</button><p class="status" id="status" aria-live="polite">' + esc(flashMsg) + '</p></section>' +
       (others.length ? '<section class="card"><h2>Hồ sơ khác trên máy</h2><div class="row" style="margin-top:8px">' + others.map(function (id) { return '<button class="btn ghost" type="button" data-sw="' + esc(id) + '">' + esc(store.profiles[id].name) + '</button>'; }).join('') + '</div></section>' : '') +
       '<section class="card"><h2>Sao lưu và chuyển máy</h2><p class="small" style="margin:6px 0 10px">Hồ sơ và tiến độ chỉ nằm trên điện thoại này. Lưu một bản sao vào Tệp, Drive hoặc Zalo của chính bạn. Sang máy mới: mở app, bấm <b>Nhập hồ sơ từ chuyên gia</b>, chọn file sao lưu.</p><div class="row"><button class="btn gold" id="bk" type="button">Lưu bản sao</button></div><p class="small muted" style="margin:8px 0 0" id="bkMsg">' + (store.lastBackup ? 'Lần sao lưu gần nhất: ' + new Date(store.lastBackup).toLocaleDateString('vi-VN') + '.' : 'Chưa sao lưu lần nào.') + '</p></section>' + famSettingsHtml(p) +
       catalogHtml(p) +
       '<section class="card"><h2>Liên hệ chuyên gia</h2><p class="small" style="margin:6px 0 10px">' + EXPERT.name + '</p><div class="row" style="margin-bottom:10px"><a class="btn" href="' + EXPERT.zalo + '" target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center">Nhắn Zalo cho chuyên gia</a></div><div class="row"><code style="font-size:16px;font-weight:700;color:var(--purple);user-select:all">' + EXPERT.email + '</code><button class="btn ghost" id="cp" type="button">Sao chép email</button></div></section>' +
-      '<section class="card"><h2>Xoá hồ sơ khỏi máy</h2><p class="small" style="margin:6px 0 10px">Xoá hồ sơ và các dấu đã làm xong trên điện thoại này.</p><div class="row"><button class="btn ghost" id="del" type="button">Xoá hồ sơ này</button><button class="btn" id="delYes" type="button" hidden>Xoá vĩnh viễn</button></div></section>' ;
+      '<section class="card"><h2>Xoá hồ sơ khỏi máy</h2><p class="small" style="margin:6px 0 10px">Xoá hồ sơ và các dấu đã làm xong trên điện thoại này.</p><div class="row"><button class="btn ghost" id="del" type="button">Xoá hồ sơ này</button><button class="btn" id="delYes" type="button" hidden>Xoá vĩnh viễn</button></div></section>' + legalHtml();
     $('#pick').addEventListener('click', function () { $('#file').click(); });
     $('#bk').addEventListener('click', function () { saveBackup(null, $('#bkMsg')); }); bindFamSettings(p, function () { keepScroll = true; render(); });
     $$('button[data-sw]', m).forEach(function (b) { b.addEventListener('click', function () { store.active = b.dataset.sw; save(); view = 'today'; render(); }); });
