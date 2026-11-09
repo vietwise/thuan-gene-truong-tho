@@ -1189,6 +1189,7 @@ details.grp>summary::-webkit-details-marker{display:none}
       if (!ok) throw new Error('Mã không hợp lệ. Hãy sao chép lại nguyên mã chuyên gia gửi.');
       var pl = JSON.parse(new TextDecoder().decode(b64u(body)));
       if (!pl.u || !/^\d{4}-\d{2}-\d{2}$/.test(pl.u)) throw new Error('Mã không hợp lệ.');
+      if (pl.k === 'tvv') throw new Error('Đây là mã tư vấn viên (dán vào app Giao Thức Trường Thọ), không phải mã của app khách.');
       return pl;
     });
   }
