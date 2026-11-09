@@ -248,6 +248,7 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
 #licCode{width:100%;font-family:ui-monospace,Menlo,monospace;font-size:13px}
 .upg{border:2px solid var(--yellow)}.upgbadge{display:inline-block;background:var(--yellow);color:var(--ink);font-weight:800;font-size:13px;border-radius:99px;padding:4px 12px;margin:6px 0 0}
 .legal dl{margin:10px 0 0;display:grid;gap:8px}.legal dt{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--purple)}.legal dd{margin:0}.legal a{color:var(--purple);font-weight:600}
+.fbbox{margin-top:12px;background:var(--purple-soft);border-radius:12px;padding:10px 12px}.fblist{list-style:none;padding:0;margin:0;display:grid;gap:6px}.fblist li{display:grid;grid-template-columns:22px 1fr;gap:6px;font-size:14.5px;line-height:1.45}.fblist li>span:first-child{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;margin-top:1px}.fb-ok>span:first-child{background:#476e70}.fb-info>span:first-child{background:#8a459a}.fb-warn>span:first-child{background:#ca41bc}
 .lightrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .chip{border:1.5px dashed var(--moss);background:var(--sheet);color:var(--moss);border-radius:999px;padding:7px 12px;font-size:13.5px;font-weight:700;cursor:pointer}
 .chip.on{background:var(--moss);color:#fff;border-style:solid}
@@ -364,6 +365,7 @@ details.grp>summary::-webkit-details-marker{display:none}
       phases: (core.phases || []).map(function (p) { return { id: p.id, name: p.name || ('Giai đoạn ' + p.id), when: p.when || '' }; }),
       phase: Number(c.phase || 1), reminders: rs, coreFlag: rs.some(function (r) { return r.core; }), summary: pick(SUMMARY), detail: pick(DETAILED),
       emergency: core.emergency || [], exportedAt: o.exportedAt || '', importedAt: new Date().toISOString(),
+      sex: String(c.sex || ''), birth: String(c.birth || ''), height: parseFloat(String(c.height || '').replace(',', '.')) || 0,
       gated: !!(o.gated || (c.license && c.license.code))   // only files from Chuyên gia Nhất Phương Hồng's own app use paid plans; other consultants' clients keep the full app
     };
   }
@@ -802,12 +804,51 @@ details.grp>summary::-webkit-details-marker{display:none}
       img.src = u;
     });
   }
+  // ---------- phản hồi số đo ngay trong app: so với khoảng tham chiếu và với chính mình 7 ngày trước (quy tắc cố định, không cần mạng) ----------
+  function measFeedback(p, day) {
+    var f = feelOf(p, day), m = f.m || {}, out = [], female = /^n[ữu]|female|^f$/i.test(p.sex || ''), male = /^nam|male|^m$/i.test(p.sex || '');
+    var add = function (lv, t) { out.push('<li class="fb-' + lv + '"><span aria-hidden="true">' + (lv === 'ok' ? '✓' : lv === 'warn' ? '!' : '•') + '</span><span>' + t + '</span></li>'); };
+    // so với 7 ngày trước (giá trị gần nhất trong khoảng 5–10 ngày trước)
+    var past = function (getter) { var all = store.feel[p.id] || {}; for (var d = 7; d <= 10; d++) { var k = ymd(new Date(parseYmd(day).getTime() - d * 864e5)); var v = all[k] && getter(all[k]); if (v != null && v !== '') return v; } for (d = 5; d < 7; d++) { k = ymd(new Date(parseYmd(day).getTime() - d * 864e5)); v = all[k] && getter(all[k]); if (v != null && v !== '') return v; } return null; };
+    var diff = function (now, before, unit, goodDown) { if (before == null) return ''; var dlt = Math.round((now - before) * 10) / 10; if (!dlt) return ' Không đổi so với tuần trước.'; return ' ' + (dlt > 0 ? 'Tăng ' : 'Giảm ') + num(Math.abs(dlt)) + ' ' + unit + ' so với tuần trước' + (goodDown == null ? '.' : ((dlt < 0) === goodDown ? ', đúng hướng.' : '.')); };
+    if (f.kg) {
+      var h = p.height > 100 ? p.height / 100 : 0;
+      if (h) { var bmi = Math.round(f.kg / (h * h) * 10) / 10, t = 'Cân nặng ' + num(f.kg) + ' kg, chỉ số khối cơ thể (BMI) ' + num(bmi);
+        if (bmi < 18.5) add('warn', t + ': hơi thiếu cân so với chuẩn người châu Á (18,5–22,9). Ăn đủ bữa, thêm đạm từ cá, trứng, đậu.' + diff(f.kg, past(function (x) { return x.kg; }), 'kg', false));
+        else if (bmi < 23) add('ok', t + ': trong khoảng tốt (18,5–22,9).' + diff(f.kg, past(function (x) { return x.kg; }), 'kg', null));
+        else if (bmi < 25) add('info', t + ': hơi cao so với chuẩn người châu Á (dưới 23). Giữ bữa tối sớm, rau trước cơm.' + diff(f.kg, past(function (x) { return x.kg; }), 'kg', true));
+        else add('warn', t + ': ở mức béo phì theo chuẩn người châu Á (từ 25). Giữ nhịp giao thức, bàn với chuyên gia ở lần tư vấn tới.' + diff(f.kg, past(function (x) { return x.kg; }), 'kg', true));
+      } else add('info', 'Cân nặng ' + num(f.kg) + ' kg.' + diff(f.kg, past(function (x) { return x.kg; }), 'kg', null) + ' (Hồ sơ chưa có chiều cao nên app chưa tính được BMI.)');
+    }
+    if (m.fat != null) { var lo = female ? 21 : male ? 8 : 15, hi = female ? 32 : male ? 20 : 28, hi2 = female ? 35 : male ? 25 : 32, t2 = 'Mỡ ' + num(m.fat) + '%', d2 = diff(m.fat, past(function (x) { return x.m && x.m.fat; }), 'điểm %', true);
+      if (m.fat < lo) add('warn', t2 + ': thấp hơn khoảng khoẻ mạnh (' + lo + '–' + hi + '%' + (female || male ? '' : ', chưa rõ giới tính') + ').' + d2);
+      else if (m.fat <= hi) add('ok', t2 + ': trong khoảng khoẻ mạnh (' + lo + '–' + hi + '%).' + d2);
+      else if (m.fat <= hi2) add('info', t2 + ': hơi cao (khoảng tốt ' + lo + '–' + hi + '%). Tập kháng lực 2–3 buổi/tuần, đi bộ sau bữa ăn 10 phút.' + d2);
+      else add('warn', t2 + ': cao. Ưu tiên giấc ngủ, bữa tối sớm, tập kháng lực; số này đi xuống chậm, nhìn xu hướng theo tuần.' + d2); }
+    if (m.sleepH != null) { var t3 = 'Ngủ ' + num(m.sleepH) + ' giờ';
+      if (m.sleepH < 6) add('warn', t3 + ': thiếu (nên 7–9 giờ). Tối nay tắt màn hình trước giờ ngủ 60 phút, phòng tối và mát.');
+      else if (m.sleepH < 7) add('info', t3 + ': hơi ít (nên 7–9 giờ). Đi ngủ sớm hơn 30 phút.');
+      else if (m.sleepH <= 9) add('ok', t3 + ': đủ giấc.');
+      else add('info', t3 + ': khá nhiều. Nếu vẫn mệt khi dậy, ghi lại để hỏi chuyên gia.'); }
+    if (m.steps != null) { var t4 = Math.round(m.steps).toLocaleString('vi-VN') + ' bước';
+      if (m.steps >= 7000) add('ok', t4 + ': rất tốt (mục tiêu từ 7.000).');
+      else if (m.steps >= 4000) add('info', t4 + ': khá. Thêm 10 phút đi bộ sau bữa tối là chạm 7.000.');
+      else add('warn', t4 + ': ít. Chia nhỏ: 3 lần đi bộ 10 phút sau ba bữa.'); }
+    if (m.rhr != null) { var t5 = 'Nhịp tim nghỉ ' + num(m.rhr) + ' nhịp/phút', d5 = diff(m.rhr, past(function (x) { return x.m && x.m.rhr; }), 'nhịp/phút', true);
+      if (m.rhr < 45) add('info', t5 + ': thấp. Nếu không tập thể thao đều mà thấy chóng mặt, mệt, hãy hỏi bác sĩ.' + d5);
+      else if (m.rhr <= 70) add('ok', t5 + ': tốt.' + d5);
+      else if (m.rhr <= 80) add('info', t5 + ': hơi cao (tốt nhất 50–70). Thở chậm 5 phút, ngủ đủ, bớt cà phê chiều.' + d5);
+      else if (m.rhr <= 100) add('warn', t5 + ': cao so với khoảng tốt (50–70). Theo dõi thêm vài ngày; thường cao kéo dài thì báo chuyên gia.' + d5);
+      else add('warn', t5 + ': trên 100 khi nghỉ. Nếu kèm hồi hộp, khó thở, đau ngực thì đi khám ngay.' + d5); }
+    if (!out.length) return '<p class="small muted" style="margin:10px 0 0">Gõ số xong, app phản hồi ngay ở đây.</p>';
+    return '<div class="fbbox"><p class="small" style="margin:0 0 6px"><b>Phản hồi hôm nay</b></p><ul class="fblist">' + out.join('') + '</ul><p class="small muted" style="margin:6px 0 0">Khoảng tham chiếu chung cho người trưởng thành, không thay cho chẩn đoán. Chuyên gia sẽ đọc kỹ cùng gene và xét nghiệm của bạn.</p></div>';
+  }
   function measOf(p, k) { var f = feelOf(p, k); f.m = f.m || {}; return f.m; }
   function measCard(p, day) {
     var m = measOf(p, day);
     return '<section class="card meas"><h2>Số đo hôm nay</h2><p class="small muted" style="margin:4px 0 10px">Xem số trên app cân điện tử hoặc đồng hồ, vòng đeo rồi gõ vài số chính vào đây. App vẽ xu hướng trong tab Tiến độ.</p>' +
-      '<div class="mgrid">' + MEAS.map(function (x) { return '<label>' + x[1] + '<input inputmode="decimal" data-m="' + x[0] + '" value="' + (m[x[0]] != null ? num(m[x[0]]) : '') + '" placeholder="' + x[2] + '"></label>'; }).join('') + '</div>' +
-      '<p class="small muted" style="margin:8px 0 0">Cân nặng ghi ở khung "Hôm nay bạn thấy thế nào?".</p></section>';
+      '<div class="mgrid"><label>Cân nặng (kg)<input inputmode="decimal" data-kg="1" value="' + (feelOf(p, day).kg ? num(feelOf(p, day).kg) : '') + '" placeholder="kg"></label>' + MEAS.map(function (x) { return '<label>' + x[1] + '<input inputmode="decimal" data-m="' + x[0] + '" value="' + (m[x[0]] != null ? num(m[x[0]]) : '') + '" placeholder="' + x[2] + '"></label>'; }).join('') + '</div>' +
+      '<div id="mFb" aria-live="polite">' + measFeedback(p, day) + '</div></section>';
   }
   function fillThumbs(p, day) {
     var box = $('#mThumbs'); if (!box) return;
@@ -819,7 +860,9 @@ details.grp>summary::-webkit-details-marker{display:none}
     }).catch(function () { box.innerHTML = '<p class="small muted">Trình duyệt này không lưu được ảnh.</p>'; });
   }
   function bindMeas(p, day) {
-    $$('input[data-m]').forEach(function (i) { i.addEventListener('change', function () { var v = parseFloat(String(i.value).replace(',', '.')); var m = measOf(p, day); if (isFinite(v) && v >= 0) m[i.dataset.m] = Math.round(v * 10) / 10; else delete m[i.dataset.m]; save(); }); });
+    var fb = function () { var b = $('#mFb'); if (b) b.innerHTML = measFeedback(p, day); };
+    $$('input[data-m]').forEach(function (i) { i.addEventListener('change', function () { var v = parseFloat(String(i.value).replace(',', '.')); var m = measOf(p, day); if (isFinite(v) && v >= 0) m[i.dataset.m] = Math.round(v * 10) / 10; else delete m[i.dataset.m]; save(); fb(); }); });
+    $$('input[data-kg]').forEach(function (i) { i.addEventListener('change', function () { var v = parseFloat(String(i.value).replace(',', '.')); var f = feelOf(p, day); if (v > 20 && v < 300) f.kg = Math.round(v * 10) / 10; else delete f.kg; save(); fb(); }); });
   }
   function measStatsHtml(p, st) {
     var f = store.feel[p.id] || {}, rows = st.perDay.filter(function (x) { var v = f[x.k]; return v && (v.kg || (v.m && Object.keys(v.m).length)); }).slice(-14);
