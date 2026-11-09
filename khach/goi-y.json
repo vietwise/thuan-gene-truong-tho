@@ -113,28 +113,35 @@
     }
   ],
   "zalo": "https://zalo.me/0977206471",
-  "_huong_dan_goi": "Các gói Đồng hành hiện ở tab Quản lý → Nâng cấp. 'price' để trống thì app ghi 'nhắn chuyên gia để biết phí'. Mã của gói 'id' phải trùng với gói chọn trong app chuyên gia khi tạo mã kích hoạt.",
+  "_huong_dan_goi": "Các gói Đồng hành hiện ở tab Quản lý → Nâng cấp. 'price' để trống thì app ghi 'nhắn chuyên gia để biết phí'. Mã của gói 'id' phải trùng với gói trong app Exe khi tạo mã kích hoạt. Bảng giá chốt 09/11/2026.",
   "plans": [
+    {
+      "id": "dh1",
+      "name": "Đồng hành 1 tháng",
+      "months": 1,
+      "price": "190.000 đ",
+      "note": "Dùng thử trọn bản Đồng hành một tháng."
+    },
     {
       "id": "dh3",
       "name": "Đồng hành 3 tháng",
       "months": 3,
-      "price": "",
+      "price": "390.000 đ",
       "note": "Trọn một giai đoạn giao thức, khoảng 12 tuần."
     },
     {
       "id": "dh6",
       "name": "Đồng hành 6 tháng",
       "months": 6,
-      "price": "",
+      "price": "590.000 đ",
       "note": "Hai giai đoạn, có lần xem lại tiến độ và chỉnh giao thức ở giữa."
     },
     {
       "id": "dh12",
       "name": "Đồng hành 12 tháng",
       "months": 12,
-      "price": "",
-      "note": "Cả năm thuận gene, theo nhịp bốn mùa."
+      "price": "990.000 đ",
+      "note": "Cả năm thuận gene, theo nhịp bốn mùa. Tiết kiệm nhất."
     }
   ],
   "_huong_dan_quy": "Các quỹ khách được chọn khi tặng Châu Lộc tượng trưng và tạo Thẻ hảo tâm (tab Tiến độ, khung Quặng mỏ). Thêm quỹ mới: thêm một dòng {id, name}.",
