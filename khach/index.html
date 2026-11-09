@@ -695,10 +695,10 @@ details.grp>summary::-webkit-details-marker{display:none}
   function oTaskOf(p, k) { var o = oToday(p, k); if (!o || !o.t) return null; return p.reminders.filter(function (r) { return r.id === o.t; })[0] || null; }
   function oracleTodayHtml(p, day) {
     var o = oToday(p, day);
-    if (!o) return '<section class="card orc-inv"><img alt="" src="" data-oback><div><span class="lbl">Lá bài hôm nay</span><h2>Hôm nay, lá bài nào sẽ tìm đến bạn?</h2><p>Thở ba hơi, rút một lá trong 22 lá thức tỉnh. Lá bài sẽ chọn cho bạn một việc thuận gene để làm thật trọn vẹn hôm nay.</p><button class="btn" type="button" id="oDraw">Rút lá bài ✦</button></div></section>';
+    if (!o) return '<section class="card orc-inv"><img alt="" src="" data-oback><div><span class="lbl">Lá bài chủ đích hôm nay của bạn</span><h2>Hôm nay, lá bài nào sẽ tìm đến bạn?</h2><p>Thở ba hơi, rút một lá trong 22 lá thức tỉnh. Lá bài sẽ chọn cho bạn một việc thuận gene để làm thật trọn vẹn hôm nay.</p><button class="btn" type="button" id="oDraw">Rút lá bài ✦</button></div></section>';
     var c = oCard(o.c); if (!c) return '<section class="card orc-mini" data-opend><p class="small muted" style="margin:0">Đang mở lá bài hôm nay…</p></section>';
     var g = oGroup(c), t = oTaskOf(p, day), dm = doneMap(p, day);
-    return '<section class="card orc-mini" style="--og:' + g.color + '">' + oArt(c, 'sm') + '<div><span class="lbl" style="color:' + g.color + '">Lá bài hôm nay · ' + esc(g.name) + '</span><h3>' + esc(c.title) + '</h3><p class="oq">' + esc(c.question) + '</p>' +
+    return '<section class="card orc-mini" style="--og:' + g.color + '">' + oArt(c, 'sm') + '<div><span class="lbl" style="color:' + g.color + '">Lá bài chủ đích hôm nay của bạn · ' + esc(g.name) + '</span><h3>' + esc(c.title) + '</h3><p class="oq">' + esc(c.question) + '</p>' +
       (t ? '<p class="orc-task"><b>✦ Việc của lá bài:</b> ' + esc(t.time) + ' · ' + esc(t.title) + (dm[t.id] ? ' <b style="color:var(--moss)">· đã xong ✓</b>' : '') + '</p>' : '') +
       '<button class="linkbtn" type="button" id="oOpen">Xem lại lá bài</button></div></section>';
   }
@@ -718,7 +718,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   }
   var oTimer = null;
   function oracleOpen(p, mode, cardId) {
-    var box = document.createElement('div'); box.id = 'orc'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', mode === 'breath' ? 'Thở bình an' : 'Lá bài hôm nay');
+    var box = document.createElement('div'); box.id = 'orc'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', mode === 'breath' ? 'Thở bình an' : 'Lá bài chủ đích hôm nay của bạn');
     document.body.appendChild(box); document.body.style.overflow = 'hidden';
     var close = function () { clearTimeout(oTimer); box.remove(); document.body.style.overflow = ''; keepScroll = true; render(); };
     box.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
@@ -758,7 +758,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   function cardHtml(p, r, day, dm, sm, isNow) {
     var t = plain(r.type).replace(/ /g, ''), su = snoozeUntil(p, day, r.id), snz = su > Date.now() && !dm[r.id];
     return '<li class="rcard t-' + t + (dm[r.id] ? ' done' : '') + (sm[r.id] ? ' skipped' : '') + (isNow ? ' now' : '') + '"><time>' + esc(r.time) + '</time><div><div class="rtitle">' + esc(r.title) + (r.star ? ' <span class="pill" title="Chờ xét nghiệm hoặc bác sĩ đồng ý">*</span>' : '') + '</div><div class="rdetail">' + esc(r.detail) + '</div>' +
-      '<div class="rmeta"><span class="pill">' + esc(r.type) + (r.ml ? ' · ' + r.ml + ' ml' : '') + '</span>' + (isCore(p, r) && !isWater(r) ? '<span class="pill core">Cốt lõi</span>' : '') + ((oToday(p, day) || {}).t === r.id ? '<span class="pill orc">✦ Lá bài hôm nay</span>' : '') + (snz ? '<span class="pill snz">Hoãn đến ' + hhmm(su) + '</span>' : '') + (sm[r.id] ? '<span>Đã bỏ qua</span>' : '') + '</div>' +
+      '<div class="rmeta"><span class="pill">' + esc(r.type) + (r.ml ? ' · ' + r.ml + ' ml' : '') + '</span>' + (isCore(p, r) && !isWater(r) ? '<span class="pill core">Cốt lõi</span>' : '') + ((oToday(p, day) || {}).t === r.id ? '<span class="pill orc">✦ Lá bài chủ đích</span>' : '') + (snz ? '<span class="pill snz">Hoãn đến ' + hhmm(su) + '</span>' : '') + (sm[r.id] ? '<span>Đã bỏ qua</span>' : '') + '</div>' +
       (r.genes ? '<details class="why" data-why="' + esc(r.id) + '"><summary>Vì sao việc này?</summary><p>Căn cứ: ' + esc(r.genes) + '. Đọc thêm ở tab Tài liệu.</p></details>' : '') +
       '</div><label class="chk"><input type="checkbox" data-rid="' + esc(r.id) + '"' + (dm[r.id] ? ' checked' : '') + '><span>Xong</span></label></li>';
   }
