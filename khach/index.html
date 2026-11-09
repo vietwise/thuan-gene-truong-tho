@@ -805,9 +805,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   function measOf(p, k) { var f = feelOf(p, k); f.m = f.m || {}; return f.m; }
   function measCard(p, day) {
     var m = measOf(p, day);
-    return '<section class="card meas"><h2>Số đo hôm nay</h2><p class="small muted" style="margin:4px 0 10px">Chụp màn hình app cân điện tử hoặc đồng hồ, vòng đeo (giấc ngủ, nhịp tim, bước chân, HRV…). Ảnh lưu trên điện thoại này để bạn gửi chuyên gia khi tư vấn. App không tự đọc số trong ảnh, muốn xem xu hướng thì gõ vài số chính bên dưới.</p>' +
-      '<label class="btn gold" style="display:inline-flex;align-items:center;cursor:pointer">Thêm ảnh chụp màn hình<input id="mFile" type="file" accept="image/*" multiple hidden></label>' +
-      '<div class="thumbs" id="mThumbs" aria-live="polite"></div>' +
+    return '<section class="card meas"><h2>Số đo hôm nay</h2><p class="small muted" style="margin:4px 0 10px">Xem số trên app cân điện tử hoặc đồng hồ, vòng đeo rồi gõ vài số chính vào đây. App vẽ xu hướng trong tab Tiến độ.</p>' +
       '<div class="mgrid">' + MEAS.map(function (x) { return '<label>' + x[1] + '<input inputmode="decimal" data-m="' + x[0] + '" value="' + (m[x[0]] != null ? num(m[x[0]]) : '') + '" placeholder="' + x[2] + '"></label>'; }).join('') + '</div>' +
       '<p class="small muted" style="margin:8px 0 0">Cân nặng ghi ở khung "Hôm nay bạn thấy thế nào?".</p></section>';
   }
@@ -821,17 +819,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     }).catch(function () { box.innerHTML = '<p class="small muted">Trình duyệt này không lưu được ảnh.</p>'; });
   }
   function bindMeas(p, day) {
-    var inp = $('#mFile'); if (!inp) return;
-    inp.addEventListener('change', function () {
-      var files = Array.prototype.slice.call(inp.files || []); if (!files.length) return;
-      var box = $('#mThumbs'); if (box) box.insertAdjacentHTML('beforeend', '<p class="small muted" id="mBusy">Đang lưu ảnh…</p>');
-      try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
-      files.reduce(function (pr, f, i) { return pr.then(function () { return shrink(f).then(function (b) { return photoPut({ k: p.id + '|' + day + '|' + Date.now() + '-' + i, pid: p.id, day: day, at: Date.now(), blob: b }); }); }); }, Promise.resolve())
-        .then(function () { inp.value = ''; fillThumbs(p, day); flash('Đã lưu ' + files.length + ' ảnh số đo.'); })
-        .catch(function () { var b2 = $('#mBusy'); if (b2) b2.textContent = 'Chưa lưu được ảnh (bộ nhớ trình duyệt bị chặn hoặc đầy).'; });
-    });
     $$('input[data-m]').forEach(function (i) { i.addEventListener('change', function () { var v = parseFloat(String(i.value).replace(',', '.')); var m = measOf(p, day); if (isFinite(v) && v >= 0) m[i.dataset.m] = Math.round(v * 10) / 10; else delete m[i.dataset.m]; save(); }); });
-    fillThumbs(p, day);
   }
   function measStatsHtml(p, st) {
     var f = store.feel[p.id] || {}, rows = st.perDay.filter(function (x) { var v = f[x.k]; return v && (v.kg || (v.m && Object.keys(v.m).length)); }).slice(-14);
@@ -839,29 +827,12 @@ details.grp>summary::-webkit-details-marker{display:none}
     st.perDay.forEach(function (x) { var v = f[x.k]; if (!v) return; var all = Object.assign({ kg: v.kg }, v.m || {}); Object.keys(all).forEach(function (k) { if (all[k] == null) return; if (first[k] == null) first[k] = all[k]; last[k] = all[k]; }); });
     var cols = [['kg', 'Cân (kg)']].concat(MEAS.map(function (x) { return [x[0], x[1].replace(' (giờ)', '')]; }));
     var trend = cols.filter(function (c) { return first[c[0]] != null && last[c[0]] != null; }).map(function (c) { return c[1] + ': ' + num(first[c[0]]) + ' → ' + num(last[c[0]]); }).join(' · ');
-    return '<section class="card"><h2>Số đo và ảnh chụp</h2>' + (trend ? '<p class="small" style="margin:6px 0 0"><b>Đầu kỳ → gần nhất:</b> ' + esc(trend) + '</p>' : '<p class="small muted" style="margin:6px 0 0">Chưa có số đo nào được gõ. Ảnh chụp màn hình vẫn được lưu để gửi chuyên gia.</p>') +
-      (rows.length ? '<div style="overflow-x:auto"><table class="ftab mtab"><thead><tr><th>Ngày</th>' + cols.map(function (c) { return '<th>' + c[1] + '</th>'; }).join('') + '<th>Ảnh</th></tr></thead><tbody>' +
-        rows.map(function (x) { var v = f[x.k] || {}, mm = v.m || {}; return '<tr><td>' + x.d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }) + '</td>' + cols.map(function (c) { var val = c[0] === 'kg' ? v.kg : mm[c[0]]; return '<td>' + (val != null ? num(val) : '—') + '</td>'; }).join('') + '<td class="ph" data-phk="' + x.k + '">·</td></tr>'; }).join('') + '</tbody></table></div>' : '') +
-      '<p class="small" style="margin:10px 0 6px" id="phCount">Đang đếm ảnh…</p><div class="row"><button class="btn" type="button" id="phSend">Gửi ảnh số đo cho chuyên gia</button></div><p class="small muted" style="margin:6px 0 0">App chọn tối đa 7 ảnh trải đều trong kỳ (đúng số ảnh app chuyên gia đọc được). Bạn tự chọn gửi qua Zalo hoặc email. Ảnh không nằm trong file sao lưu.</p><p class="status" id="phMsg" aria-live="polite"></p></section>';
+    return '<section class="card"><h2>Số đo</h2>' + (trend ? '<p class="small" style="margin:6px 0 0"><b>Đầu kỳ → gần nhất:</b> ' + esc(trend) + '</p>' : '<p class="small muted" style="margin:6px 0 0">Chưa có số đo nào. Gõ số ở khung Số đo hôm nay trong tab Hôm nay.</p>') +
+      (rows.length ? '<div style="overflow-x:auto"><table class="ftab mtab"><thead><tr><th>Ngày</th>' + cols.map(function (c) { return '<th>' + c[1] + '</th>'; }).join('') + '</tr></thead><tbody>' +
+        rows.map(function (x) { var v = f[x.k] || {}, mm = v.m || {}; return '<tr><td>' + x.d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }) + '</td>' + cols.map(function (c) { var val = c[0] === 'kg' ? v.kg : mm[c[0]]; return '<td>' + (val != null ? num(val) : '—') + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>' : '') + '</section>';
   }
   function spread(l, n) { if (l.length <= n) return l; var out = []; for (var i = 0; i < n; i++) out.push(l[Math.round(i * (l.length - 1) / (n - 1))]); return out; }
-  function bindMeasStats(p, st) {
-    var from = st.from;
-    photosOf(p.id).then(function (l) {
-      var inP = l.filter(function (x) { return x.day >= from; }), byDay = {};
-      inP.forEach(function (x) { byDay[x.day] = (byDay[x.day] || 0) + 1; });
-      $$('[data-phk]').forEach(function (td) { td.textContent = byDay[td.dataset.phk] || '—'; });
-      var c = $('#phCount'); if (c) c.textContent = inP.length ? 'Có ' + inP.length + ' ảnh trong ' + Object.keys(byDay).length + ' ngày của kỳ này.' : 'Chưa có ảnh nào trong kỳ này. Thêm ảnh ở tab Hôm nay.';
-      var b = $('#phSend'); if (!b) return; if (!inP.length) { b.disabled = true; return; }
-      b.addEventListener('click', function () {
-        var pick = spread(inP, 7), files = pick.map(function (x, i) { return new File([x.blob], 'so-do-' + x.day + '-' + (i + 1) + '.jpg', { type: 'image/jpeg' }); });
-        var msg = $('#phMsg');
-        if (navigator.canShare && navigator.canShare({ files: files })) { navigator.share({ files: files, title: 'Ảnh số đo — ' + p.name, text: 'Ảnh số đo của ' + p.name + ' (' + pick.length + ' ảnh)' }).catch(function () {}); return; }
-        files.forEach(function (f, i) { setTimeout(function () { var a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = f.name; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 4000); }, i * 400); });
-        if (msg) msg.textContent = 'Đã tải ' + files.length + ' ảnh về máy. Gửi các ảnh này cho chuyên gia qua Zalo hoặc email.';
-      });
-    }).catch(function () { var c = $('#phCount'); if (c) c.textContent = 'Trình duyệt này không lưu được ảnh.'; });
-  }
+  function bindMeasStats() {}
   function backupDue(p) {
     var age = function (iso) { return iso ? (Date.now() - new Date(iso).getTime()) / 864e5 : 1e9; };
     return store.lastBackup ? age(store.lastBackup) >= 30 : age(p.importedAt) >= 7;
@@ -1161,7 +1132,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   // ---------- gói Đồng hành: mã kích hoạt do chuyên gia ký (ECDSA P-256), app chỉ giữ khoá công khai để kiểm tra, chạy cả khi không có mạng ----------
   var LIC_PUB = {"kty":"EC","x":"lz9PJpw4OsGT7uC4CN_bNfqCFD6vSn6DXFPNEComR_k","y":"q4mOaiMWGZJn6528v5rko_grw9YVxFSVba-cXMi1V8Y","crv":"P-256"};
   var GRACE_DAYS = 7, LICOK = {}, licKey = null;
-  var PAID = ['Tiến độ cả giai đoạn, lịch giữ nhịp, bảng gửi chuyên gia', 'Lá bài thức tỉnh mỗi sáng và vườn thẻ 22 lá', 'Châu Lộc và 4 châu ngọc', 'Số đo và ảnh chụp cân, thiết bị đeo mỗi ngày', 'Giờ game-học cùng gia đình'];
+  var PAID = ['Tiến độ cả giai đoạn, lịch giữ nhịp, bảng gửi chuyên gia', 'Lá bài thức tỉnh mỗi sáng và vườn thẻ 22 lá', 'Châu Lộc và 4 châu ngọc', 'Số đo cân và thiết bị đeo mỗi ngày', 'Giờ game-học cùng gia đình'];
   var FREE = ['Thẻ nhắc hôm nay và thông báo đúng giờ', 'Nhắc bằng Lịch của điện thoại', 'Chấm cảm nhận mỗi ngày', 'Tài liệu giao thức, sao lưu, liên hệ chuyên gia'];
   function b64u(s) { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; var b = atob(s), a = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
   function verifyCode(code) {
