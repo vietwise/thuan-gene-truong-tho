@@ -698,7 +698,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     if (!o) return '<section class="card orc-inv"><img alt="" src="" data-oback><div><span class="lbl">Lá bài chủ đích hôm nay của bạn</span><h2>Hôm nay, lá bài nào sẽ tìm đến bạn?</h2><p>Thở ba hơi, rút một lá trong 22 lá thức tỉnh. Lá bài sẽ chọn cho bạn một việc thuận gene để làm thật trọn vẹn hôm nay.</p><button class="btn" type="button" id="oDraw">Rút lá bài ✦</button></div></section>';
     var c = oCard(o.c); if (!c) return '<section class="card orc-mini" data-opend><p class="small muted" style="margin:0">Đang mở lá bài hôm nay…</p></section>';
     var g = oGroup(c), t = oTaskOf(p, day), dm = doneMap(p, day);
-    return '<section class="card orc-mini" style="--og:' + g.color + '">' + oArt(c, 'sm') + '<div><span class="lbl" style="color:' + g.color + '">Lá bài chủ đích hôm nay của bạn · ' + esc(g.name) + '</span><h3>' + esc(c.title) + '</h3><p class="oq">' + esc(c.question) + '</p>' +
+    return '<section class="card orc-mini" style="--og:' + g.color + '">' + oArt(c, 'sm') + '<div><span class="lbl" style="color:' + g.color + '">Lá bài chủ đích hôm nay của bạn</span><h3>' + esc(c.title) + '</h3><p class="oq">' + esc(c.question) + '</p>' +
       (t ? '<p class="orc-task"><b>✦ Việc của lá bài:</b> ' + esc(t.time) + ' · ' + esc(t.title) + (dm[t.id] ? ' <b style="color:var(--moss)">· đã xong ✓</b>' : '') + '</p>' : '') +
       '<button class="linkbtn" type="button" id="oOpen">Xem lại lá bài</button></div></section>';
   }
@@ -708,7 +708,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   }
   function oFaceHtml(p, c, k, fresh) {
     var g = oGroup(c), o = oToday(p, k) || {}, t = oTaskOf(p, k), map = OGROUP_TASK[c.group] || {};
-    return '<div class="oface" style="--og:' + g.color + '">' + oArt(c, 'big') + '<div class="ob2"><span class="gp">' + esc(g.name) + ' · ' + esc(g.meaning) + '</span><h3>' + esc(c.title) + '</h3><p>' + esc(c.story) + '</p>' +
+    return '<div class="oface" style="--og:' + g.color + '">' + oArt(c, 'big') + '<div class="ob2"><span class="gp">' + esc(g.meaning) + '</span><h3>' + esc(c.title) + '</h3><p>' + esc(c.story) + '</p>' +
       '<div class="oqb"><b>Câu hỏi chiêm nghiệm</b>' + esc(c.question) + '</div>' +
       (t ? '<div class="otask"><b class="t">✦ Việc thuận gene của lá bài hôm nay</b><b>' + esc(t.time) + ' · ' + esc(t.title) + '</b><br><span class="small">' + esc(t.detail || '') + '</span><p class="small" style="margin-top:6px">' + esc(map.line || '') + '</p></div>' : '') +
       (o.n ? '<div class="oqb"><b>Điều bạn đã ngẫm</b>' + esc(o.n) + '</div>' : '') +
