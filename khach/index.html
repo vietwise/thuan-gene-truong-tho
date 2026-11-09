@@ -287,7 +287,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   'use strict';
   var EXPERT = { name: 'Chuyên gia Nhất Phương Hồng', email: 'hongple99@gmail.com', zalo: 'https://zalo.me/0977206471' };
   var KEY = 'ttk.v1';
-  var DETAILED = [['d01','1. Phân tích hệ thống'],['d02','2. Ba chuyên gia'],['d03','3. Phản biện chéo'],['d04','4. Giao thức thống nhất'],['d05','5. Lịch một ngày & nhịp tuần'],['d06','6. Thẻ nhắc hằng ngày'],['d07','7. Thuốc, thực phẩm & thảo dược đang dùng'],['d08','8. Thành phần cơ thể & thiết bị đeo'],['d09','9. Hồ sơ di truyền'],['d10','9b. Chùm siêu gene trường thọ'],['d11','10. Theo dõi phenotype'],['d12','11. Biomarker'],['d13','12. An toàn & câu hỏi mở']];
+  var DETAILED = [['d01','1. Phân tích hệ thống'],['d02','2. Ba chuyên gia'],['d03','3. Phản biện chéo'],['d04','4. Giao thức thống nhất'],['d05','5. Lịch một ngày & nhịp tuần'],['d06','6. Thẻ nhắc hằng ngày'],['d07','7. Thuốc, thực phẩm & thảo dược đang dùng'],['d14','7b. Sản phẩm thuận tự nhiên — Siêu Thị Vietwise'],['d08','8. Thành phần cơ thể & thiết bị đeo'],['d09','9. Hồ sơ di truyền'],['d10','9b. Chùm siêu gene trường thọ'],['d11','10. Theo dõi phenotype'],['d12','11. Biomarker'],['d13','12. An toàn & câu hỏi mở']];
   var SUMMARY = [['s1','Phần 1 — Di truyền'],['s2','Phần 2 — Lối sống'],['s3','Phần 3 — Lâm sàng']];
   var DAYN = ['', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
   var DAYS = ['', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
@@ -600,7 +600,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   var WARN_RE = /bác sĩ|thuốc|an toàn|lưu ý|cẩn trọng|thận trọng|xét nghiệm cần|câu hỏi còn mở|chờ xét nghiệm/i;
   function md(t) {
     var h = window.marked ? window.marked.parse(t || '') : '<p>' + esc(t).replace(/\n/g, '<br>') + '</p>';
-    h = window.DOMPurify ? window.DOMPurify.sanitize(h) : esc(t);
+    h = window.DOMPurify ? window.DOMPurify.sanitize(h).replace(/<a href="http/g, '<a target="_blank" rel="noopener" href="http') : esc(t);
     var box = document.createElement('div'); box.innerHTML = h;
     var isBoldP = function (n) { return n.tagName === 'P' && n.children.length === 1 && n.firstElementChild.tagName === 'STRONG' && n.textContent.trim() === n.firstElementChild.textContent.trim(); };
     $$('h3, h4, p', box).forEach(function (n) {
