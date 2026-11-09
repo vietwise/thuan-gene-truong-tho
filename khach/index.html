@@ -1461,7 +1461,16 @@ details.grp>summary::-webkit-details-marker{display:none}
   (function fromUrl2() { try { var u = new URL(location.href), a = u.searchParams.get('act'); if (a) { act(u.searchParams.get('pid'), u.searchParams.get('day'), u.searchParams.get('rid'), a); history.replaceState(null, '', location.pathname); } } catch (e) {} })();
   render(); setTimeout(tick, 1500);
   checkLicenses().then(function () { if (cur()) { keepScroll = true; render(); } });
-  if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); }); }
+  if ('serviceWorker' in navigator) {
+    // when a newer version takes over, reload once so the person sees it straight away (not while typing)
+    var hadCtl = !!navigator.serviceWorker.controller, reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (!hadCtl || reloaded) return; reloaded = true;
+      var go = function () { var a = document.activeElement; if (a && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) { setTimeout(go, 3000); return; } location.reload(); };
+      go();
+    });
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(function (reg) { reg.update && reg.update(); }).catch(function () {}); });
+  }
   loadOffers(); window.addEventListener('online', loadOffers);
 })();
 </script>
