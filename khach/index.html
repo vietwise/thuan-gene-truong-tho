@@ -158,6 +158,11 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
 .pick input{width:22px;height:22px;margin-top:2px;accent-color:var(--purple);flex:none}
 .btn[disabled]{opacity:.45;cursor:not-allowed}
 .offer{border:2px solid var(--yellow);background:var(--saffron-soft)}
+.shopcard ul.shop{list-style:none;margin:8px 0;padding:0;display:grid;gap:10px}
+.shopcard ul.shop li{display:grid;gap:2px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.shopcard ul.shop a{color:var(--purple)}
+.shopcard .warn{color:#8a459a}
+.shopcard a.btn{text-decoration:none;display:inline-block}
 .offer .big{font-family:var(--display);font-size:19px;font-weight:700;color:var(--purple)}
 .offer .lbl{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
 .offer a.btn{text-decoration:none;display:inline-flex;align-items:center}
@@ -364,6 +369,7 @@ details.grp>summary::-webkit-details-marker{display:none}
       title: core.title || 'Giao thức trường thọ', goal: core.goal || '',
       phases: (core.phases || []).map(function (p) { return { id: p.id, name: p.name || ('Giai đoạn ' + p.id), when: p.when || '' }; }),
       phase: Number(c.phase || 1), reminders: rs, coreFlag: rs.some(function (r) { return r.core; }), summary: pick(SUMMARY), detail: pick(DETAILED),
+      products: (Array.isArray(core.products) ? core.products : []).filter(function (x) { return x && x.name; }).slice(0, 10).map(function (x) { var u = String(x.url || ''); return { name: String(x.name).slice(0, 120), url: /^https:\/\/sieuthivietwise\.vn\//.test(u) ? u : SHOP_URL, need: String(x.need || '').slice(0, 200), use: String(x.use || '').slice(0, 200), time: String(x.time || '').slice(0, 40), note: String(x.note || '').slice(0, 240) }; }),
       emergency: core.emergency || [], exportedAt: o.exportedAt || '', importedAt: new Date().toISOString(),
       sex: String(c.sex || ''), birth: String(c.birth || ''), height: parseFloat(String(c.height || '').replace(',', '.')) || 0,
       gated: !!(o.gated || (c.license && c.license.code))   // only files from Chuyên gia Nhất Phương Hồng's own app use paid plans; other consultants' clients keep the full app
@@ -914,7 +920,7 @@ details.grp>summary::-webkit-details-marker{display:none}
       (backupDue(p) ? '<p class="note" style="margin:0">Đổi điện thoại hay xoá trình duyệt là mất tiến độ. <button class="linkbtn" id="nudgeBk" type="button">Lưu bản sao ngay</button></p>' : '') +
       (nx ? '<section class="card next"><span class="lbl">Việc tiếp theo · ' + esc(nx.time) + '</span><p class="big">' + esc(nx.title) + '</p><p style="margin:0">' + esc(nx.detail) + '</p><div class="row" style="margin-top:10px"><button class="btn" type="button" data-done="' + esc(nx.id) + '">Đã làm xong</button></div></section>'
           : '<section class="card next"><span class="lbl">Hôm nay</span><p class="big">' + (rs.length && done === rs.length ? 'Đã xong tất cả. Cảm ơn bạn đã chăm cơ thể mình.' : 'Không còn việc nào sau giờ này.') + '</p></section>') +
-      feelCard(p, day) + (full(p) ? measCard(p, day) : '') + groups + famCard(p, day) + (full(p) ? '' : lockCard('today')) +
+      feelCard(p, day) + (full(p) ? measCard(p, day) : '') + groups + shopCard(p) + famCard(p, day) + (full(p) ? '' : lockCard('today')) +
       (rest.length ? '<details class="sec"><summary>' + rest.length + ' việc khác tạm nghỉ hôm nay</summary><ul class="small" style="padding-left:18px">' + rest.map(function (r) { return '<li>' + esc(r.time) + ' · ' + esc(r.title) + '</li>'; }).join('') + '</ul></details>' : '') +
       offerCard(p) +
       '<section class="card"><div class="row" style="justify-content:space-between"><h2>7 ngày qua</h2><button class="linkbtn" type="button" id="toStats">Tiến độ cả giai đoạn →</button></div><div class="week" style="margin-top:10px">' + weekHtml + '</div></section>' +
@@ -939,7 +945,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     $('#feelDone') && $('#feelDone').addEventListener('click', function () { var i = $('#kg'); if (i) i.dispatchEvent(new Event('change')); feelEdit = false; again(); });
     $('#feelEdit') && $('#feelEdit').addEventListener('click', function () { feelEdit = true; again(); });
     $('#nudgeBk') && $('#nudgeBk').addEventListener('click', function () { saveBackup(function () { again(); }); });
-    bindIcs(p, again); bindOffers(p, again); bindOracle(p, again); if (full(p)) bindMeas(p, day); bindGems(p, again, m); bindLock();
+    bindShop(m); bindIcs(p, again); bindOffers(p, again); bindOracle(p, again); if (full(p)) bindMeas(p, day); bindGems(p, again, m); bindLock();
   }
   function notifyCard() {
     var st = store.notify;
@@ -965,6 +971,23 @@ details.grp>summary::-webkit-details-marker{display:none}
     return { id: '__game', time: f.time, title: 'Giờ chơi game-học cùng gia đình', detail: '15–20 phút cả nhà cùng chơi một trò ở Vườn Game-học Vietwise, rồi kể cho nhau nghe điều vui nhất hôm nay.', type: 'Gia đình', days: [1, 2, 3, 4, 5, 6, 7], phase: 'both', fam: true };
   }
   function famDue(p) { var r = famR(p), day = ymd(); return r && r.time <= nowHM() && !handled(p, day, r.id) && !snoozed(p, day, r.id) ? [r] : []; }
+  // ---------- Siêu Thị Vietwise: sản phẩm thuận tự nhiên chuyên gia chọn cho hồ sơ này ----------
+  var SHOP_URL = 'https://sieuthivietwise.vn/35/', docFocus = '';
+  function shopCard(p) {
+    var ps = p.products || [], has7b = (p.detail || []).some(function (s) { return s.key === 'd14'; });
+    var link = function (u, t) { return '<a href="' + esc(u) + '" target="_blank" rel="noopener">' + t + '</a>'; };
+    var body = ps.length
+      ? '<ul class="shop">' + ps.map(function (x) {
+          return '<li><b>' + link(x.url, esc(x.name)) + '</b>' + (x.use || x.time ? '<span class="small">' + esc([x.time, x.use].filter(Boolean).join(' · ')) + '</span>' : '') +
+            (x.need ? '<span class="small muted">Vì: ' + esc(x.need) + '</span>' : '') + (x.note ? '<span class="small warn">Lưu ý: ' + esc(x.note) + '</span>' : '') + '</li>';
+        }).join('') + '</ul>'
+      : '<p class="small" style="margin:6px 0">' + (has7b ? 'Chuyên gia đã viết phần sản phẩm phù hợp với bạn trong mục 7b.' : 'Hồ sơ này chưa có phần sản phẩm. Khi chuyên gia gửi bản giao thức mới, sản phẩm phù hợp với bạn sẽ hiện ở đây.') + '</p>';
+    return '<details class="sec shopcard"' + (ps.length ? ' open' : '') + '><summary>Sản phẩm thuận tự nhiên cho bạn · Siêu Thị Vietwise</summary>' + body +
+      '<p class="small muted" style="margin:6px 0">Không phải thực phẩm chức năng. Sản phẩm dùng hằng ngày đã có trong thẻ nhắc đúng giờ.</p>' +
+      '<div class="row" style="margin:4px 0 12px">' + link(SHOP_URL, 'Mua tại Siêu Thị Vietwise') .replace('<a ', '<a class="btn" ') +
+      (has7b ? '<button class="linkbtn" type="button" id="to7b">Đọc mục 7b →</button>' : '') + '</div></details>';
+  }
+  function bindShop(m) { var b = $('#to7b', m); if (b) b.addEventListener('click', function () { docFocus = 'd14'; view = 'docs'; render(); }); }
   function famCard(p, day) {
     var r = famR(p); if (!r) return '';
     var dm = doneMap(p, day), ok = !!dm[r.id];
@@ -1447,7 +1470,8 @@ details.grp>summary::-webkit-details-marker{display:none}
     m.innerHTML = '<section class="card"><h1>Bản tóm tắt cốt lõi</h1><p class="small muted" style="margin:4px 0 0">Những điều không thể bỏ qua: di truyền, lối sống, lâm sàng.</p>' + (p.summary.length ? '' : none) + '</section>' +
       p.summary.map(function (s) { return '<article class="card doc">' + md(s.md) + '</article>'; }).join('') +
       '<section class="card"><h1>Giao thức chi tiết</h1><p class="small muted" style="margin:4px 0 0">Bản đầy đủ để đọc khi cần. Chạm vào từng mục để mở.</p>' + (p.detail.length ? '' : none) + '</section>' +
-      p.detail.map(function (s) { return '<details class="sec"><summary>' + esc(s.title) + '</summary><div class="doc">' + md(s.md) + '</div></details>'; }).join('');
+      p.detail.map(function (s) { return '<details class="sec" data-k="' + s.key + '"' + (s.key === docFocus ? ' open' : '') + '><summary>' + esc(s.title) + '</summary><div class="doc">' + md(s.md) + '</div></details>'; }).join('');
+    if (docFocus) { var el = m.querySelector('details[data-k="' + docFocus + '"]'); docFocus = ''; if (el) setTimeout(function () { el.scrollIntoView({ block: 'start' }); }, 30); }
   }
   function saveBackup(after, msgEl) {
     var name = 'sao-luu-truong-tho-' + ymd() + '.json';
