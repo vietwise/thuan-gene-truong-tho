@@ -158,6 +158,10 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
 .pick input{width:22px;height:22px;margin-top:2px;accent-color:var(--purple);flex:none}
 .btn[disabled]{opacity:.45;cursor:not-allowed}
 .offer{border:2px solid var(--yellow);background:var(--saffron-soft)}
+.qday{display:grid;gap:4px}
+.qday .lbl{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--jade,#476e70)}
+.qday .quote{margin:0}
+.qday #qNext{justify-self:end}
 .shopcard ul.shop{list-style:none;margin:8px 0;padding:0;display:grid;gap:10px}
 .shopcard ul.shop li{display:grid;gap:2px;padding:8px 0;border-bottom:1px dashed var(--line)}
 .shopcard ul.shop a{color:var(--purple)}
@@ -322,7 +326,31 @@ details.grp>summary::-webkit-details-marker{display:none}
     ["b", "Hãy khai phá châu ngọc quý bên trong mình, sử dụng nó để giúp ích cho nhân loại, trân trọng cuộc đời, và trở thành phiên bản tốt nhất của chính mình...", "Nhất Phương Hồng · Nhìn Cây Sửa Đất"],
     ["b", "Hãy học cách \"cấu trúc hóa\" cuộc đời mình, loại bỏ những \"tạp chất\" phiền muộn để trở thành một nguồn năng lượng tích cực, tự nuôi dưỡng chính mình và lan tỏa sinh khí cho thế giới xung quanh...", "Nhất Phương Hồng · Chuyện Của Nước"],
     ["b", "Kỷ luật không nên tập trung vào trừng phạt mà là vào việc học hỏi từ sai lầm...", "Nhất Phương Hồng · Nhìn Cây Sửa Đất"],
-    ["b", "Mỗi khi bạn cầm một ly nước trên tay, hãy dừng lại một nhịp để nhìn thấu suốt hành trình của nó...", "Nhất Phương Hồng · Chuyện Của Nước"]
+    ["b", "Mỗi khi bạn cầm một ly nước trên tay, hãy dừng lại một nhịp để nhìn thấu suốt hành trình của nó...", "Nhất Phương Hồng · Chuyện Của Nước"],
+    ["g", "Cơ thể không cần được sửa chữa. Nó cần được lắng nghe đúng nhịp mà tạo hoá đã đặt sẵn.", ""],
+    ["g", "Mỗi tế bào mang một bản thiết kế hoàn chỉnh. Lối sống là cách ta chọn trang nào được đọc to lên.", ""],
+    ["g", "Gene là hạt giống, không phải số phận. Đất, nước và ánh sáng ta cho mỗi ngày quyết định cây lớn ra sao.", ""],
+    ["g", "Thân cần được nuôi, tâm cần được yên, trí cần được sáng. Ba nhu cầu thật ấy không thể thay nhau.", ""],
+    ["g", "Mặt trời mọc mỗi sáng là lời mời đồng hồ sinh học của ta bắt đầu lại từ đầu.", ""],
+    ["g", "Đói thật thì ăn, mệt thật thì nghỉ, buồn thật thì được ôm. Phân biệt nhu cầu thật với thói quen là bắt đầu chữa lành.", ""],
+    ["g", "Sự hoàn hảo của tạo hoá không nằm ở việc không có điểm yếu, mà ở khả năng tự cân bằng khi được chăm sóc đúng.", ""],
+    ["g", "Một bữa ăn đúng giờ, một giấc ngủ đủ sâu, một hơi thở chậm: những việc nhỏ ấy là ngôn ngữ cơ thể hiểu rõ nhất.", ""],
+    ["g", "Trường thọ không phải là thêm năm vào cuộc đời, mà là thêm sức sống vào từng năm.", ""],
+    ["g", "Khi tâm an, thân bớt phải gồng. Khi thân khoẻ, trí có chỗ để lớn lên.", ""],
+    ["g", "Biết mình mang xu hướng gì là để bước đi nhẹ hơn, không phải để lo lắng nhiều hơn.", ""],
+    ["g", "Cơ thể luôn nói thật qua giấc ngủ, cơn đói, nhịp tim và nét mặt. Việc của ta là học cách nghe.", ""],
+    ["g", "Thiên nhiên không vội, nhưng mọi thứ đều hoàn thành đúng mùa. Thay đổi bền vững cũng vậy.", ""],
+    ["g", "Chăm sóc bản thân đúng cách là món quà dành cho cả những người mình thương.", ""],
+    ["g", "Biết ơn trái tim đã đập không nghỉ từ trước khi ta biết gọi tên nó.", ""],
+    ["g", "Mỗi sáng thức dậy là một lời cảm ơn cơ thể chưa nói ra. Hãy nói nó bằng một hơi thở sâu.", ""],
+    ["g", "Lòng biết ơn biến những gì ta đang có thành đủ đầy.", ""],
+    ["g", "Cảm ơn đôi chân đã đưa ta đi qua bao nhiêu ngày khó. Hôm nay hãy cho chúng một buổi đi bộ dịu dàng.", ""],
+    ["g", "Biết ơn bữa cơm trước mặt là nhớ đến đất, nước, nắng và đôi tay đã làm ra nó.", ""],
+    ["g", "Khi lòng biết ơn lớn lên, chỗ cho lo âu nhỏ lại.", ""],
+    ["g", "Biết ơn tổ tiên đã trao cho ta bộ gene này: vừa là di sản, vừa là bài học để sống khôn ngoan hơn.", ""],
+    ["g", "Một lời cảm ơn mỗi tối trước khi ngủ là liều thuốc an thần tự nhiên nhất.", ""],
+    ["g", "Biết ơn không cần điều kiện hoàn hảo. Nó bắt đầu từ chính hơi thở này.", ""],
+    ["g", "Ta không thể biết ơn và oán giận cùng một lúc. Chọn biết ơn là chọn bình an.", ""]
   ];
   function quoteHtml(q, id) { return '<blockquote class="quote"' + (id ? ' id="' + id + '"' : '') + '>' + esc(q[1]) + (q[2] ? '<cite>— ' + esc(q[2]) + '</cite>' : '') + '</blockquote>'; }
   function pickQuote(kind, seed) { var l = QUOTES.filter(function (q) { return !kind || q[0] === kind; }); return l[Math.abs(seed) % l.length]; }
@@ -642,11 +670,15 @@ details.grp>summary::-webkit-details-marker{display:none}
     clearInterval(quoteTimer);
     var el = $('#rq'); if (!el) return;
     var i = Math.floor(Math.random() * QUOTES.length);
-    quoteTimer = setInterval(function () {
-      var e = $('#rq'); if (!e) { clearInterval(quoteTimer); return; }
-      e.classList.add('fade');
-      setTimeout(function () { i = (i + 1) % QUOTES.length; var q = QUOTES[i]; e.innerHTML = esc(q[1]) + (q[2] ? '<cite>— ' + esc(q[2]) + '</cite>' : ''); e.classList.remove('fade'); }, 600);
-    }, 15000);
+    qI = i;
+    quoteTimer = setInterval(function () { if (!$('#rq')) { clearInterval(quoteTimer); return; } nextQuote(true); }, 20000);
+  }
+  var qI = 0;
+  function nextQuote(auto) {
+    var e = $('#rq'); if (!e) return;
+    if (auto !== true) { clearInterval(quoteTimer); quoteTimer = setInterval(function () { if (!$('#rq')) { clearInterval(quoteTimer); return; } nextQuote(true); }, 20000); }
+    e.classList.add('fade');
+    setTimeout(function () { qI = (qI + 1) % QUOTES.length; var q = QUOTES[qI]; e.innerHTML = esc(q[1]) + (q[2] ? '<cite>— ' + esc(q[2]) + '</cite>' : ''); e.classList.remove('fade'); }, 400);
   }
   function welcome() {
     var demo = Object.keys(store.profiles).length;
@@ -914,6 +946,7 @@ details.grp>summary::-webkit-details-marker{display:none}
       (hasP2 ? '<div class="seg" role="group" aria-label="Giai đoạn">' + p.phases.map(function (ph) { return '<button type="button" data-ph="' + ph.id + '" class="' + (String(p.phase) === String(ph.id) ? 'on' : '') + '">' + esc(ph.name) + '</button>'; }).join('') + '</div>' : '') +
       '<div class="lightrow"><button type="button" class="chip' + (light ? ' on' : '') + '" id="lightBtn" aria-pressed="' + light + '">' + (light ? 'Đang là ngày nhẹ' : 'Hôm nay là ngày nhẹ?') + '</button><span class="small muted">' +
         (light ? 'Chỉ giữ ' + rs.length + ' việc cốt lõi. Ngày nhẹ không làm đứt chuỗi.' : 'Ốm, đi xa, bận: chỉ giữ việc cốt lõi' + (p.coreFlag ? ' chuyên gia đã đánh dấu' : ' (thuốc, nước, giấc ngủ)') + '.') + '</span></div>' + (full(p) ? gemRowHtml(p) : '') + '</section>' +
+      '<section class="qday" aria-label="Lời nhắn hôm nay"><span class="lbl">Lời nhắn hôm nay</span>' + quoteHtml(q, 'rq') + '<button class="linkbtn small" type="button" id="qNext">Câu khác →</button></section>' +
       (full(p) ? oracleTodayHtml(p, day) : '') +
       (rv ? reviewCard(rv) + (full(p) ? oracleReflectHtml(p, rv.k, rv.label) : '') : (nowHM() >= REVIEW_AT && full(p) ? oracleReflectHtml(p, day, 'hôm nay') : '')) +
       (rv && rv.label === 'hôm nay' ? '' : '<section class="card next due" id="dueBanner" hidden aria-live="polite"></section>') + notifyCard() +
@@ -924,8 +957,7 @@ details.grp>summary::-webkit-details-marker{display:none}
       (rest.length ? '<details class="sec"><summary>' + rest.length + ' việc khác tạm nghỉ hôm nay</summary><ul class="small" style="padding-left:18px">' + rest.map(function (r) { return '<li>' + esc(r.time) + ' · ' + esc(r.title) + '</li>'; }).join('') + '</ul></details>' : '') +
       offerCard(p) +
       '<section class="card"><div class="row" style="justify-content:space-between"><h2>7 ngày qua</h2><button class="linkbtn" type="button" id="toStats">Tiến độ cả giai đoạn →</button></div><div class="week" style="margin-top:10px">' + weekHtml + '</div></section>' +
-      icsCard(p) +
-      quoteHtml(q, 'rq');
+      icsCard(p);
     var again = function () { keepScroll = true; render(); };
     $('#toStats').addEventListener('click', function () { view = 'stats'; render(); });
     $$('input[data-rid]', m).forEach(function (cb) { cb.addEventListener('change', function () { if (cb.checked) act(p.id, day, cb.dataset.rid, 'done'); else { delete doneMap(p, day)[cb.dataset.rid]; save(); } again(); }); });
@@ -945,7 +977,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     $('#feelDone') && $('#feelDone').addEventListener('click', function () { var i = $('#kg'); if (i) i.dispatchEvent(new Event('change')); feelEdit = false; again(); });
     $('#feelEdit') && $('#feelEdit').addEventListener('click', function () { feelEdit = true; again(); });
     $('#nudgeBk') && $('#nudgeBk').addEventListener('click', function () { saveBackup(function () { again(); }); });
-    bindShop(m); bindIcs(p, again); bindOffers(p, again); bindOracle(p, again); if (full(p)) bindMeas(p, day); bindGems(p, again, m); bindLock();
+    bindShop(m); $('#qNext') && $('#qNext').addEventListener('click', nextQuote); bindIcs(p, again); bindOffers(p, again); bindOracle(p, again); if (full(p)) bindMeas(p, day); bindGems(p, again, m); bindLock();
   }
   function notifyCard() {
     var st = store.notify;
