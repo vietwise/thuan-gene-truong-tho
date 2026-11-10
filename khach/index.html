@@ -158,6 +158,12 @@ details.sec[open] summary{border-bottom:1px solid var(--line)}
 .pick input{width:22px;height:22px;margin-top:2px;accent-color:var(--purple);flex:none}
 .btn[disabled]{opacity:.45;cursor:not-allowed}
 .offer{border:2px solid var(--yellow);background:var(--saffron-soft)}
+.ocel{border:2px solid var(--yellow);background:linear-gradient(160deg,var(--sheet),var(--saffron-soft))}
+.ocel .lbl{color:var(--magenta);font-weight:700;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.ocel h2{margin:2px 0 4px}
+.ocel .gcard img{width:100%;border-radius:12px;display:block}
+.ocinv{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--purple-soft)}
+.ocinv a.btn{text-decoration:none;display:inline-block}
 .qday{display:grid;gap:4px}
 .qday .lbl{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--jade,#476e70)}
 .qday .quote{margin:0}
@@ -365,7 +371,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   // ---------- storage (this phone only) ----------
   var store = { profiles: {}, done: {}, skip: {}, active: null, notify: null, shown: {}, snooze: {}, light: {}, feel: {}, review: {}, lastBackup: null };
   var memOnly = false;
-  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.profiles) store = s; } catch (e) { memOnly = true; } ['skip', 'shown', 'snooze', 'light', 'feel', 'review', 'icsOff', 'offerSeen', 'oracle', 'why', 'breath', 'fam', 'adapt', 'lic', 'icsEdit', 'give'].forEach(function (k) { store[k] = store[k] || {}; }); }
+  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.profiles) store = s; } catch (e) { memOnly = true; } ['skip', 'shown', 'snooze', 'light', 'feel', 'review', 'icsOff', 'offerSeen', 'oracle', 'why', 'breath', 'fam', 'adapt', 'lic', 'icsEdit', 'give', 'ocel'].forEach(function (k) { store[k] = store[k] || {}; }); }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) { memOnly = true; } }
 
   // ---------- import ----------
@@ -718,8 +724,14 @@ details.grp>summary::-webkit-details-marker{display:none}
     var pool = match.length ? match : rs;
     return pool.filter(function (r) { return !r.time || r.time >= hm; })[0] || pool[0] || null;
   }
+  // vòng bài: mỗi vòng đi hết 22 lá, không lá nào lặp lại trong một vòng; xong vòng thì xáo lại, sang vòng mới
+  function oRounds(p) {
+    var o = oMap(p), total = DECK ? DECK.cards.length : 22, cur = {}, n = 0, done = [];
+    Object.keys(o).sort().forEach(function (k) { var e = o[k]; if (!e || !e.c) return; cur[e.c] = 1; n = Object.keys(cur).length; if (n >= total) { done.push({ n: done.length + 1, d: k }); cur = {}; n = 0; } });
+    return { done: done, cur: cur, n: n, round: done.length + 1, total: total };
+  }
   function oDraw(p) {
-    var seen = oSeen(p), all = DECK.cards, unseen = all.filter(function (c) { return !seen[c.id]; });
+    var seen = oRounds(p).cur, all = DECK.cards, unseen = all.filter(function (c) { return !seen[c.id]; });
     var from = unseen.length ? unseen : all, c = from[Math.floor(Math.random() * from.length)];
     var t = oPickTask(p, c.group);
     oMap(p)[ymd()] = { c: c.id, t: t ? t.id : '', at: Date.now(), n: '' }; save();
@@ -741,6 +753,59 @@ details.grp>summary::-webkit-details-marker{display:none}
     return '<section class="card orc-mini" style="--og:' + g.color + '">' + oArt(c, 'sm') + '<div><span class="lbl" style="color:' + g.color + '">Lá bài chủ đích hôm nay của bạn</span><h3>' + esc(c.title) + '</h3><p class="oq">' + esc(c.question) + '</p>' +
       (t ? '<p class="orc-task"><b>✦ Việc của lá bài:</b> ' + esc(t.time) + ' · ' + esc(t.title) + (dm[t.id] ? ' <b style="color:var(--moss)">· đã xong ✓</b>' : '') + '</p>' : '') +
       '<button class="linkbtn" type="button" id="oOpen">Xem lại lá bài</button></div></section>';
+  }
+  var roundCard = null;
+  function oCelebHtml(p) {
+    if (!DECK) return '';
+    var R = oRounds(p), last = R.done[R.done.length - 1], seenC = store.ocel[p.id] || {};
+    if (!last || seenC[last.n]) return '';
+    var img = roundCard ? '<div class="gcard"><img src="' + roundCard.url + '" alt="' + esc(roundCard.alt) + '"><div class="row" style="justify-content:center;gap:8px;margin-top:10px"><button class="btn gold" type="button" id="rShare">Chia sẻ ảnh</button><button class="btn ghost" type="button" id="rSave">Tải ảnh</button></div></div>' : '';
+    return '<section class="card ocel"><span class="lbl">✦ Vòng ' + last.n + ' trọn vẹn</span><h2>Bạn đã đi trọn 22 lá thức tỉnh</h2>' +
+      '<p style="margin:4px 0">Hai mươi hai buổi sáng, hai mươi hai lá bài, hai mươi hai việc thuận gene. Bạn được thêm <b>+22 Châu Lộc</b>. Sáng mai bộ bài xáo lại, bắt đầu vòng ' + (last.n + 1) + '.</p>' +
+      img +
+      '<div class="ocinv"><b>Rủ cả nhà cùng chơi</b><p class="small" style="margin:2px 0 8px">Lá bài thức tỉnh là một khu vườn nhỏ trong Vườn Game-học Vietwise. Ở đó còn nhiều game-học cho bố mẹ và con chơi cùng nhau mỗi ngày.</p><a class="btn gold" href="' + GARDEN_URL + '" target="_blank" rel="noopener">Ghé Vườn Game-học cùng cả nhà</a></div>' +
+      '<div class="row" style="gap:10px;margin-top:10px">' + (roundCard ? '' : '<button class="btn" type="button" id="rMake">Tạo ảnh chia sẻ</button>') + '<button class="linkbtn" type="button" id="rDone">Thu gọn</button></div></section>';
+  }
+  function roundImage(o) {
+    return new Promise(function (res) {
+      var c = document.createElement('canvas'); c.width = 1080; c.height = 1350; var x = c.getContext('2d');
+      var serif = 'Georgia, "Times New Roman", serif', sans = '-apple-system, "Segoe UI", Roboto, Arial, sans-serif';
+      var wrap = function (t, max) { var w = String(t).split(' '), lines = [], cur = ''; w.forEach(function (q) { var tt = cur ? cur + ' ' + q : q; if (x.measureText(tt).width > max && cur) { lines.push(cur); cur = q; } else cur = tt; }); if (cur) lines.push(cur); return lines; };
+      x.fillStyle = '#f5f1e8'; x.fillRect(0, 0, 1080, 1350);
+      x.fillStyle = '#8a459a'; x.fillRect(0, 0, 1080, 300); x.fillStyle = '#ca41bc'; x.fillRect(0, 300, 1080, 10);
+      var draw = function (logo) {
+        if (logo) { x.save(); x.beginPath(); x.arc(160, 150, 92, 0, Math.PI * 2); x.closePath(); x.fillStyle = '#f5c70f'; x.fill(); x.beginPath(); x.arc(160, 150, 86, 0, Math.PI * 2); x.clip(); x.drawImage(logo, 74, 64, 172, 172); x.restore(); }
+        x.textAlign = 'left'; x.fillStyle = '#f5c70f'; x.font = '700 66px ' + serif; x.fillText('22 LÁ THỨC TỈNH', 290, 140);
+        x.fillStyle = '#f5f1e8'; x.font = '500 34px ' + sans; x.fillText('Thuận Gene Trường Thọ NPH', 292, 200);
+        x.textAlign = 'center'; x.fillStyle = '#476e70'; x.font = '700 50px ' + serif; var wl = wrap(o.who, 940).slice(0, 2); wl.forEach(function (l, i) { x.fillText(l, 540, (wl.length > 1 ? 380 : 410) + i * 56); });
+        x.font = '400 36px ' + sans; x.fillText('đã đi trọn', 540, 480);
+        x.fillStyle = '#ca41bc'; x.font = '700 120px ' + serif; x.fillText('Vòng ' + o.n, 540, 610);
+        // 22 lá nhỏ
+        for (var i = 0; i < 22; i++) { var col = i % 11, row = Math.floor(i / 11), cx = 90 + col * 82, cy = 670 + row * 130;
+          x.fillStyle = i % 2 ? '#8a459a' : '#476e70'; x.fillRect(cx, cy, 70, 110); x.strokeStyle = '#f5c70f'; x.lineWidth = 3; x.strokeRect(cx + 5, cy + 5, 60, 100);
+          x.fillStyle = '#f5c70f'; x.font = '700 22px ' + serif; x.fillText(ROMAN[i + 1] || String(i + 1), cx + 35, cy + 64); }
+        x.fillStyle = '#476e70'; x.font = '600 34px ' + sans; x.fillText('Hoàn thành ngày ' + o.date, 540, 990);
+        x.fillStyle = '#8a459a'; x.font = 'italic 34px ' + serif; wrap('Hai mươi hai buổi sáng thức tỉnh, hai mươi hai việc thuận gene làm trọn vẹn.', 900).forEach(function (l, i) { x.fillText(l, 540, 1070 + i * 46); });
+        x.fillStyle = '#476e70'; x.fillRect(0, 1250, 1080, 100);
+        x.fillStyle = '#f5f1e8'; x.font = '400 26px ' + sans; x.fillText('Bộ bài 22 lá thức tỉnh · Vườn Game-học Vietwise', 540, 1290);
+        x.fillStyle = '#ecc459'; x.font = '600 26px ' + sans; x.fillText('vietwise.edu.vn', 540, 1328);
+        c.toBlob(function (b) { res(b); }, 'image/png');
+      };
+      var im = new Image(); im.onload = function () { draw(im); }; im.onerror = function () { draw(null); }; im.src = 'icon-512.png';
+    });
+  }
+  function bindCeleb(p, again) {
+    var R = oRounds(p), last = R.done[R.done.length - 1]; if (!last) return;
+    var mk = $('#rMake'); if (mk) mk.addEventListener('click', function () {
+      roundImage({ who: p.name || 'Một người bạn', n: last.n, date: last.d.split('-').reverse().join('/') }).then(function (b) { if (roundCard) URL.revokeObjectURL(roundCard.url); roundCard = { url: URL.createObjectURL(b), blob: b, alt: (p.name || 'Một người bạn') + ' đã đi trọn vòng ' + last.n + ' của 22 lá thức tỉnh' }; again(); });
+    });
+    var dn = $('#rDone'); if (dn) dn.addEventListener('click', function () { (store.ocel[p.id] = store.ocel[p.id] || {})[last.n] = ymd(); save(); if (roundCard) URL.revokeObjectURL(roundCard.url); roundCard = null; again(); });
+    var sv = $('#rSave'); if (sv) sv.addEventListener('click', function () { var a = document.createElement('a'); a.href = roundCard.url; a.download = 'vong-' + last.n + '-22-la-thuc-tinh.png'; document.body.appendChild(a); a.click(); a.remove(); });
+    var sh = $('#rShare'); if (sh) sh.addEventListener('click', function () {
+      var f = null; try { f = new File([roundCard.blob], 'vong-22-la-thuc-tinh.png', { type: 'image/png' }); } catch (e) {}
+      var text = roundCard.alt + ' — app Thuận Gene Trường Thọ NPH, Vườn Game-học Vietwise ' + GARDEN_URL;
+      if (f && navigator.canShare && navigator.canShare({ files: [f] })) navigator.share({ files: [f], text: text }).catch(function () {}); else sv && sv.click();
+    });
   }
   function oracleReflectHtml(p, k, label) {
     var o = oToday(p, k), c = o && oCard(o.c); if (!c) return '';
@@ -947,7 +1012,7 @@ details.grp>summary::-webkit-details-marker{display:none}
       '<div class="lightrow"><button type="button" class="chip' + (light ? ' on' : '') + '" id="lightBtn" aria-pressed="' + light + '">' + (light ? 'Đang là ngày nhẹ' : 'Hôm nay là ngày nhẹ?') + '</button><span class="small muted">' +
         (light ? 'Chỉ giữ ' + rs.length + ' việc cốt lõi. Ngày nhẹ không làm đứt chuỗi.' : 'Ốm, đi xa, bận: chỉ giữ việc cốt lõi' + (p.coreFlag ? ' chuyên gia đã đánh dấu' : ' (thuốc, nước, giấc ngủ)') + '.') + '</span></div>' + (full(p) ? gemRowHtml(p) : '') + '</section>' +
       '<section class="qday" aria-label="Lời nhắn hôm nay"><span class="lbl">Lời nhắn hôm nay</span>' + quoteHtml(q, 'rq') + '<button class="linkbtn small" type="button" id="qNext">Câu khác →</button></section>' +
-      (full(p) ? oracleTodayHtml(p, day) : '') +
+      (full(p) ? oracleTodayHtml(p, day) + oCelebHtml(p) : '') +
       (rv ? reviewCard(rv) + (full(p) ? oracleReflectHtml(p, rv.k, rv.label) : '') : (nowHM() >= REVIEW_AT && full(p) ? oracleReflectHtml(p, day, 'hôm nay') : '')) +
       (rv && rv.label === 'hôm nay' ? '' : '<section class="card next due" id="dueBanner" hidden aria-live="polite"></section>') + notifyCard() +
       (backupDue(p) ? '<p class="note" style="margin:0">Đổi điện thoại hay xoá trình duyệt là mất tiến độ. <button class="linkbtn" id="nudgeBk" type="button">Lưu bản sao ngay</button></p>' : '') +
@@ -977,7 +1042,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     $('#feelDone') && $('#feelDone').addEventListener('click', function () { var i = $('#kg'); if (i) i.dispatchEvent(new Event('change')); feelEdit = false; again(); });
     $('#feelEdit') && $('#feelEdit').addEventListener('click', function () { feelEdit = true; again(); });
     $('#nudgeBk') && $('#nudgeBk').addEventListener('click', function () { saveBackup(function () { again(); }); });
-    bindShop(m); $('#qNext') && $('#qNext').addEventListener('click', nextQuote); bindIcs(p, again); bindOffers(p, again); bindOracle(p, again); if (full(p)) bindMeas(p, day); bindGems(p, again, m); bindLock();
+    if (full(p)) bindCeleb(p, again); bindShop(m); $('#qNext') && $('#qNext').addEventListener('click', nextQuote); bindIcs(p, again); bindOffers(p, again); bindOracle(p, again); if (full(p)) bindMeas(p, day); bindGems(p, again, m); bindLock();
   }
   function notifyCard() {
     var st = store.notify;
@@ -995,7 +1060,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     ['benchi', 'Bền chí', 'Bền chí mở khi bạn làm hết phần việc của mình trong một ngày.'],
     ['anlac', 'An lạc', 'An lạc mở khi trong cùng một ngày bạn thở bình an ba hơi, dừng đúng lúc (làm xong việc giấc ngủ, hoặc tổng kết ngày), và kể lại trải nghiệm bằng cách chấm cảm nhận hôm nay.']
   ];
-  var CL_RULES = [['Mỗi việc trong giao thức làm xong', 1], ['Ngày giữ nhịp (làm được từ 80%)', 5], ['Việc của lá bài hôm nay làm xong', 2], ['Chấm cảm nhận trong ngày', 1], ['Giờ game-học cùng gia đình', 3], ['Mỗi lần mở một châu ngọc', 2]];
+  var CL_RULES = [['Mỗi việc trong giao thức làm xong', 1], ['Ngày giữ nhịp (làm được từ 80%)', 5], ['Việc của lá bài hôm nay làm xong', 2], ['Chấm cảm nhận trong ngày', 1], ['Giờ game-học cùng gia đình', 3], ['Mỗi lần mở một châu ngọc', 2], ['Đi trọn một vòng 22 lá thức tỉnh', 22]];
   var gemSel = null;   // nothing open until a gem is tapped; tap again to fold
   function famOf(p) { var f = (store.fam[p.id] = store.fam[p.id] || {}); if (f.on === undefined) f.on = 1; if (!f.time) f.time = '19:30'; return f; }
   function famR(p) {
@@ -1049,6 +1114,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     var d = parseYmd(start), guard = 0, prevMiss = false;
     var g = { cl: 0, todayCl: 0, n: { hieuky: 0, thichnghi: 0, benchi: 0, anlac: 0 }, today: {}, parts: {} };
     var add = function (k, why, v) { g.cl += v; if (k === todayK) g.todayCl += v; g.parts[why] = (g.parts[why] || 0) + v; };
+    var rdone = {}; if (DECK) oRounds(p).done.forEach(function (r) { rdone[r.d] = 1; });
     var why = store.why[p.id] || {}, wk = Object.keys(why).sort(function (a, b) { return String(why[a]).localeCompare(String(why[b])); });
     while (ymd(d) <= todayK && guard++ < 800) {
       var k = ymd(d), isT = k === todayK, list = plan(p, d), dm = (store.done[p.id] || {})[k] || {}, f = (store.feel[p.id] || {})[k] || {};
@@ -1058,6 +1124,7 @@ details.grp>summary::-webkit-details-marker{display:none}
       var o = (store.oracle[p.id] || {})[k]; if (o && o.t && dm[o.t]) add(k, CL_RULES[2][0], 2);
       var felt = FEEL.every(function (x) { return f[x[0]]; }); if (felt) add(k, CL_RULES[3][0], 1);
       if (dm.__game) add(k, CL_RULES[4][0], 3);
+      if (rdone[k]) add(k, CL_RULES[6][0], 22);
       var got = [];
       if (full) got.push('benchi');
       if (((store.adapt[p.id] || {})[k]) || (prevMiss && kept)) got.push('thichnghi');
@@ -1392,9 +1459,10 @@ details.grp>summary::-webkit-details-marker{display:none}
   function oGardenHtml(p, st) {
     var os = oStats(p, st), seen = oSeen(p);
     var cells = DECK ? DECK.cards.map(function (c) { return seen[c.id] ? '<button type="button" data-ocard="' + c.id + '" aria-label="' + esc(c.title) + '">' + oArt(c, 'xs') + '</button>' : '<button type="button" class="lock" tabindex="-1" aria-label="Chưa gặp" style="background-image:url(' + DECK.back + ')"></button>'; }).join('') : '';
+    var R = DECK ? oRounds(p) : null, rl = R && R.done.length ? '<p class="small" style="margin:6px 0 0"><b>Vòng ' + R.round + ':</b> đã gặp ' + R.n + ' / 22 lá · đã đi trọn <b>' + R.done.length + ' vòng</b>.</p>' : '';
     return '<section class="card"><h2>Vườn thẻ của bạn</h2><p class="small" style="margin:6px 0 0">Đã gặp <b>' + os.seen + ' / 22</b> lá thức tỉnh. Trong giai đoạn này bạn rút ' + os.draws + ' lá' + (os.taskN ? ', làm xong <b>' + os.taskDone + ' / ' + os.taskN + '</b> việc của lá bài' : '') + '.</p>' +
       (cells ? '<div class="ogarden">' + cells + '</div>' : '<p class="small muted" data-ogwait>Đang tải vườn thẻ…</p>') +
-      (os.seen >= 22 ? '<p class="small" style="margin:10px 0 0">Bạn đã gặp đủ 22 lá. Vườn Game-học Vietwise còn nhiều khu vườn khác cho cả nhà. <a href="' + GARDEN_URL + '" target="_blank" rel="noopener">Ghé xem</a></p>' : '') + '</section>';
+      rl + (os.seen >= 22 ? '<div class="ocinv" style="margin-top:10px"><b>Rủ cả nhà cùng chơi</b><p class="small" style="margin:2px 0 8px">Bạn đã gặp đủ 22 lá. Vườn Game-học Vietwise còn nhiều game-học cho bố mẹ và con chơi cùng nhau.</p><a class="btn gold sm" href="' + GARDEN_URL + '" target="_blank" rel="noopener">Ghé Vườn Game-học</a></div>' : '') + '</section>';
   }
   function renderStats(p, m) {
     if (!full(p)) { m.innerHTML = lockCard('stats') + '<section class="card"><h2>Bản Đồng hành có gì</h2><ul style="padding-left:18px;margin:8px 0 0">' + PAID.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></section>'; bindLock(); return; }
@@ -1507,7 +1575,7 @@ details.grp>summary::-webkit-details-marker{display:none}
   }
   function saveBackup(after, msgEl) {
     var name = 'sao-luu-truong-tho-' + ymd() + '.json';
-    var txt = JSON.stringify({ app: BACKUP_APP, v: 1, savedAt: new Date().toISOString(), data: { profiles: store.profiles, done: store.done, skip: store.skip, feel: store.feel, light: store.light, review: store.review, icsOff: store.icsOff, oracle: store.oracle, why: store.why, breath: store.breath, fam: store.fam, adapt: store.adapt, lic: store.lic, icsEdit: store.icsEdit, give: store.give, active: store.active } });
+    var txt = JSON.stringify({ app: BACKUP_APP, v: 1, savedAt: new Date().toISOString(), data: { profiles: store.profiles, done: store.done, skip: store.skip, feel: store.feel, light: store.light, review: store.review, icsOff: store.icsOff, oracle: store.oracle, why: store.why, breath: store.breath, fam: store.fam, adapt: store.adapt, lic: store.lic, icsEdit: store.icsEdit, give: store.give, ocel: store.ocel, active: store.active } });
     var ok = function () { store.lastBackup = new Date().toISOString(); save(); if (msgEl) msgEl.textContent = 'Đã tạo bản sao ' + name + '. Cất vào Tệp, Drive hoặc Zalo của chính bạn.'; if (after) after(); };
     var file = null; try { file = new File([txt], name, { type: 'application/json' }); } catch (e) {}
     if (file && navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: 'Sao lưu Trường Thọ' }).then(ok).catch(function () {}); return; }
@@ -1529,7 +1597,7 @@ details.grp>summary::-webkit-details-marker{display:none}
     $$('button[data-sw]', m).forEach(function (b) { b.addEventListener('click', function () { store.active = b.dataset.sw; save(); view = 'today'; render(); }); });
     $('#cp').addEventListener('click', function (e) { var b = e.currentTarget; try { navigator.clipboard.writeText(EXPERT.email).then(function () { b.textContent = 'Đã sao chép'; }, function () { b.textContent = 'Bôi đen để sao chép'; }); } catch (x) { b.textContent = 'Bôi đen để sao chép'; } });
     $('#del').addEventListener('click', function () { $('#delYes').hidden = false; $('#del').textContent = 'Huỷ'; $('#del').onclick = function () { renderMe(p, m); }; });
-    $('#delYes').addEventListener('click', function () { delete store.profiles[p.id]; ['done', 'skip', 'feel', 'light', 'review', 'snooze', 'icsOff', 'oracle', 'why', 'breath', 'fam', 'adapt', 'lic', 'icsEdit', 'give'].forEach(function (k) { delete store[k][p.id]; }); photosClear(p.id); store.active = Object.keys(store.profiles)[0] || null; save(); view = 'today'; render(); });
+    $('#delYes').addEventListener('click', function () { delete store.profiles[p.id]; ['done', 'skip', 'feel', 'light', 'review', 'snooze', 'icsOff', 'oracle', 'why', 'breath', 'fam', 'adapt', 'lic', 'icsEdit', 'give', 'ocel'].forEach(function (k) { delete store[k][p.id]; }); photosClear(p.id); store.active = Object.keys(store.profiles)[0] || null; save(); view = 'today'; render(); });
   }
   var FOOT_LINKS = [
     { t: 'Liên hệ chuyên gia qua Zalo', u: 'https://zalo.me/0977206471', z: 1 },
