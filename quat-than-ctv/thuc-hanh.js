@@ -450,7 +450,7 @@ function hoanNhacThang() { S.hoanThang = congNgay(homNay(), 1); save(); render()
 function xongThang() { var t = thangTruoc(); S.thangDon = S.thangDon || {}; S.thangDon[t.ma] = homNay(); save(); toast('Đã ghi nhận báo cáo ' + t.ten); render(); }
 function htmlNhacThang() {
   var t = canNhacThang(); if (!t) return '';
-  return '<div class="the nhac-thang"><b>📥 Tải báo cáo bán hàng ' + esc(t.ten) + '</b><details class="nhac-cach"><summary>Cách tải (cần đăng nhập tài khoản CTV)</summary><ol class="nhac-b"><li>Đăng nhập tài khoản CTV, mở <a href="' + linkDon(t.tu, t.den) + '" target="_blank" rel="noopener">đơn hàng ' + esc(t.ten) + ' ›</a> (đã lọc sẵn từ ' + t.tu + ' đến ' + t.den + ').</li><li>Tải file về, hoặc quét chọn bảng đơn rồi Sao chép.</li><li>Quay lại app, bấm nút dưới.</li></ol></details><div class="hang"><a class="nut nho" href="#don">⇪ Tải lên app</a><button class="chip" onclick="hoanNhacThang()">Mai nhắc</button><button class="chip" onclick="xongThang()">Đã tải rồi</button></div></div>';
+  return '<div class="the nhac-thang"><b>📥 Tải báo cáo bán hàng ' + esc(t.ten) + '</b><details class="nhac-cach"><summary>Cách tải (cần đăng nhập tài khoản CTV)</summary><ol class="nhac-b"><li>Đăng nhập tài khoản CTV, tải đơn hàng từ ' + t.tu + ' đến ' + t.den + '.</li><li>Tải file về, hoặc quét chọn bảng đơn rồi Sao chép.</li><li>Quay lại app, bấm nút dưới.</li></ol></details><div class="hang"><a class="nut nho" href="#don">⇪ Tải lên app</a><button class="chip" onclick="hoanNhacThang()">Mai nhắc</button><button class="chip" onclick="xongThang()">Đã tải rồi</button></div></div>';
 }
 
 
