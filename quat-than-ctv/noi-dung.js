@@ -1,4 +1,4 @@
-// Quạt Thần CTV — nội dung phương pháp (bản chuẩn Vy + Má Hồng chốt 23/10/2026, ghép Gương Thần theo skill quat-than)
+// Quạt Thần CTV — nội dung phương pháp (bản chuẩn Vy + Cố Vấn Nhất Phương Hồng chốt 23/10/2026, ghép Gương Thần theo skill quat-than)
 var NAN = [
   { n: 1, ten: 'Mục tiêu cam kết', ngan: 'Biết trước mình mong khách cam kết điều gì',
     viec: ['Trước buổi gặp, viết ra một điều cụ thể khách có thể cam kết sau buổi này.', 'Mục tiêu nhỏ cũng được: đồng ý hẹn buổi hai, nhận tài liệu, thử một món, chọn giỏ tháng này.'],

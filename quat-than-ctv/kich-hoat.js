@@ -72,7 +72,7 @@ V['bat-dau'] = function () {
   // Bước 3: nhập mã
   h += '<div class="the bd-b' + (ok ? ' xong' : (daGui ? '' : ' mo-nhat')) + '"><div class="bd-tieu"><span class="bd-so">' + (ok ? '✓' : '3') + '</span><b>Nhập mã kích hoạt</b></div>';
   if (daGui && !ok) {
-    h += '<p class="mo" style="margin:0 0 6px">Má Hồng duyệt xong sẽ gửi mã qua Zalo. Dán mã vào đây.</p><textarea id="dk-code" rows="3" placeholder="QT-…" autocomplete="off" spellcheck="false">' + esc(d.code) + '</textarea>' + (d.loi ? '<div class="canh">' + esc(d.loi) + '</div>' : '') + '<button class="nut rong" onclick="kichHoat()">🔓 Kích hoạt</button><button class="chip" onclick="chep(tinDangKy())">Chép lại tin đăng ký</button><a class="chip" href="' + KH_ZALO + '" target="_blank" rel="noopener">Mở Zalo Siêu thị</a>';
+    h += '<p class="mo" style="margin:0 0 6px">Cố Vấn Nhất Phương Hồng duyệt xong sẽ gửi mã qua Zalo. Dán mã vào đây.</p><textarea id="dk-code" rows="3" placeholder="QT-…" autocomplete="off" spellcheck="false">' + esc(d.code) + '</textarea>' + (d.loi ? '<div class="canh">' + esc(d.loi) + '</div>' : '') + '<button class="nut rong" onclick="kichHoat()">🔓 Kích hoạt</button><button class="chip" onclick="chep(tinDangKy())">Chép lại tin đăng ký</button><a class="chip" href="' + KH_ZALO + '" target="_blank" rel="noopener">Mở Zalo Siêu thị</a>';
   } else if (!ok) h += '<p class="mo" style="margin:0">Làm bước 2 trước nhé.</p>';
   h += '</div>';
   if (window.XEM_THU && !ok) h += '<button class="nut phu rong" onclick="window.XEM_THU_MO=true;location.replace(\'#\');render()">Bản xem thử: vào app không cần mã</button>';
