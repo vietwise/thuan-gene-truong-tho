@@ -439,13 +439,18 @@ setTimeout(function () { dayBaoCao(); }, 4000);
 document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') dayBaoCao(); });
 
 // ---------- Nhắc tải báo cáo bán hàng tháng trước từ dashboard CTV ----------
+// Trang "Đơn hàng của tôi" của CTV, lọc sẵn khoảng ngày (dd/mm/yyyy)
+function ddmm(d) { return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear(); }
+function linkDon(tu, den) { return 'https://sieuthivietwise.vn/account/my_orders/?my_search=&my_from_date=' + encodeURIComponent(tu) + '&my_to_date=' + encodeURIComponent(den); }
+function linkDonTuan() { var d = new Date(), t = new Date(); t.setDate(t.getDate() - 7); return linkDon(ddmm(t), ddmm(d)); }
+function linkDonNam() { var d = new Date(); return linkDon('01/01/' + d.getFullYear(), ddmm(d)); }
 function thangTruoc() { var d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - 1); var y = d.getFullYear(), m = ('0' + (d.getMonth() + 1)).slice(-2), cuoi = new Date(y, d.getMonth() + 1, 0).getDate(); return { ma: y + '-' + m, ten: 'tháng ' + (d.getMonth() + 1) + '/' + y, tu: '01/' + m + '/' + y, den: cuoi + '/' + m + '/' + y }; }
 function canNhacThang() { var t = thangTruoc(); S.thangDon = S.thangDon || {}; if (S.thangDon[t.ma]) return null; if (S.hoanThang && S.hoanThang >= homNay()) return null; return t; }
 function hoanNhacThang() { S.hoanThang = congNgay(homNay(), 1); save(); render(); }
 function xongThang() { var t = thangTruoc(); S.thangDon = S.thangDon || {}; S.thangDon[t.ma] = homNay(); save(); toast('Đã ghi nhận báo cáo ' + t.ten); render(); }
 function htmlNhacThang() {
   var t = canNhacThang(); if (!t) return '';
-  return '<div class="the nhac-thang"><b>📥 Tải báo cáo bán hàng ' + esc(t.ten) + '</b><details class="nhac-cach"><summary>Cách tải (cần đăng nhập dashboard)</summary><ol class="nhac-b"><li>Đăng nhập tài khoản CTV, mở <a href="https://sieuthivietwise.vn/account/dashboard/" target="_blank" rel="noopener">dashboard CTV ›</a>, chọn từ ngày ' + t.tu + ' đến ' + t.den + '.</li><li>Xuất file, hoặc quét chọn bảng "Đơn hàng đã giới thiệu" rồi Sao chép.</li><li>Quay lại app, bấm nút dưới.</li></ol></details><div class="hang"><a class="nut nho" href="#don">⇪ Tải lên app</a><button class="chip" onclick="hoanNhacThang()">Mai nhắc</button><button class="chip" onclick="xongThang()">Đã tải rồi</button></div></div>';
+  return '<div class="the nhac-thang"><b>📥 Tải báo cáo bán hàng ' + esc(t.ten) + '</b><details class="nhac-cach"><summary>Cách tải (cần đăng nhập tài khoản CTV)</summary><ol class="nhac-b"><li>Đăng nhập tài khoản CTV, mở <a href="' + linkDon(t.tu, t.den) + '" target="_blank" rel="noopener">đơn hàng ' + esc(t.ten) + ' ›</a> (đã lọc sẵn từ ' + t.tu + ' đến ' + t.den + ').</li><li>Tải file về, hoặc quét chọn bảng đơn rồi Sao chép.</li><li>Quay lại app, bấm nút dưới.</li></ol></details><div class="hang"><a class="nut nho" href="#don">⇪ Tải lên app</a><button class="chip" onclick="hoanNhacThang()">Mai nhắc</button><button class="chip" onclick="xongThang()">Đã tải rồi</button></div></div>';
 }
 
 
