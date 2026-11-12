@@ -957,7 +957,7 @@ V['quan-ly'] = function () {
   h += '<a class="nut rong phu" href="#don">⇪ Tải thông tin khách từ dashboard' + (S.donNhap ? ' <small>(lần trước ' + vn(S.donNhap) + ')</small>' : '') + '</a>';
   h += '<h3>✉️ Báo cáo tuần cho mentor</h3><p class="mentor-dong">Gửi tới: <b>' + esc((S.me.mentorTen ? 'Mentor ' + [S.me.mentorTen, S.me.mentorMa ? 'mã ' + S.me.mentorMa : ''].filter(Boolean).join(' · ') + ' và ' : '') + MENTOR_CHUNG_TEN) + '</b> <a href="#quan-ly" onclick="setTimeout(function(){var d=document.querySelector(\'details.toi\');if(d){d.open=true;d.scrollIntoView()}},50)">sửa</a></p>';
   h += htmlTuGui();
-  h += '<div class="hang"><button class="nut nho" onclick="guiMentor()">✉ Mở email báo cáo tuần</button><button class="nut phu nho" onclick="chep(baoCaoTuan())">Sao chép</button></div><p class="mo">Báo cáo chỉ có con số và điều bạn tự soi, không có tên khách.</p>' + htmlLichSu() + htmlSaoLuu();
+  h += '<div class="hang"><button class="nut nho" onclick="guiMentor()">✉ Mở email báo cáo tuần bằng Gmail</button><button class="nut phu nho" onclick="chep(baoCaoTuan())">Sao chép</button></div><p class="mo">Báo cáo chỉ có con số và điều bạn tự soi, không có tên khách. Dùng app email khác? <a href="javascript:void 0" onclick="guiMentorKhac()">Mở bằng app email mặc định</a>.</p>' + htmlLichSu() + htmlSaoLuu();
   return h;
 };
 function baoCaoTuan() {
@@ -976,7 +976,24 @@ function guiMentor() {
   var to = nguoiNhan().join(',');
   var tieu = 'Báo cáo Quạt Thần tuần ' + vn(dauTuan()) + (S.me.ten ? ' · ' + S.me.ten : '') + (S.me.ma ? ' (' + S.me.ma + ')' : '');
   S.baoCao = S.baoCao || {}; S.baoCao[dauTuan()] = homNay(); save();
-  location.href = 'mailto:' + to + '?subject=' + encodeURIComponent(tieu) + '&body=' + encodeURIComponent(baoCaoTuan());
+  moGmail(to, tieu, baoCaoTuan());
+}
+// Mở thư soạn sẵn bằng Gmail: iPhone mở thẳng app Gmail (chưa cài thì sang Gmail trên web), máy khác mở Gmail trên web
+function linkGmailWeb(to, su, body) { return 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(to) + '&su=' + encodeURIComponent(su) + '&body=' + encodeURIComponent(body); }
+function moGmail(to, su, body) {
+  var web = linkGmailWeb(to, su, body);
+  if (heDieuHanh() === 'ios') {
+    var di = false, an = function () { if (document.hidden) di = true; };
+    document.addEventListener('visibilitychange', an);
+    location.href = 'googlegmail://co?to=' + encodeURIComponent(to) + '&subject=' + encodeURIComponent(su) + '&body=' + encodeURIComponent(body);
+    setTimeout(function () { document.removeEventListener('visibilitychange', an); if (!di && !document.hidden) location.href = web; }, 1600);
+    return;
+  }
+  var w = window.open(web, '_blank', 'noopener'); if (!w) location.href = web;
+}
+function guiMentorKhac() {
+  var tieu = 'Báo cáo Quạt Thần tuần ' + vn(dauTuan()) + (S.me.ten ? ' · ' + S.me.ten : '') + (S.me.ma ? ' (' + S.me.ma + ')' : '');
+  location.href = 'mailto:' + nguoiNhan().join(',') + '?subject=' + encodeURIComponent(tieu) + '&body=' + encodeURIComponent(baoCaoTuan());
 }
 function lichSuTuan(n) {
   var dau = dauTuan(), r = [];
