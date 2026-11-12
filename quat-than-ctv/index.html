@@ -676,8 +676,20 @@ function chonAnh(fs) {
 function boAnhMoi(i) { URL.revokeObjectURL(ANH[i].url); ANH.splice(i, 1); render(); }
 function xoaAnhCu() { hoi('Xoá ' + R.anh + ' ảnh chat đã lưu của buổi này?', 'Xoá ảnh', function () { for (var i = 0; i < R.anh; i++) audioXoa('anh:' + R.id + ':' + i); R.anh = 0; var r = S.review.filter(function (x) { return x.id === R.id; })[0]; if (r) { r.anh = 0; save(); } render(); }); }
 function napAnh(id, n) { var e = document.getElementById('anh-' + id); if (!e) return; for (var i = 0; i < n; i++) (function (i) { audioLay('anh:' + id + ':' + i).then(function (b) { if (!b) return; var u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.target = '_blank'; a.innerHTML = '<img src="' + u + '" alt="Ảnh chat ' + (i + 1) + '">'; e.appendChild(a); }).catch(function () {}); })(i); }
-function datAudio(b, ten) { AU = b; if (AU_URL) URL.revokeObjectURL(AU_URL); AU_URL = URL.createObjectURL(b); R.audio = { ten: ten, kb: Math.round(b.size / 1024) }; render(); }
-function chonAudio(f) { if (!f) return; if (f.size > 150 * 1048576) { toast('File lớn quá 150MB, bạn cắt ngắn đoạn cần nghe lại nhé'); return; } datAudio(f, f.name); }
+function datAudio(b, ten) { AU = b; if (AU_URL) URL.revokeObjectURL(AU_URL); AU_URL = URL.createObjectURL(b); R.audio = { ten: ten, kb: Math.round(b.size / 1024), video: /^video\//.test(b.type || '') || /\.(mp4|mov|m4v|webm|3gp)$/i.test(ten) }; render(); }
+function chonAudio(f) { if (!f) return; if (f.size > 300 * 1048576) { toast('File lớn quá 300MB. Bạn cắt ngắn đoạn cần xem lại, hoặc đưa lên YouTube/Drive rồi dán link nhé'); return; } datAudio(f, f.name); }
+// Link YouTube, Google Drive (hoặc link bất kỳ) của buổi gặp: chỉ lưu đường dẫn, app không tải nội dung về
+function ytId(u) { var m = /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|live\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/.exec(u || ''); return m ? m[1] : ''; }
+function driveId(u) { var m = /drive\.google\.com\/(?:file\/d\/|open\?(?:.*&)?id=|uc\?(?:.*&)?id=)([A-Za-z0-9_-]{20,})/.exec(u || ''); return m ? m[1] : ''; }
+function loaiLink(u) { return ytId(u) ? 'YouTube' : (/drive\.google\.com|docs\.google\.com/.test(u) ? 'Google Drive' : 'Link'); }
+function themLink() { var e = document.getElementById('rv-link'); if (!e) return; var u = e.value.trim(); if (!u) return; if (!/^https?:\/\//i.test(u)) u = 'https://' + u; try { new URL(u); } catch (x) { toast('Link chưa đúng, dán lại giúp mình nhé'); return; } R.links = (R.links || []).filter(function (x) { return x !== u; }).concat([u]); render(); }
+function boLink(i) { R.links.splice(i, 1); render(); }
+function htmlLinks(ls, sua) {
+  return (ls || []).map(function (u, i) {
+    var y = ytId(u), d = driveId(u), nhung = y ? 'https://www.youtube-nocookie.com/embed/' + y : (d ? 'https://drive.google.com/file/d/' + d + '/preview' : '');
+    return '<div class="the" style="padding:10px 12px"><div class="hang"><b style="flex:1">' + (y ? '▶️ ' : d ? '📁 ' : '🔗 ') + loaiLink(u) + '</b><a class="chip" href="' + esc(u) + '" target="_blank" rel="noopener">Mở ›</a>' + (sua ? '<button class="chip" onclick="boLink(' + i + ')" aria-label="Bỏ link">×</button>' : '') + '</div>' + (nhung ? '<div style="position:relative;padding-top:56.25%;margin-top:8px;border-radius:12px;overflow:hidden;background:#000"><iframe src="' + nhung + '" title="Video buổi gặp" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></div>' : '<div class="mo" style="word-break:break-all">' + esc(u) + '</div>') + '</div>';
+  }).join('');
+}
 function thuAm() {
   if (REC) { REC.stop(); return; }
   if (!navigator.mediaDevices || !window.MediaRecorder) { toast('Máy này chưa thu âm trong app được. Bạn thu bằng app ghi âm rồi tải file lên nhé.'); return; }
@@ -688,7 +700,7 @@ function thuAm() {
     r.start(); render();
   }).catch(function () { toast('Chưa được phép dùng micro'); });
 }
-function napAudio(id) { var e = document.getElementById('au-' + id); if (!e) return; audioLay(id).then(function (b) { if (b) e.src = URL.createObjectURL(b); else e.outerHTML = '<p class="mo">File thu âm không còn trên máy này.</p>'; }).catch(function () {}); }
+function napAudio(id) { var e = document.getElementById('au-' + id); if (!e) return; audioLay(id).then(function (b) { if (b) e.src = URL.createObjectURL(b); else e.outerHTML = '<p class="mo">File ghi âm, video không còn trên máy này.</p>'; }).catch(function () {}); }
 
 // ---------- Nhập danh sách khách từ dữ liệu Siêu thị ----------
 var NH = null;
@@ -1063,18 +1075,19 @@ V.suaReview = function () {
   h += '<label>Ngày</label><input type="date" value="' + R.ngay + '" onchange="R.ngay=this.value">';
   h += '<label>Kết quả</label><div>' + [['mua', 'Đã mua'], ['hen', 'Hẹn lại'], ['dung', 'Dừng đúng lúc'], ['khong', 'Chưa thành']].map(function (x) { return '<button class="chip' + (R.ketQua === x[0] ? ' on' : '') + '" onclick="R.ketQua=\'' + x[0] + '\';render()">' + x[1] + '</button>'; }).join('') + '</div>';
   h += '<label>Khách nói gì nguyên văn đáng nhớ?</label><textarea rows="2" oninput="R.nguyenVan=this.value">' + esc(R.nguyenVan || '') + '</textarea>';
-  h += '<p class="mo" style="margin-top:12px"><b>Câu chuyện buổi gặp, bằng chữ hoặc file ghi âm.</b> Kể lại theo trình tự: mở lời ra sao, khách nói gì, mình hỏi gì, khách phản ứng thế nào. Nghe lại hoặc đọc lại rồi mới soi từng nan.</p>';
+  h += '<p class="mo" style="margin-top:12px"><b>Câu chuyện buổi gặp, bằng chữ, ghi âm, video hoặc link YouTube, Drive.</b> Kể lại theo trình tự: mở lời ra sao, khách nói gì, mình hỏi gì, khách phản ứng thế nào. Nghe lại hoặc đọc lại rồi mới soi từng nan.</p>';
   h += '<label>Kể lại buổi gặp</label><textarea rows="5" oninput="R.keLai=this.value" placeholder="Hôm nay em gặp chị Lan ở…">' + esc(R.keLai || '') + '</textarea>';
-  h += '<label>Âm thanh buổi gặp</label><div class="hang"><button class="nut ' + (REC ? '' : 'phu ') + 'nho" onclick="thuAm()">' + (REC ? '■ Dừng thu' : '● Thu âm ngay') + '</button><label class="nut phu nho" style="margin:0">Tải file ghi âm<input type="file" accept="audio/*" class="an" onchange="chonAudio(this.files[0])"></label></div>';
+  h += '<label>Âm thanh hoặc video buổi gặp</label><div class="hang"><button class="nut ' + (REC ? '' : 'phu ') + 'nho" onclick="thuAm()">' + (REC ? '■ Dừng thu' : '● Thu âm ngay') + '</button><label class="nut phu nho" style="margin:0">🎧 Tải file ghi âm / 🎬 video<input type="file" accept="audio/*,video/*,.m4a,.mp3,.wav,.aac,.ogg,.mp4,.mov,.m4v,.webm" class="an" onchange="chonAudio(this.files[0])"></label></div>';
   if (REC) h += '<p class="thieu">Đang thu… bấm Dừng thu khi xong.</p>';
-  if (AU_URL) h += '<audio controls src="' + AU_URL + '"></audio><div class="mo">' + esc(R.audio.ten) + ' · ' + R.audio.kb + ' KB</div>';
+  if (AU_URL) h += (R.audio.video ? '<video controls playsinline src="' + AU_URL + '" style="width:100%;border-radius:12px;background:#000"></video>' : '<audio controls src="' + AU_URL + '"></audio>') + '<div class="mo">' + esc(R.audio.ten) + ' · ' + (R.audio.kb > 2048 ? Math.round(R.audio.kb / 1024) + ' MB' : R.audio.kb + ' KB') + '</div>';
   else if (R.audio) h += '<p class="mo">Đã có file: ' + esc(R.audio.ten) + '. Chọn file khác nếu muốn thay.</p>';
+  h += '<label for="rv-link">Link YouTube, Google Drive của buổi gặp</label><div class="hang" style="flex-wrap:nowrap"><input id="rv-link" type="url" inputmode="url" placeholder="Dán link youtube.com/… hoặc drive.google.com/…" style="flex:1;margin:0" onkeydown="if(event.key===\'Enter\'){event.preventDefault();themLink()}"><button class="nut phu nho" style="margin:0" onclick="themLink()">＋ Thêm</button></div><p class="mo" style="margin:4px 0 8px">Video dài thì đưa lên YouTube (để Không công khai) hoặc Drive rồi dán link. App chỉ lưu link, xem được khi có mạng.</p>' + htmlLinks(R.links, true);
   h += '<p class="mo" style="margin-top:12px"><b>Tương tác qua chat?</b> Tải ảnh chụp màn hình đoạn chat với khách, rồi chép chữ trong đoạn chat vào ô bên dưới để app review được.</p>';
   h += '<label class="nut phu nho" style="margin:0">🖼 Tải ảnh chụp màn hình chat<input type="file" accept="image/*" multiple class="an" onchange="chonAnh(this.files)"></label>';
   if (R.anh || ANH.length) h += '<div class="anh-ds">' + ANH.map(function (a, i) { return '<span><img src="' + a.url + '" alt="Ảnh chat mới ' + (i + 1) + '"><button onclick="boAnhMoi(' + i + ')" aria-label="Bỏ ảnh">×</button></span>'; }).join('') + (R.anh ? '<p class="mo" style="width:100%;margin:4px 0 0">Đã lưu ' + R.anh + ' ảnh trước đó. <a href="javascript:void 0" onclick="xoaAnhCu()">Xoá ảnh đã lưu</a></p>' : '') + '</div>';
   h += '<label>Chữ trong đoạn chat</label><textarea rows="5" oninput="R.chat=this.value" placeholder="Khách: …&#10;Mình: …">' + esc(R.chat || '') + '</textarea><p class="mo" style="margin:-4px 0 8px">Cách lấy chữ nhanh: trên Zalo hoặc Messenger nhấn giữ tin nhắn rồi chọn Sao chép. Hoặc mở ảnh chụp màn hình, nhấn giữ vào chữ (iPhone có Văn bản trực tiếp, Android có Google Ống kính) để chép cả đoạn. Ghi "Khách:" và "Mình:" đầu mỗi lượt để app soi đúng.</p>';
-  h += '<label>Bản chép lời ghi âm (nếu có)</label><textarea rows="4" oninput="R.chepLoi=this.value" placeholder="Dán bản chép lời từ app ghi âm, hoặc tự gõ lại đoạn quan trọng. App soi lời này ở Phần 3.">' + esc(R.chepLoi || '') + '</textarea>';
-  h += '<div class="canh">Xin phép khách trước khi thu âm, và chỉ dùng để tự mài giũa. File ghi âm và ảnh chat nằm trên máy bạn, không gửi đi đâu, và không có trong file sao lưu. Ảnh chat có tên, số điện thoại của khách thì đừng gửi cho người khác.</div>';
+  h += '<label>Bản chép lời ghi âm, video (nếu có)</label><textarea rows="4" oninput="R.chepLoi=this.value" placeholder="Dán bản chép lời từ app ghi âm, hoặc từ YouTube (bấm ⋯ dưới video, chọn Hiện bản chép lời), hoặc tự gõ lại đoạn quan trọng. App soi lời này ở Phần 3.">' + esc(R.chepLoi || '') + '</textarea>';
+  h += '<div class="canh">Xin phép khách trước khi thu âm, và chỉ dùng để tự mài giũa. File ghi âm, video và ảnh chat nằm trên máy bạn, không gửi đi đâu, và không có trong file sao lưu. Video trên YouTube nên để chế độ Không công khai, trên Drive chỉ chia sẻ cho người cần xem. Ảnh chat có tên, số điện thoại của khách thì đừng gửi cho người khác.</div>';
   h += '<h3>Phần 2 · Tự đánh giá từng nan</h3>';
   for (var i = 1; i <= 9; i++) { var v = R.buoc[i]; h += '<div class="the" style="padding:10px 12px"><div class="hang"><span class="so' + (NAN[i - 1].guong.do ? ' do' : '') + '">' + i + '</span><b style="flex:1">' + esc(NAN[i - 1].ten) + '</b></div><div class="mo" style="margin:4px 0">' + esc(NAN[i - 1].thu) + '</div><button class="chip tot' + (v === 'tot' ? ' on' : '') + '" onclick="R.buoc[' + i + ']=\'tot\';render()">Tốt</button><button class="chip chua' + (v === 'chua' ? ' on' : '') + '" onclick="R.buoc[' + i + ']=\'chua\';render()">Chưa tốt</button><button class="chip' + (v === 'bo' ? ' on' : '') + '" onclick="R.buoc[' + i + ']=\'bo\';render()">Bỏ qua</button></div>'; }
   var nhay = R.buoc[6] && R.buoc[4] && R.buoc[4] !== 'tot' && R.buoc[6] !== 'bo';
@@ -1109,7 +1122,8 @@ V.xemReview = function (id) {
   if (r.chat) h += '<details><summary>Đoạn chat</summary><div class="trong" style="white-space:pre-wrap">' + esc(r.chat) + '</div></details>';
   if (r.chepLoi) h += '<details><summary>Bản chép lời ghi âm</summary><div class="trong" style="white-space:pre-wrap">' + esc(r.chepLoi) + '</div></details>';
   if (r.keLai) h += '<details><summary>Kể lại buổi gặp</summary><div class="trong" style="white-space:pre-wrap">' + esc(r.keLai) + '</div></details>';
-  if (r.audio) { h += '<div class="the"><b>Nghe lại buổi gặp</b><audio id="au-' + id + '" controls></audio></div>'; setTimeout(function () { napAudio(id); }, 0); }
+  if (r.audio) { h += '<div class="the"><b>' + (r.audio.video ? 'Xem lại buổi gặp' : 'Nghe lại buổi gặp') + '</b>' + (r.audio.video ? '<video id="au-' + id + '" controls playsinline style="width:100%;border-radius:12px;background:#000"></video>' : '<audio id="au-' + id + '" controls></audio>') + '</div>'; setTimeout(function () { napAudio(id); }, 0); }
+  if (r.links && r.links.length) h += '<h3>Video, link buổi gặp</h3>' + htmlLinks(r.links, false);
   var cham = { tot: [], chua: [], bo: [] }; NAN.forEach(function (b) { var v = r.buoc[b.n]; if (cham[v]) cham[v].push(b.n); });
   h += '<h3>Phần 2 · Bạn tự đánh giá</h3><div class="the">' + ([['tot', '✓ Tốt'], ['chua', '✗ Chưa tốt'], ['bo', '– Bỏ qua']].filter(function (x) { return cham[x[0]].length; }).map(function (x) { return '<div><b>' + x[1] + ':</b> nan ' + cham[x[0]].join(', ') + '</div>'; }).join('') || '<div class="mo">Chưa tự chấm nan nào.</div>') + (r.phatHuy ? '<div style="margin-top:8px"><b>Phát huy:</b> ' + esc(r.phatHuy) + '</div>' : '') + (r.khacPhuc ? '<div><b>Khắc phục:</b> ' + esc(r.khacPhuc) + '</div>' : '') + (r.dienLai ? '<div><b>Sẽ diễn lại:</b> ' + esc(r.dienLai) + '</div>' : '') + '</div>';
   h += htmlDanhGia(r) + htmlKichBan(r);
