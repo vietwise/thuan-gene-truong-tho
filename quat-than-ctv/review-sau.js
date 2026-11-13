@@ -219,6 +219,8 @@ function chamSau(r) {
   kq.dau = kh.filter(function (x) { return RE_DAU.test(x.b) && x.c.length > 8; }).sort(function (a, b) { return diemDau(b) - diemDau(a); }).slice(0, 5);
   if (!kq.dau.length) kq.dau = ds.filter(function (x) { return x.ai !== 'b' && RE_DAU.test(x.b) && /\b(chi|anh|co|nha|be|con|minh)\b/.test(x.b) && x.c.length > 8; }).slice(0, 3);
   kq.tuChoi = []; RE_TU_CHOI.forEach(function (t) { var x = thay(ds, t[1], 'k'); if (x) kq.tuChoi.push({ id: t[0], ten: t[2], cau: x }); });
+  kq.dau = kq.dau.filter(function (x) { return !RE_TU_CHOI.some(function (t) { return t[1].test(x.b); }); });
+  kq.td = tuDauCa(ds);
 
   function tc(ten, x, ghi) { return { ten: ten, ok: !!x, cau: x && x.c ? x : null, ghi: ghi || '' }; }
   var N = {};
@@ -283,6 +285,26 @@ function chamSau(r) {
   return kq;
 }
 
+// ---- Sản phẩm, dịch vụ đang bán trong ca này (lấy từ chính tư liệu, không mặc định) ----
+var RE_SP = /(máy|ghế|gối|đệm|nệm|đai|tinh dầu|dầu|kem|bột|trà|sữa|viên|nước|cao|siro|mật ong|gạo|dịch vụ|liệu trình|gói|khóa học|khoá học|combo|set|bộ|thiết bị|thực phẩm|sản phẩm|video|app|ứng dụng)\s+((?:[^\s,.;:!?“”"()]+\s*){1,5})/gi;
+var DUNG_SP = /^(này|đó|kia|nào|của|cho|mình|em|chị|anh|bên|thì|là|và|với|rất|cũng|đã|đang|sẽ|có|không|ko|nha|nhé|ạ|giá|tốt|bao|mấy|được|hả|nhiều|ít|loại|mới|ở|tại|về|để|mà|rồi)$/i;
+function sanPhamCa(r, ds) {
+  var ban = ds.filter(function (x) { return x.ai !== 'k'; }), txt = (ban.length ? ban : ds).map(function (x) { return x.c; }).join('\n'), b = bd(ds.map(function (x) { return x.c; }).join('\n')), ra = null;
+  (SP.sanPham || []).forEach(function (p) { var t = bd(p.ten); if (!ra && t.length > 2 && b.indexOf(t) >= 0) ra = { ten: p.ten, sp: p }; });
+  if (ra) return ra;
+  var dem = {}, goc = {}, m; RE_SP.lastIndex = 0;
+  while ((m = RE_SP.exec(txt))) {
+    var w = m[2].trim().split(/\s+/), keep = [];
+    for (var i = 0; i < w.length; i++) { if (DUNG_SP.test(w[i]) || /^\d+k?$/i.test(w[i])) break; keep.push(w[i]); }
+    if (!keep.length && !/^(dịch vụ|liệu trình|sản phẩm|video|app)$/i.test(m[1])) continue;
+    var cum = (m[1].toLowerCase() + ' ' + keep.join(' ')).trim(), k = bd(cum);
+    if (/^san pham$|^video$|^may tinh|^may (bay|anh)|^nuoc (ngoai|minh)|^bo (me|ba)/.test(k)) continue;
+    dem[k] = (dem[k] || 0) + 1 + keep.length * 0.1; goc[k] = cum;
+  }
+  var top = Object.keys(dem).sort(function (a, c) { return dem[c] - dem[a]; })[0];
+  return top ? { ten: goc[top], sp: null } : null;
+}
+
 // ================= 3 · KỊCH BẢN MÀI RÌU =================
 function goiKhach(r, ds) {
   var k = khach(r.khach); if (k && k.goi) return k.goi.trim();
@@ -296,9 +318,27 @@ function tuDau(x) {
   if (!x) return ''; var c = boCham(x.c), m = /(lo|sợ|ngại|mệt|muốn|mong|cần|bị|khó|băn khoăn|vất vả|thiếu)\s+(nhất\s+|nhiều\s+|là\s+)*([^,;.]{3,60})/i.exec(c);
   return ngan(m ? m[3] : c.split(/[,;]/)[0], 10);
 }
+function tuDauCa(ds) {
+  var best = null;
+  ds.forEach(function (x) {
+    if (x.ai === 'b' && !/hom truoc|nghe (chi|anh|co) (ke|noi)|lan truoc/.test(x.b)) return;
+    if (RE_TU_CHOI.some(function (t) { return t[1].test(x.b); })) return;
+    var re = /(hay bị|bị|đau|mỏi|nhức|tê|lo|sợ|ngại|khó)\s+(?:nhất\s+|lắm\s+|là\s+)*([^,;.?!]{2,40})/gi, m;
+    while ((m = re.exec(x.c))) {
+      var dau = m[1].toLowerCase(), cum = (/^(đau|mỏi|nhức|tê)$/.test(dau) ? dau + ' ' : '') + m[2].trim();
+      cum = cum.replace(/\s+(lắm|quá|ghê|nữa|rồi|em|chị|anh|ạ|nha|nhé)$/i, '').trim();
+      if (cum.split(/\s+/).length > 9 || cum.split(/\s+/).length < 2) continue;
+      var d = (/bị|đau|mỏi|nhức|tê/.test(dau) ? 3 : /lo|sợ/.test(dau) ? 1 : 0) - cum.split(/\s+/).length * 0.1 + (x.ai === 'k' ? 0.5 : 0);
+      if (!best || d > best.d) best = { d: d, t: cum };
+    }
+  });
+  return best ? best.t : '';
+}
 function maiRiu(r, kq) {
   var ds = kq.ds, g = goiKhach(r, ds), G = hoa(g), k = khach(r.khach);
-  var dau = kq.dau[0], dau2 = kq.dau[1], td = tuDau(dau), nc = k && (k.nhuCau || []).length ? boCham(k.nhuCau[0]) : td ? 'yên tâm, không còn phải lo chuyện ' + td : 'chuyện ' + g + ' vừa kể được giải quyết cho yên tâm';
+  var dau = kq.dau[0], dau2 = kq.dau[1], td = kq.td || tuDau(dau), nc = k && (k.nhuCau || []).length ? boCham(k.nhuCau[0]) : td ? 'yên tâm, không còn phải lo chuyện ' + td : 'chuyện ' + g + ' vừa kể được giải quyết cho yên tâm';
+  var spc = sanPhamCa(r, ds), spTen = spc ? spc.ten : '[tên sản phẩm, dịch vụ của ca này]', spF = spc && spc.sp && (spc.sp.diem || [])[0] ? boCham(spc.sp.diem[0]) : '';
+  kq.spCa = spc;
   var canh = [];
   function them(n, phu, ban, khachDap, viSao, nhan) {
     var x = kq.nan[n], cu = phu && n === 4 ? (phu.indexOf('4.1') === 0 ? x.tc[0] : phu.indexOf('4.2') === 0 ? x.tc[2] : x.tc[3]).cau : x.cau;
@@ -307,15 +347,15 @@ function maiRiu(r, kq) {
   }
   var x;
   x = kq.nan[1];
-  them(1, '', '(Nói với nhóm trước khi vào vai) Mục tiêu cam kết của em: ' + (k && k.mucTieu ? boCham(k.mucTieu) : g + ' đồng ý để em gửi bộ câu hỏi hồ sơ gia đình, hoặc chọn thử một món nhỏ cho đúng chuyện ' + g + ' đang lo') + '.', '(Khách chưa xuất hiện.)',
+  them(1, '', '(Nói với nhóm trước khi vào vai) Mục tiêu cam kết của em: ' + (k && k.mucTieu ? boCham(k.mucTieu) : g + ' đồng ý ' + (spc ? 'trải nghiệm thử ' + spTen : 'chọn thử một món nhỏ') + ' cho đúng chuyện ' + (td || g + ' đang lo') + ', hoặc hẹn với em một bước tiếp cụ thể') + '.', '(Khách chưa xuất hiện.)',
     x.muc === 'tot' ? 'Ca thật đã có mục tiêu. Giữ thói quen nói to trước nhóm.' : 'Ca thật chưa thấy mục tiêu cam kết. Không có mục tiêu thì buổi gặp trôi theo câu chuyện và dễ nhảy sang bán. Mục tiêu là việc khách sẽ làm, không phải số tiền.');
   x = kq.nan[2];
   var kn2 = (k && k.ketNoi && !x.tc[1].ok) ? k.ketNoi : (x.tc[0].ok ? x.tc[0].cau.c : 'Em chào ' + g + ' ạ.') + (x.tc[1].ok && x.tc[1].cau !== x.tc[0].cau ? ' ' + x.tc[1].cau.c : x.tc[1].ok ? '' : ' Lần trước ' + g + ' có kể … (nhắc một chi tiết thật của nhà ' + g + '), giờ chuyện đó sao rồi ' + g + '?') + (x.tc[2].ok ? '' : ' Em làm cùng Siêu thị Vietwise vì … (một câu chuyện thật của em).');
   them(2, '', kn2, dau ? loiKhach(dau) : 'Ừ chào em. Dạo này chị cũng bận lắm.',
     x.muc === 'tot' ? 'Kết nối đã ổn: có chào hỏi, có chi tiết thật của khách, có chuyện của mình.' : 'Thiếu: ' + x.tc.filter(function (t) { return !t.ok; }).map(function (t) { return t.ten.toLowerCase(); }).join('; ') + '. Mở bằng một chi tiết thật của khách để khách thấy mình được nhớ tới, không phải đang bị bán hàng.');
   x = kq.nan[3];
-  var q3 = td ? G + ' nói ' + loiKhach(dau) + '. ' + G + ' kể thêm cho em, chuyện đó thường xảy ra lúc nào, và lúc đó ' + g + ' thấy sao ạ?' : G + ' lo cho bữa ăn của nhà mình thì điều gì làm ' + g + ' băn khoăn nhất ạ?';
-  them(3, '', q3, dau2 ? loiKhach(dau2) : dau ? '(Khách kể thêm một chuyện cụ thể trong nhà.)' : 'Thì chị cũng lo chuyện ăn uống của mấy đứa nhỏ.',
+  var q3 = td ? G + ' nói ' + loiKhach(dau) + '. ' + G + ' kể thêm cho em, chuyện đó thường xảy ra lúc nào, và lúc đó ' + g + ' thấy sao ạ?' : 'Dạo này điều gì làm ' + g + ' băn khoăn nhất' + (spc ? ' về chuyện ' + g + ' đang tìm ' + spTen : '') + ' ạ?';
+  them(3, '', q3, dau2 ? loiKhach(dau2) : dau ? '(Khách kể thêm một chuyện cụ thể trong nhà.)' : '(Khách kể điều mình đang lo.)',
     (x.tc[0].ghi ? 'Ca thật: ' + x.tc[0].ghi + '. ' : '') + (x.tc[1].ok ? 'Bạn đã đào thêm một tầng, tốt. ' : 'Chưa thấy câu hỏi đào thêm vào đúng chữ khách vừa nói. ') + 'Bản mài rìu nhặt lại chính chữ khách đã nói rồi hỏi sâu một tầng, để nhu cầu là của khách chứ không phải mình đoán.', 'Đào thêm một tầng');
   x = kq.nan[4];
   them(4, '4.1 Khách tự xác nhận nhu cầu', 'Em nghe ' + g + ' nói' + (dau ? ' ' + loiKhach(dau) : ' vậy') + ', vậy điều ' + g + ' mong nhất là ' + nc + ', đúng không ' + g + '? (Dừng, chờ khách xác nhận.)', 'Đúng rồi em.',
@@ -325,10 +365,10 @@ function maiRiu(r, kq) {
   them(4, '4.3 Viễn cảnh hướng tới', 'Còn nếu ' + (k && (k.nhuCau || []).length ? nc : td ? g + ' được yên tâm, chuyện ' + td + ' không còn làm ' + g + ' lo nữa' : nc) + ', ' + g + ' hình dung một ngày của nhà mình sẽ khác đi thế nào ạ? (Dừng, chờ khách trả lời. Khách chỉ gật đầu đồng tình cũng được.)', '(Gật đầu) Ừ, vậy thì tốt quá em.',
     (x.tc[3].ok ? 'Ca thật đã có câu viễn cảnh hướng tới. ' : 'Ca thật thiếu câu viễn cảnh hướng tới. ') + 'Kết nan 4 bằng hy vọng. Khách đồng tình ở đây là đã ngầm chốt; nan 5 đến 7 chỉ còn giúp khách giao dịch.', 'Chờ khách trả lời');
   x = kq.nan[5];
-  them(5, '', x.tc[0].ok && x.tc[1].ok ? x.tc[1].cau.c : (k && k.thuongHieu) ? k.thuongHieu : 'Siêu thị Vietwise chỉ nhận hàng có hồ sơ kiểm nghiệm, ' + g + ' xem được nguồn gốc từng món. Có một chị khách của em cũng ' + (td ? 'từng ' + td : 'có hoàn cảnh giống nhà mình') + ' (kể một ca thật bạn biết), giờ chị ấy yên tâm hơn nhiều.', 'Vậy à, có kiểm nghiệm thì chị yên tâm hơn.',
+  them(5, '', x.tc[0].ok && x.tc[1].ok ? x.tc[1].cau.c : (k && k.thuongHieu) ? k.thuongHieu : (spc ? G + ' ơi, ' + spTen + ' bên em có nguồn gốc rõ ràng: … (nêu đúng giấy tờ, người làm ra, nơi sản xuất có thật). ' : 'Siêu thị Vietwise chỉ nhận hàng có hồ sơ rõ ràng, ' + g + ' xem được nguồn gốc từng món. ') + 'Có một khách của em cũng ' + (td ? 'từng ' + td : 'có hoàn cảnh giống ' + g) + ' (kể một ca thật bạn biết), giờ đã yên tâm hơn nhiều.', 'Vậy à, vậy thì chị yên tâm hơn.',
     'Thiếu: ' + (x.tc.filter(function (t) { return !t.ok; }).map(function (t) { return t.ten.toLowerCase(); }).join('; ') || 'không thiếu gì, giữ nhé') + '. Uy tín phải kiểm chứng được, và chuyện kể phải là chuyện thật.');
   x = kq.nan[6];
-  var tf = k && (k.tfbr || []).length ? tfbrCau(k.tfbr[k.tfbr.length - 1]) : G + ' muốn ' + nc + ' (T). [Tên sản phẩm] làm từ … (F: chỉ nói điều có trên nhãn, hồ sơ), nên … (B: lợi ích cho đúng nhà ' + g + '). ' + G + ' hình dung dùng thế này mỗi ngày thì thấy sao ạ? (R)';
+  var tf = k && (k.tfbr || []).length ? tfbrCau(k.tfbr[k.tfbr.length - 1]) : G + ' muốn ' + nc + ' (T). ' + hoa(spTen) + (spF ? ': ' + spF : ' có … (F: chỉ nói điều có thật trên nhãn, hồ sơ, đúng như trong ca)') + ', nên … (B: lợi ích cho đúng chuyện ' + g + ' vừa kể). ' + G + ' hình dung dùng thế này mỗi ngày thì thấy sao ạ? (R)';
   them(6, '', tf, 'Nghe gọn đó em.', 'Ca thật: ' + x.tc.map(function (t) { return t.ten.split(':')[0] + (t.ok ? ' ✓' : ' ✗'); }).join(', ') + '. TFBR nối thẳng vào nhu cầu khách vừa xác nhận ở nan 4, và luôn kết bằng câu hỏi để khách nói.');
   x = kq.nan[7];
   var tcH = kq.tuChoi.filter(function (t) { return t.id !== 'tin'; })[0], xl = {
@@ -337,7 +377,7 @@ function maiRiu(r, kq) {
     hoi: 'Dạ hợp lý ạ. Em gửi ' + g + ' ảnh sản phẩm và giá để ' + g + ' đưa người nhà xem, tối mai em nhắn hỏi lại ' + g + ' nha?',
     chua: 'Dạ, vậy mình quay lại chuyện ' + (td || g + ' kể lúc nãy') + ' một chút: ' + g + ' thấy chuyện đó cần giải quyết sớm, hay để sau cũng được ạ?'
   };
-  var b7 = 'Một gói dùng được khoảng … (nói đúng số liệu thật). ' + G + ' muốn em giao cùng giỏ hàng tuần này, hay ' + g + ' để lần sau ạ?';
+  var b7 = (spc ? hoa(spTen) + ' ' : 'Gói này ') + 'giá … (nói đúng giá thật, sau khi khách đã đồng tình ở nan 4). ' + G + ' muốn bắt đầu ngay tuần này, hay ' + g + ' muốn thử phần nhỏ trước ạ?';
   them(7, '', tcH ? b7 + ' / Khi khách ' + tcH.ten + ': ' + xl[tcH.id] : b7, tcH ? loiKhach(tcH.cau) : (r.ketQua === 'mua' ? 'Ừ, vậy em giao cho chị nha.' : 'Để chị suy nghĩ thêm nha.'),
     'Ca thật: ' + x.tc.map(function (t) { return t.ten + (t.ok ? ' ✓' : ' ✗') + (t.ghi && !t.ok ? ' (' + t.ghi + ')' : ''); }).join('; ') + '. Khách vẫn được quyền nói không. Không giảm giá ép, không tạo khan hiếm giả; nếu khách còn lo về nhu cầu thì quay lại nan 4.', tcH ? 'Hỏi ra lý do thật' : '');
   them(8, '', '(Ngày 5 sau mua) ' + G + ' ơi, mấy hôm nay ' + (td ? 'chuyện ' + td + ' thế nào rồi ạ?' : 'nhà mình dùng thấy thế nào rồi ạ?'), 'Cũng được em, mà chị hay quên cách dùng.',
@@ -349,9 +389,11 @@ function maiRiu(r, kq) {
 var MUC_CHU = { tot: '✓ Tốt', chua: '◐ Chưa đủ', bo: '○ Bỏ qua' };
 function htmlDanhGia(r) {
   var kq = chamSau(r), h = '<h3>Phần 3 · App chấm sát từng nan</h3>';
-  if (!kq.co) return h + '<div class="the mo">Chưa có tư liệu để app đọc. Bấm Sửa, tải ảnh chat, ghi âm, video, PDF, Word hoặc dán lời kể vào Phần 1 nhé.</div>';
+  if (!kq.co) return h + '<div class="canh">App chưa có chữ nào của ca này để chấm, nên chưa viết được kịch bản mài rìu.' + (r.links && r.links.length ? ' Link YouTube, Drive app chỉ lưu để xem lại, không đọc được lời trong video.' : '') + (r.audio ? ' File ghi âm, video lưu trước bản mới chưa được chép lời.' : '') + ' Bấm <b>Sửa</b>, dùng nút <b>📎 Chọn tư liệu</b> để tải file video, ghi âm, ảnh chat từ máy (app tự đọc và chép lời), hoặc dán lời kể, bản chép lời vào Phần 1.</div><button class="nut rong" onclick="suaReview(\'' + r.id + '\')">Sửa và tải tư liệu</button>';
   var tot = 0; for (var n = 1; n <= 9; n++) if (kq.nan[n].muc === 'tot') tot++;
   h += '<div class="the"><div class="hang" style="align-items:center"><div class="diem-ap"><b>' + tot + '</b>/9</div><div style="flex:1">nan đủ tiêu chí · ' + kq.ds.length + ' câu đã đọc · ' + kq.hoi + ' câu hỏi (' + kq.mo + ' câu mở)' + (kq.tyLe != null ? ' · khách nói ' + kq.tyLe + '%' : '') + '</div></div>';
+  var spc0 = sanPhamCa(r, kq.ds);
+  h += '<div style="margin-top:8px"><b>Sản phẩm, dịch vụ trong ca:</b> ' + (spc0 ? esc(spc0.ten) : '<span class="mo">app chưa nhận ra, kịch bản để trống chỗ tên sản phẩm cho bạn điền</span>') + '</div>';
   if (kq.dau.length) h += '<div style="margin-top:8px"><b>Chữ của khách</b> (điều khách lo, mong):<ul style="margin:4px 0 0">' + kq.dau.map(function (x) { return '<li>“' + esc(ngan(x.c, 30)) + '”</li>'; }).join('') + '</ul></div>';
   if (kq.tuChoi.length) h += '<div style="margin-top:6px"><b>Khách từ chối, trì hoãn:</b> ' + kq.tuChoi.map(function (t) { return esc(t.ten) + ' (“' + esc(ngan(t.cau.c, 16)) + '”)'; }).join('; ') + '</div>';
   h += '</div>';
@@ -378,7 +420,7 @@ function htmlMaiRiu(r, kq) {
     return o + '<details class="kb-visao"><summary>💡 Vì sao mài lại thế này?</summary><p>' + esc(c.viSao) + '</p></details><div class="mo">Người quan sát soi: ' + esc(b.thu) + '</div></div>';
   }).join('');
   h += '<div class="hang"><a class="nut" href="#review/tapm/' + r.id + '">▶ Tập bản mài rìu từng câu</a><button class="nut phu" onclick="chep(chuMaiRiu(\'' + r.id + '\'))">Sao chép bản mài rìu cho team</button></div>';
-  return h + '<p class="mo" style="margin-top:14px">Bên dưới là hai kịch bản mẫu A, B để tập thêm tình huống khách rõ và khách chưa rõ.</p>';
+  return h + '<p class="mo" style="margin-top:14px">Muốn tập thêm kỹ năng chung, mở hai kịch bản mẫu A, B bên dưới (ca ví dụ, không phải ca của bạn).</p>';
 }
 function chuMaiRiu(id) {
   var r = S.review.filter(function (x) { return x.id === id; })[0], cs = maiRiu(r, chamSau(r));
@@ -403,8 +445,14 @@ function yeuCauAIReview(id) {
     if (R.tuLieu && R.tuLieu.length) o += '<div class="mo" style="margin-top:6px">Đã đọc: ' + R.tuLieu.map(function (t) { return esc(t.ten) + (t.loi ? ' (chưa đọc được)' : ''); }).join(' · ') + '</div>';
     o += '<p class="mo" style="margin:6px 0 0">Lần đầu chép lời ghi âm, app tải bộ nghe tiếng Việt khoảng 80MB (cần Wi-Fi), sau đó chạy không cần mạng. Chép lời mất chừng bằng độ dài file, cứ để app mở. Ảnh chat: bong bóng trái là Khách, phải là Mình.</p></div>';
     h = h.replace('<label>Kể lại buổi gặp</label>', o + '<label>Kể lại buổi gặp</label>');
+    h = h.replace('onchange="chonAudio(this.files[0])"', 'onchange="docTuLieu(this.files)"').replace('onchange="chonAnh(this.files)"', 'onchange="docTuLieu(this.files)"');
     if (AU_URL) h = h.replace(/(<div class="mo">[^<]*· [\d.]+ (?:MB|KB)<\/div>)/, '$1<button class="chip" onclick="chepLoiBanThu()">📝 Chép lời file này vào ô bản chép lời</button>');
     return h;
+  };
+  var gocKB = htmlKichBan;
+  htmlKichBan = function (r) {
+    var co = chamSau(r).co;
+    return '<details class="the"' + (co ? '' : ' open') + '><summary><b>📚 Kịch bản mẫu chung A, B</b> <span class="mo">(ca ví dụ mẹ bé, rau, Umikai: để tập kỹ năng, không phải ca của bạn)</span></summary>' + gocKB(r) + '</details>';
   };
   var gocV = V.review;
   V.review = function (p) {
