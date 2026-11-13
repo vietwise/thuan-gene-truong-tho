@@ -138,7 +138,7 @@ audio{width:100%;margin:6px 0}
 @media (min-width:700px){main{padding-top:24px}}
 .diem-ap{font-size:15px;color:var(--tim)}.diem-ap b{font-size:34px;color:var(--dem)}
 .tot-c{font-size:12px;color:#1f8a4c;font-weight:700}.chua-c{font-size:12px;color:#9a8a6a;font-weight:600}
-.canh-kb{border-left:4px solid var(--vang)}.canh-kb.ky{border-left-color:var(--tim);background:#fbf3ff}
+.canh-kb{border-left:4px solid var(--vang)}.kb-nhan{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;background:var(--hong);color:#fff;font-size:11px;font-weight:700;vertical-align:1px}.kb-visao{margin:8px 0 6px;background:#fffbea;border:1px solid #f2dc8a;border-radius:10px;padding:6px 10px}.kb-visao summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--dem)}.kb-visao p{margin:6px 0 2px;font-size:14px;line-height:1.5}.canh-kb.ky{border-left-color:var(--tim);background:#fbf3ff}
 .vai{margin:8px 0 4px;padding:8px 10px;background:#fff;border-radius:10px;border:1px solid var(--vien)}.vai i{display:block;font-style:normal;font-size:12px;font-weight:700;color:var(--dem);margin-bottom:2px}.vai.kh{background:#fff6fa;border-color:#f3c6da}.vai.kh i{color:var(--hong)}.vai textarea{margin:0}
 .tien{height:8px;border-radius:6px;background:var(--vien);overflow:hidden;margin:6px 0 12px}.tien i{display:block;height:100%;background:linear-gradient(90deg,var(--vang),var(--hong))}
 .buoc-rv{display:flex;gap:6px;flex-wrap:wrap;margin:-4px 0 6px}.buoc-rv span{font-size:12.5px;padding:3px 10px;border-radius:20px;background:var(--vien);color:var(--mo,#666)}.buoc-rv span.on{background:var(--dem);color:var(--vang)}
@@ -1074,7 +1074,7 @@ V.review = function (p) {
   if (p[1] === 'moi') { AU = null; AU_URL = ''; ANH = []; R = { id: uid(), ngay: homNay(), khach: p[2] || '', buoc: {}, ketQua: '' }; if (p[2]) { var kk = khach(p[2]); if (kk && kk.ketQua) R.ketQua = kk.ketQua; } location.replace('#review/sua'); return ''; }
   if (p[1] === 'sua' && R) return V.suaReview();
   if (p[1] === 'xem') return V.xemReview(p[2]);
-  if (p[1] === 'tap') { var rt = S.review.filter(function (x) { return x.id === p[2]; })[0]; if (rt) { batDauTap(kichBan(rt).map(function (c) { return { tieu: c.tieu, ban: c.ban, khach: c.khach, quan: c.quan, ky: c.ky }; }), '#review/xem/' + rt.id, 'Kịch bản ' + vn(rt.ngay), 'rv:' + rt.id); location.replace('#tap-noi'); return ''; } }
+  if (p[1] === 'tap') { var rt = S.review.filter(function (x) { return x.id === p[2]; })[0]; if (rt) { batDauTap(kichBan(rt).map(function (c) { return { tieu: c.tieu, ban: c.ban, khach: c.khach, quan: c.quan, ky: c.ky, nhan: c.nhan, viSao: c.viSao }; }), '#review/xem/' + rt.id, 'Kịch bản ' + vn(rt.ngay), 'rv:' + rt.id); location.replace('#tap-noi'); return ''; } }
   var h = '<h2 class="dau"><span class="dau-ic">' + ART.icon(3) + '</span><span>3 · Review điêu luyện Quạt Thần</span></h2><p class="mo">Soi cả cuộc thành lẫn chưa thành để mài giũa.</p><a class="nut rong" href="#review/moi">+ Review một buổi gặp</a>';
   h += '<div class="the ds" style="padding:0"><a href="#cong-cu/soat"><div class="y"><div>Soát Quạt Thần</div><div class="mo">9 câu soát một bài đăng hay chiến dịch thấy gợn</div></div>›</a></div>';
   if (S.review.length) {
@@ -1229,6 +1229,7 @@ if ('serviceWorker' in navigator) {
 </script>
 <script src="giao-dien.js"></script>
 <script src="doc-file.js"></script>
+<script src="kich-ban.js"></script>
 <script src="kich-hoat.js"></script>
 </body>
 </html>

@@ -134,7 +134,7 @@ function htmlTap() {
   }
   var c = TAP.ds[TAP.b];
   h += '<p class="mo">Bước ' + (TAP.b + 1) + '/' + n + '. Đọc câu một lần, rồi nói thành tiếng bằng lời của mình, không cần thuộc từng chữ.</p>';
-  h += '<div class="the canh-kb' + (c.ky ? ' ky' : '') + '"><b>' + (c.ky ? '★ ' : '') + esc(c.tieu) + '</b><div class="vai"><i>Bạn nói</i><textarea rows="3" oninput="suaCauTap(this.value)">' + esc(c.ban) + '</textarea></div><div class="vai kh"><i>Khách đáp</i>' + esc(c.khach) + '</div>' + (c.quan ? '<div class="mo">Tự soi: ' + esc(c.quan) + '</div>' : '') + '</div>';
+  h += '<div class="the canh-kb' + (c.ky ? ' ky' : '') + '"><b>' + (c.ky ? '★ ' : '') + esc(c.tieu) + '</b><div class="vai"><i>Bạn nói' + (c.nhan ? ' <span class="kb-nhan">' + esc(c.nhan) + '</span>' : '') + '</i><textarea rows="3" oninput="suaCauTap(this.value)">' + esc(c.ban) + '</textarea></div><div class="vai kh"><i>Khách đáp</i>' + esc(c.khach) + '</div>' + (c.viSao ? '<details class="kb-visao"><summary>💡 Vì sao cần câu này?</summary><p>' + esc(c.viSao) + '</p></details>' : '') + (c.quan ? '<div class="mo">Tự soi: ' + esc(c.quan) + '</div>' : '') + '</div>';
   h += '<div class="hang"><button class="nut ' + (TAP_REC ? '' : 'phu ') + '" onclick="tapThu()">' + (TAP_REC ? '■ Dừng thu' : '● Nói thử và thu lại') + '</button></div>';
   if (TAP_REC) h += '<p class="thieu">Đang thu… nói câu của bạn rồi bấm Dừng thu.</p>';
   if (TAP.au[TAP.b]) h += '<p class="mo" style="margin:6px 0 2px">Nghe lại giọng mình:</p><audio controls src="' + TAP.au[TAP.b] + '"></audio>';
