@@ -939,10 +939,16 @@ function demKy(tu) {
   return r;
 }
 function dauTuan() { var d = new Date(), w = (d.getDay() + 6) % 7; return congNgay(homNay(), -w); }
+var NHOM_ZALO = 'https://zalo.me/g/zchzctnzix7q62o8qqwf';
+function vaoNhomZalo() { S.me.vaoNhom = homNay(); save(); window.open(NHOM_ZALO, '_blank'); setTimeout(render, 300); }
+function htmlNhomZalo() {
+  if (S.me.vaoNhom) return '<p class="mo" style="margin:0 0 10px">👥 Nhóm Zalo CTV Quạt Thần: <a href="' + NHOM_ZALO + '" target="_blank" rel="noopener">mở nhóm</a></p>';
+  return '<div class="the" style="border-color:var(--kim);background:#fff8e1"><b>👥 Mời bạn vào nhóm Zalo CTV Quạt Thần</b><p class="mo" style="margin:4px 0 8px">Nhóm dành riêng cho các bạn đã cài app: Cố Vấn Nhất Phương Hồng báo bản cập nhật, cả nhóm cùng hỏi đáp và chia sẻ ca thật để cùng mài rìu. Nhiều cái quạt nhỏ cùng thổi, góp gió thành bão.</p><button class="nut rong" onclick="vaoNhomZalo()">Vào nhóm Zalo ngay</button><p class="mo" style="margin:6px 0 0">Bấm một lần là app ghi nhận và thôi nhắc. Lần sau mở nhóm ở dòng nhỏ đầu trang Quản lý.</p></div>';
+}
 V['quan-ly'] = function () {
   var tu = dauTuan(), w = demKy(tu), m = demKy(homNay().slice(0, 8) + '01'), vd = viecDenHan(), dem = {};
   S.khach.forEach(function (k) { var g = giaiDoan(k); dem[g] = (dem[g] || 0) + 1; });
-  var h = '<h2 class="dau"><span class="dau-ic qt-emo">📊</span><span>Quản lý</span></h2>' + htmlToi();
+  var h = '<h2 class="dau"><span class="dau-ic qt-emo">📊</span><span>Quản lý</span></h2>' + htmlNhomZalo() + htmlToi();
   var gy = goiYKetNoi();
   if (vd.length) h += '<h3>⏰ Việc đến hạn (' + vd.length + ')</h3><div class="the ds" style="padding:0">' + vd.slice(0, 20).map(function (x) { return '<a href="#khach/' + x.k.id + '/' + x.n + '"><span class="so">' + (x.n || '🛒') + '</span><div class="y"><div>' + esc(x.k.ten || 'Khách chưa đặt tên') + '</div><div class="mo">' + esc(x.ten) + '</div></div>›</a>'; }).join('') + '</div>';
   if (gy.length) h += '<h3>🪞 Gợi ý kết nối (' + gy.length + ')</h3>' + htmlGoiY(gy.slice(0, 12));

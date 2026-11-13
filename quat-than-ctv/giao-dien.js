@@ -25,6 +25,7 @@ V.home = function () {
   var ml = S.khach.filter(function (k) { return k.st && k.st.tiep && k.st.tiep <= congNgay(homNay(), 3); }).sort(function (a, b) { return a.st.tiep < b.st.tiep ? -1 : 1; }).slice(0, 8);
   var gyh = goiYKetNoi();
   var h = '<div class="hero">' + ART.hero() + '<div class="hero-chu"><small>Chào ' + esc(S.me.ten || 'bạn') + ' · ' + thu + '</small><b>Quạt ra tiền<br>chân chính</b><a class="hero-cl" href="#cl">' + ART.xu() + ' ' + c.tong + ' CL<span>🔥 ' + chuoiNgay() + '</span></a></div></div>';
+  if (!S.me.vaoNhom && window.NHOM_ZALO) h += '<a class="the phan nhe" href="#quan-ly"><span class="o-ic" style="--m:#c9930f">👥</span><b style="flex:1">Vào nhóm Zalo CTV Quạt Thần</b><span class="mui">›</span></a>';
   if (!S.me.ten) h += '<a class="the phan nhe" href="#quan-ly"><span class="o-ic" style="--m:#1b2f86">👤</span><b style="flex:1">Ghi tên của bạn</b><span class="mui">›</span></a>';
   h += htmlNhacThang();
   h += oLuoi([
